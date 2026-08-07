@@ -1,0 +1,653 @@
+BATCH 18 
+
+GIT BASICS:
+
+GIT BASH INSTALL 
+
+LINUX :
+
+pwd --> /c/Users/Madhukiran/Desktop/27july
+
+touch file1
+
+touch file1 file2 file3 
+
+mkdir dir1 dir2 dir3 
+
+rm -rf file/dir
+
+clear / ctrl + L 
+
+view: 
+ls 
+
+ll
+
+ls -lrth
+
+ls -la 
+
+cd dir
+
+cd ..
+
+cat fname
+
+  pwd
+  501  touch chiru
+  502  touch venky balaya
+  503  mkdir prabhas naga
+  504  rm -rf testfile.txt
+  505  rm -rf venky
+  506  rm -rf test
+  507  clear
+  508  touch f1 f2 f3
+  509  mkdir dir1 dir2 dir3
+  510  ls
+  511  ll
+  512  clear
+  513  ls -lrth
+  514  ls -la
+  515  clear
+  516  rm -rf f1 f2 f3
+  517  pwd
+  518  ll
+  519  cd prabhas/
+  520  pwd
+  521  clear
+  522  ll
+  523  rm -rf p3/
+  524  cd ..
+  525  ll
+  526  clear
+  527  ll
+  528  cat chiru
+  529  cat chiru
+  530  history
+=======================================================
+
+date: 28 JUKY 2026
+
+git init --> initilize a empty repo 
+
+git config --global user.name "madhu"
+git config --global user.email "madhu@gmail.com"
+
+
+touch filename 
+
+git status ---> red (untracked ) 
+
+git add fname  ---> moved to staging
+
+git status   (green) 
+
+git commit -m "commit message" fname 
+
+git log 
+
+git show cid 
+
+=================
+KIRAN :
+
+git config --global user.name "kiran"
+git config --global user.email "kiran@gmail.com"
+
+
+touch k1 k2 k3
+git status 
+git add .
+
+git status 
+
+git commit -m "Kiran commit" 
+
+git log
+
+git show 
+ 
+ 
+  pwd
+  469  touch f1 f2 f3 f4
+  470  mkdir chiru venky naga bala
+  471  clear
+  472  ls
+  473  ll
+  474  ll
+  475  rm -rf f1 f2
+  476  rm -rf dir1/ dir2/
+  477  clear
+  478  ll
+  479  ls -lrth
+  480  ll
+  481  pwd
+  482  cd naga/
+  483  ll
+  484  cd ..
+  485  ll
+  486  cd chiru/
+  487  clear
+  488  ll
+  489  touch ramcharan
+  490  ll
+  491  clear
+  492  ll
+  493  cd ..
+  494  ll
+  495  cat file1.txt
+  496  history
+  497  pwd
+  498  git --version
+  499  git init
+  500  pwd
+  501  git init
+  502  git config --global user.name "madhu"
+  503  git config --global user.email "madhu@gmail.com"
+  504  ll
+  505  touch java
+  506  ll
+  507  git status
+  508  git status
+  509  git add java
+  510  git status
+  511  clear
+  512  git status
+  513  git commit -m "first java commit" java
+  514  git status
+  515  clear
+  516  git log
+  517  git show 9d6a2f91715ddd5acbb407f0c8ece56694015140
+  518  touch chiru venky bala naga
+  519  ll
+  520  git status
+  521  clear
+  522  git status
+  523  git add bala chiru
+  524  git status
+  525  git commit -m "bala-chiru commit" bala chiru
+  526  git status
+  527  git log
+  528  git show 2ef833d7d744ed6265783884f11494e80c560be2
+  529  l
+  530  ll
+  531  git status
+  532  touch python
+  533  git status
+  534  git add python
+  535  git status
+  536  git commit -m "python code commit" python
+  537  git status
+  538  git log
+  539  git show 7261ca5ad5ebd237c8f91385b7596dd927178dad
+  540  git config --global user.name "kiran"
+  541  git config --global user.email  "kiran@gmail.com"
+  542  git status
+  543  touch k1 k2 k3
+  544  ll
+  545  git status
+  546  git add .
+  547  git status
+  548  git commit -m "kiran commit"
+  549  clear
+  550  git log
+  551  clear
+  552  git log
+  553  git show ef147cae8fcae724756e0b490c000516c18d06ac
+  554  git log
+  555  history
+  556  git log
+  557  history
+==============================
+DATE: 29 JULY 2026
+
+GH account - done 
+
+Git Hub repo create --b18project repo 
+
+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
+
+git clone https://github.com/devopstraininghub/b18projectrepo.git
+
+cd b18projectrepo
+
+touch madhu 
+
+git status --> red , ws
+
+git add .
+
+git status  --> green , staging 
+
+git commit -m "msg" 
+
+git push 
+
+authentication --> 2 types 
+  1. email & password 
+  2. token 
+  
+ --------
+code modification 
+code deletion 
+
+push 
+
+verify  
+=====
+ git init
+  486  git config --global user.name "madhu"
+  487  git config --global user.email "madhu@gmail.com"
+  488  ll
+  489  ls -la
+  490  touch java
+  491  git status
+  492  git add .
+  493  git status
+  494  git commit -m "java file commit"
+  495  clear
+  496  git status
+  497  git log
+  498  git show e6bf5d1131dfa3cb3042cd5b3347cc013ad270e6
+  499  git log
+  500  git clone https://github.com/devopstraininghub/b18projectrepo.git
+  501  ll
+  502  cd b18projectrepo/
+  503  ls -la
+  504  touch jenkins docker k8s
+  505  ll
+  506  git status
+  507  clear
+  508  git add .
+  509  git status
+  510  git commit -m "docker jenkins k8s files commit"
+  511  git status
+  512  clear
+  513  git log
+  514  git show d7f9f83ca4874b2688af59c656b0666c570256e7
+  515  git show 39da36c61e4e3c20d692a4474e98bc95ee2dc1ac
+  516  git log
+  517  touch linux python
+  518  git status
+  519  git add .
+  520  git status
+  521  git commit -m "linux python files"
+  522  git status
+  523  git log
+  524  ll
+  525  git push
+  526  touch madhu
+  527  git status
+  528  git add .
+  529  git status
+  530  git commit -m "madhu"
+  531  git push
+  532  git push
+  533  ll
+  534  git status
+  535  ll
+  536  LL
+  537  ll
+  538  cat madhu
+  539  git status
+  540  git add .
+  541  git commit -m "modified madhu file"
+  542  git log
+  543  git show 360e53e721c1f5b778d4b9c7107cdf4544e917ab
+  544  git push
+  545  git log
+  546  ll
+  547  ll
+  548  cat madhu
+  549  git status
+  550  git add .
+  551  git status
+  552  git commit -m "Updated madhu code"
+  553  git log
+  554  git show 3c1c610d20dd4f79b82ce1facdf72354c6ee5dbb
+  555  ll
+  556  rm -rf docker
+  557  ll
+  558  rm -rf jenkins k8s
+  559  ll
+  560  git status
+  561  git add .
+  562  git status
+  563  git commit -m "deleted unwanted files"
+  564  gi tlog
+  565  clear
+  566  git log
+  567  git show 323c3aef86558325ce60449ff750a2839e625979
+  568  git push
+  569  history
+==================================
+
+DATE: 30 JULY 
+
+git clone <repo>
+
+cd b18projectrepo
+mkdir madhukiran 
+cd madhukiran 
+touch madhucode 
+  ----My name is Madhu ...
+  
+git status 
+git add .
+git commit -m "Madhucode"
+git log
+git push   ---> directory push 
+
+------------------------
+
+ADARSH:
+
+git clone https://github.com/devopstraininghub/b18projectrepo.git
+ll --> b18projectrepo
+
+cd b18projectrepo
+touch Adarsh 
+git status 
+git add . 
+git status 
+git commit -m "Adarsh commit" 
+git push 
+
+error : permission to b18projectrepo repo denied to adars 
+
+-------
+form :
+https://forms.gle/CTHLaCcWAKp1SUx68
+
+-----
+git clone https://github.com/devopstraininghub/b18projectrepo.git
+ll --> b18projectrepo
+
+cd b18projectrepo
+touch rajanikanth  
+git status 
+git add . 
+git status 
+git commit -m "rajanikanth commit" 
+git push 
+
+git pull --rebase 
+git push 
+
+=======================================================================
+
+GIT BRANCH :
+
+
+git branch 
+
+git branch <br.name> 
+
+git checkout <br.name> 
+
+--  code ---
+add , commit 
+
+
+git checkout main 
+
+git merge <br.name> 
+
+git branch -d <br.name> 
+
+git branch -D <br.name> 
+
+=============================================================
+
+DATE: 31 JULY 2026
+
+
+ls -lrth 
+
+git clone https://github.com/devopstraininghub/b18projectrepo.git
+
+ll
+cd b18projectrepo
+
+git branch 
+
+git branch madhu_br
+
+git checkout madhu_br
+
+git branch 
+
+touch madhufile
+
+echo "THis is Madhu , I am crazy to learn devops" > madhufile
+
+git status 
+git add .
+git commit -m "Madhu branch commit" 
+
+git push https://github.com/devopstraininghub/b18projectrepo.git madhu_br
+
+git push origin <branch.name> 
+
+git pu
+=============================================
+git cherry-pick cid 
+
+=======================================================
+
+DATE: 3 AUG 2026
+
+git branch mc_br
+git checkout mc_br
+
+git checkout -b mc_br
+
+
+data 
+git add . && git commit -m "mc branch files"
+
+git push origin mc_br
+
+git push origin -d mc_br
+
+===========================================
+
+
+vi/vim /nano
+
+vim fname
+
+esc --- I  (insert mode) 
+
+   --- data ---
+   ----data --
+  
+esc: w 
+esc: q
+esc: wq 
+
+git merge scenarios 
+
+========================================
+DATE: 4 AUG 2026
+
+
+
+git MERGE CONFLICTS
+
+=================
+git amend
+-----
+git commit --amend -m "label" -m "label2" -m "label3"
+
+amend
+-----
+git commit --amend -m "label" -m "label2" -m "label3"
+
+======================
+
+FILTERING:
+git log -n 
+git log --oneline 
+git log --oneline -n 
+git log --author kiran
+git log --since="YYYY-MM-DD"  or git log --since="AUGUST 1 2026"
+
+
+
+This option filters the commits to only show those that were made after the specified date
+The date format used here is "YYYY-MM-DD"
+
+======================
+git config --global user.user mcuser
+git config --global user.email mcuser@gmail.com
+git config --list 
+
+========================
+
+Alias 
+-----
+git status  ---> git sts 
+
+git config --global alias.s "status"
+git config --global alias.s "status"
+git s
+
+git log
+git config --global alias.l "log"
+git l
+
+
+git log --oneline
+git config --global alias.lo "log --oneline"
+git lO
+ 
+======
+git config --global --unset alias.s
+
+==============================
+
+====================================
+only for modified files :
+
+git commit -am "messgae"
+
+
+=============================
+
+DATE: 5 AUG 2025
+
+git tag 
+
+git tag <tag.name> cid
+git checkout tag 
+
+git tag -d tagname
+
+git push origin tagname
+
+git push origin -d tagname
+
+==================
+
+
+
+PULL REQUESTS / MERGE REQUEST 
+
+REAL TIME SCENARIOS 
+
+
+FORK 
+
+HOW TO DO OPEN SOURCE CONTRIBUTION
+
+========================================
+
+
+DATE: 6 AUG 2026
+
+GIT BRANCH PROTECTION 
+
+
+==================================================
+git reset :
+
+git reset HEAD fname ---> staging to WS 
+
+git reset --soft cid (n-1)  ----> LR to Staging
+
+git reset --mixed cid (n-1) ----> LR to Workspace 
+
+
+git reset --hard cid (n-1)   ---> deletes the data 
+
+-------------------
+git stash
+
+
+git stash save task1
+
+work on task2 --> commit 
+
+git stash list 
+
+GIT STASH APPLY:
+---------------
+
+COPY - PASTE
+
+================================
+GIT STASH POP:
+---------------
+
+CUT -- PASTE
+
+================================
+GIT STASH DROP
+
+
+
+
+=======================================================
+
+GIT MERGE VS REBASE 
+
+     Combines two branches together.
+     Creates a new merge commit to join the histories.
+     Does NOT modify existing history (safe operation).
+	 History shows when and where branches are merged.
+     But the commit graph can become cluttered (more branches and merge commits).
+
+
+REBASE: 
+    Moves your branch’s commits on top of another branch’s latest commit.
+    Rewrites history by changing commit parents.    
+    Produces a clean, linear history    
+    Best for personal feature branches before pushing.
+	Very clean, straight (linear) commit history.
+	But rewriting history can be dangerous if used on shared branches.
+	
+=========================================	
+	
+DATE: 7 AUG 2026
+	
+git pull --rebase 
+
+GIT PULL VS GIT FETCH 
+
+git pull = git fetch + git merge orign 
+
+.gitignore
+
+
+
+git revert 
+
+   git revert safely undoes a commit by creating a new commit, making it the preferred rollback mechanism for production, CI/CD, and team-based workflows
+   
+
+-----------
+GIT QUIZ 
+
+
+GIT QUIZ 
