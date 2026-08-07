@@ -19,7 +19,41 @@ Git Bash is simply one terminal application, for Windows, which allows you to ru
 
 ---
 
-## 2. Git Basics: init, config, add, commit
+## 2. Linux Basics — commands you need before you start Git
+
+Before touching Git itself, in class we first practiced plain Linux/Bash commands inside Git Bash — because Git works entirely from the command line, so you must be comfortable moving around folders and files first. Nothing fancy, just the everyday commands.
+
+```
+$ pwd                     # "print working directory" — where am I right now?
+/c/Users/Madhukiran/Desktop/27july
+
+$ touch file1             # create one empty file
+$ touch file1 file2 file3 # create multiple empty files in one shot
+
+$ mkdir dir1 dir2 dir3     # create multiple folders in one shot
+
+$ rm -rf file_or_dir       # delete a file or folder, no confirmation asked
+
+$ clear                    # clear the screen (or press Ctrl + L)
+
+$ ls                       # list files/folders in current directory
+$ ll                       # list with extra details (permissions, size, date)
+$ ls -lrth                 # long listing, reverse order, human-readable size, sorted by time
+$ ls -la                   # long listing, including hidden files (those starting with .)
+
+$ cd dir                   # move INTO a folder
+$ cd ..                    # move OUT, one level up
+
+$ cat filename             # print the entire content of a file on screen
+```
+
+**Real-time example:** Think of `pwd` like checking "which room am I standing in right now" inside a big house. `cd dir` is walking into a room, `cd ..` is stepping back out into the hallway, `ls`/`ll` is looking around that room to see what's kept inside, and `cat filename` is opening a drawer and reading exactly what's written on the paper inside it. `rm -rf` is like throwing something straight into the dustbin — **no undo button**, so always double check the name before running it, one wrong folder name and your work is gone.
+
+**Real-time example:** In our class practice, we ran things like `touch chiru`, `touch venky balaya`, `mkdir prabhas naga`, then `rm -rf testfile.txt` to clean up. This is exactly what happens on any real Linux server too — before you even open Git, you first `cd` into the correct project folder, `ls` to confirm you're in the right place, and only then start running Git commands. Wrong folder + Git commands = you'll be committing into the wrong project, so this basic navigation habit matters a lot.
+
+---
+
+## 3. Git Basics: init, config, add, commit
 
 ### `git init` — start tracking your project
 This command converts a normal folder into a Git-tracked project, which we call "repository" or short form "repo". Internally it will create one hidden `.git` folder, which stores all the history.
@@ -88,7 +122,7 @@ This will show the commit message, plus the actual line-by-line changes (we call
 
 ---
 
-## 3. Two people, one machine — Madhu vs Kiran
+## 4. Two people, one machine — Madhu vs Kiran
 
 In our notes, Madhu and Kiran were taking turns on the same laptop, each one setting their own Git identity and making their own commits (`touch k1 k2 k3` → `git add .` → `git commit -m "Kiran commit"`).
 
@@ -96,7 +130,7 @@ In our notes, Madhu and Kiran were taking turns on the same laptop, each one set
 
 ---
 
-## 4. GitHub, Cloning, and Pushing
+## 5. GitHub, Cloning, and Pushing
 
 Understand this clearly — Git (the tool) works fully on your own laptop, offline also it will work. **GitHub** is a website which *hosts* your Git repository online, so that others can see it, download it, and collaborate with you. Simply put, GitHub is like "Google Drive, but for Git repos."
 
@@ -132,18 +166,18 @@ GitHub these days does not accept plain password for pushing code — that facil
 ```
 error: permission to b18projectrepo repo denied to adarsh
 ```
-**Real-time example:** Adarsh cloned the repo and tried to push, but he was never added as a "collaborator" on GitHub for that repo — so GitHub straightaway rejected his push. Same as trying to edit a Google Doc which is shared to you as "view only" — you can read, but can't touch anything. Solution is either the repo owner adds Adarsh as collaborator, or Adarsh raises a **Pull Request** instead (see Section 12 below, we will come to that).
+**Real-time example:** Adarsh cloned the repo and tried to push, but he was never added as a "collaborator" on GitHub for that repo — so GitHub straightaway rejected his push. Same as trying to edit a Google Doc which is shared to you as "view only" — you can read, but can't touch anything. Solution is either the repo owner adds Adarsh as collaborator, or Adarsh raises a **Pull Request** instead (see Section 13 below, we will come to that).
 
 ### `git pull --rebase`
 ```
 $ git pull --rebase
 $ git push
 ```
-This is used when somebody else has already pushed changes, and your local copy has fallen behind. It will fetch their commits, and replay *your* commits on top of that — keeping the history clean, instead of creating a messy extra merge commit. (Full merge vs rebase explanation is in Section 15, please refer that.)
+This is used when somebody else has already pushed changes, and your local copy has fallen behind. It will fetch their commits, and replay *your* commits on top of that — keeping the history clean, instead of creating a messy extra merge commit. (Full merge vs rebase explanation is in Section 16, please refer that.)
 
 ---
 
-## 5. Branches — working on features safely
+## 6. Branches — working on features safely
 
 A **branch** is nothing but a separate, parallel line of work — like a duplicate copy of your project, where you can freely experiment, without disturbing the main, working version.
 
@@ -187,7 +221,7 @@ This will pick up *one specific commit* from another branch, and apply just that
 
 ---
 
-## 6. Text editors: vim/vi and nano
+## 7. Text editors: vim/vi and nano
 
 Since Git will need a text editor for typing longer commit messages, or while resolving conflicts, we also covered basic vim usage in class:
 ```
@@ -202,7 +236,7 @@ Esc             # leave Insert mode back to Normal mode
 
 ---
 
-## 7. Merge Conflicts
+## 8. Merge Conflicts
 
 A **merge conflict** happens when Git is not able to automatically combine two changes, because both changes touched the *same line* of the *same file*, but in a different way. Git will get confused — "which one is correct?" — and it will ask you to decide.
 
@@ -218,7 +252,7 @@ You just edit the file, keep whichever version is correct, remove the `<<<<<<<` 
 
 ---
 
-## 8. `git commit --amend` — fixing your last commit
+## 9. `git commit --amend` — fixing your last commit
 
 ```
 $ git commit --amend -m "corrected message"
@@ -229,7 +263,7 @@ This allows you to change the *most recent* commit's message (or even add some f
 
 ---
 
-## 9. Filtering `git log`
+## 10. Filtering `git log`
 
 In real projects, there can be thousands of commits sitting in history — filtering is what makes it actually usable.
 ```
@@ -243,7 +277,7 @@ $ git log --since="2026-08-01"              # only commits after this date
 
 ---
 
-## 10. Config list and Aliases
+## 11. Config list and Aliases
 
 ```
 $ git config --list       # show every config setting currently active
@@ -273,7 +307,7 @@ $ git commit -am "quick fix message"
 
 ---
 
-## 11. Tags — marking important milestones
+## 12. Tags — marking important milestones
 
 A **tag** marks one specific commit as important — mostly used for release versions (`v1.0`, `v2.0`, and so on).
 ```
@@ -288,7 +322,7 @@ $ git push origin -d v1.0           # delete the tag on GitHub too
 
 ---
 
-## 12. Pull Requests, Forks, and Open Source Contribution
+## 13. Pull Requests, Forks, and Open Source Contribution
 
 - **Pull Request (PR)** / **Merge Request (MR)** — this is a formal request to the repo owner, saying: "kindly review my branch and merge it into your main branch." This is how teams review code *before* it goes live officially, and this is also how outside contributors (who don't have direct push access) can still contribute to a project.
 - **Fork** — this means making your *own personal copy* of somebody else's GitHub repo, under your own account, so that you can freely experiment on it, without needing any permission on the original repo.
@@ -302,7 +336,7 @@ Repo owners can set some rules on important branches (like `main`) — for examp
 
 ---
 
-## 13. `git reset` — undoing commits/staging
+## 14. `git reset` — undoing commits/staging
 
 `git reset` will move you *backward* through the staging/commit process. There are three modes, each one undoing a different amount, so choose carefully:
 
@@ -321,7 +355,7 @@ $ git reset --hard <cid>         # undo commit(s) AND permanently delete the cha
 
 ---
 
-## 14. `git stash` — temporarily shelving your work
+## 15. `git stash` — temporarily shelving your work
 
 Sometimes you are halfway through editing something, but suddenly you need to switch to an urgent task (say, an emergency bug fix), without committing your half-finished work. `git stash` will put your current changes "in a drawer," and give you back a clean workspace to work on the urgent thing.
 
@@ -339,7 +373,7 @@ $ git stash list                  # see everything currently stashed
 
 ---
 
-## 15. Git Merge vs Git Rebase
+## 16. Git Merge vs Git Rebase
 
 Both of these combine work from two branches, but they leave a very different footprint in your history. This confuses a lot of people, so pay attention here.
 
@@ -361,7 +395,7 @@ Both of these combine work from two branches, but they leave a very different fo
 
 ---
 
-## 16. Git Pull vs Git Fetch
+## 17. Git Pull vs Git Fetch
 
 ```
 git pull = git fetch + git merge origin
@@ -374,7 +408,7 @@ git pull = git fetch + git merge origin
 
 ---
 
-## 17. `.gitignore` — telling Git what to ignore
+## 18. `.gitignore` — telling Git what to ignore
 
 A `.gitignore` file lists out file/folder patterns which Git should never track — even if those files are physically sitting inside the project folder.
 
@@ -388,7 +422,7 @@ means these will never show up in `git status` as untracked, and can never get a
 
 ---
 
-## 18. `git revert` — the safe way to undo a commit
+## 19. `git revert` — the safe way to undo a commit
 
 ```
 $ git revert <cid>
@@ -399,7 +433,19 @@ Instead of deleting a commit from history (like `reset --hard` would do), `rever
 
 ---
 
+## 20. SVN vs Git — Centralized vs Distributed Version Control Systems
 
+This is more of a "why Git won" theory topic, but important to know for interviews also.
+
+**SVN (Subversion)** is a **Centralized Version Control System (CVCS)**. Meaning — there is exactly *one* central server which holds the *entire* project history. Every developer's laptop only has the *current* files, not the full history. So for almost everything — committing, checking history, comparing versions — you **must** be connected to that central server. No server connection, no work possible.
+
+**Git** is a **Distributed Version Control System (DVCS)**. Meaning — when you `git clone` a repo, you get the *entire* project history copied onto your own laptop, not just the latest files. So you can commit, branch, view logs, compare old versions — all **fully offline** — and only when you actually want to *share* your work with others, you `git push` it up to a central place like GitHub.
+
+**Real-time example:** Think of SVN like a **physical bank passbook system** — every single transaction, you must go to the bank branch (the central server) to update your passbook; without visiting the branch, you can't even check your own balance properly. Git, on the other hand, is like a **UPI/mobile banking app that also works offline in airplane mode for viewing your saved transaction history** — you can check everything, note down new "planned transactions" on your phone anytime, and only when you get network back, you sync (push) it to the bank's server, where everyone else can then see it.
+
+**Real-time example:** Suppose you are travelling in a train with no internet, and you still want to commit your day's work with a proper message, check `git log` of last month, or even create a new branch to experiment — Git allows all of this with zero internet, because your laptop already has the *full* repository. With SVN, most of these things would simply not work until you reconnect to the central server. This offline capability, plus easy/cheap branching, is the big reason most companies moved away from SVN/CVS to Git over the last many years.
+
+---
 
 ## Quick Recap Table
 
@@ -418,5 +464,6 @@ Instead of deleting a commit from history (like `reset --hard` would do), `rever
 | `git cherry-pick` | Copy one specific commit elsewhere | Photocopying just one page from another notebook |
 | Pull Request | Ask to merge your branch into someone else's | Submitting an edit for approval before publishing |
 | Fork | Your own personal copy of someone else's repo | Cloning a recipe to experiment with your own twist |
+| SVN vs Git | Centralized (one server) vs Distributed (full copy locally) | Bank passbook vs offline-capable mobile banking app |
 
 That's it, friends — cover these points thoroughly, practice each command with your hands on the keyboard (not just reading), and Git will become second nature within a week or two. All the best!

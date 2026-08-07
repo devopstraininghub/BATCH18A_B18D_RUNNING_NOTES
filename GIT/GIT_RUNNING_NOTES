@@ -645,6 +645,11 @@ git revert
 
    git revert safely undoes a commit by creating a new commit, making it the preferred rollback mechanism for production, CI/CD, and team-based workflows
    
+=============================================
+
+SVN VS GIT
+CENTRALIZED VS DISTRIBUTED VERSION CONTROL SYSTEMS
+
 
 -----------
 GIT QUIZ 
