@@ -1,5 +1,42 @@
 # Git Interview Questions
 
+## Table of Contents
+
+1. [Git vs GitHub](#q1)
+2. [Difference between DVCS and CVCS](#q2)
+3. [Basic Git commands used frequently](#q3)
+4. [Difference between Git Clone and Fork](#q4)
+5. [Can I use both SSH and HTTPS for Git?](#q5)
+6. [How to migrate code from one Git repository to another](#q6)
+7. [Difference between Git Pull and Git Fetch](#q7)
+8. [Difference between git clone and git pull](#q8)
+9. [Git Merge vs Rebase](#q9)
+10. [Git Merge vs Git Rebase (summary)](#q10)
+11. [GitHub repository size limits](#q11)
+12. [Working with large files in Git — What is Git LFS?](#q12)
+13. [What is Git Stash?](#q13)
+14. [What is Git Cherry-Pick?](#q14)
+15. [Use of `git log --oneline` and other filtration commands](#q15)
+16. [What is Git Reset? Hard, Soft, and Mixed reset](#q16)
+17. [What is Git Revert?](#q17)
+18. [Difference between Git Reset and Git Revert](#q18)
+19. [Git Branching, Pushing, and Deletion commands](#q19)
+20. [How to delete a specific commit from Git history](#q20)
+21. [What is Git Squash?](#q21)
+22. [What is Git Tag and its real-time usage?](#q22)
+23. [How PR works in GitHub and branching policies](#q23)
+24. [What are verified commits in GitHub?](#q24)
+25. [What is Git Submodule?](#q25)
+26. [Difference between Monorepo and Multirepo](#q26)
+27. [Branching strategies in Git](#q27)
+28. [Branching strategy in Kubernetes, Jenkins, and enterprise projects](#q28)
+29. [What is a Git bare repository and its real-time use case?](#q29)
+30. [What is Git Hooks?](#q30)
+31. [How do you deal with merge conflicts in Git?](#q31)
+
+---
+
+<a id="q1"></a>
 ## Q. Git vs GitHub
 
 Git is a version control tool that tracks changes in your code.
@@ -9,6 +46,7 @@ GitHub (along with GitLab, Bitbucket, and Azure Repos) is a platform that hosts 
 
 ---
 
+<a id="q2"></a>
 ## Q: What is the difference between Distributed Version Control System (DVCS) and Centralized Version Control System (CVCS)?
 
 **A:**
@@ -47,6 +85,7 @@ DVCS (like Git) is more flexible, faster, and widely used in modern software dev
 
 ---
 
+<a id="q3"></a>
 ## Q: What are the basic Git commands you use frequently or on a daily basis?
 
 **A:**
@@ -61,6 +100,7 @@ git clone <repo-url>         – to create a local copy of a remote repository
 
 ---
 
+<a id="q4"></a>
 ## Q: What is the difference between Git Clone and Fork?
 
 **A:**
@@ -73,6 +113,7 @@ Fork is useful when you want to contribute to the original repository. Fork crea
 
 ---
 
+<a id="q5"></a>
 ## Q: Can I use both SSH and HTTPS for Git?
 
 ```
@@ -95,6 +136,7 @@ git remote add origin3 <another-repo-url>
 
 ---
 
+<a id="q6"></a>
 ## Q: How can I migrate code from one Git repository to another?
 
 ```
@@ -118,6 +160,7 @@ This process migrates the complete codebase along with the commit history to the
 
 ---
 
+<a id="q7"></a>
 ## Q: What is the difference between Git Pull and Git Fetch?
 
 **A:**
@@ -132,6 +175,7 @@ Git Pull is a combination of Git Fetch + Git Merge. It fetches the changes from 
 
 ---
 
+<a id="q8"></a>
 ## Q: What is the difference between git clone and git pull?
 
 **A:**
@@ -147,6 +191,7 @@ It fetches and merges the latest changes from the remote branch.
 
 ---
 
+<a id="q9"></a>
 ## Git Merge vs Rebase
 
 **MERGE:**
@@ -168,12 +213,14 @@ It fetches and merges the latest changes from the remote branch.
 
 ---
 
+<a id="q10"></a>
 ## Q. Git Merge vs Git Rebase?
 
 Both achieve the same goal of merging the changes from one branch to another branch. But Git Merge will not alter the commit history. But Git Rebase will alter the commit history. Git Rebase is used to make the commit history linear. But if you perform too many rebases, it will create a lot of conflicts which will make the commit history complex.
 
 ---
 
+<a id="q11"></a>
 ## What are the GitHub repository size limits?
 
 **A:**
@@ -193,6 +240,7 @@ For files larger than 100 MB, GitHub requires the use of Git LFS (Large File Sto
 
 ---
 
+<a id="q12"></a>
 ## Q: How can we work with large files in Git? What is Git LFS?
 
 **A:**
@@ -228,6 +276,7 @@ Using Git LFS ensures large files are managed efficiently without exceeding repo
 
 ---
 
+<a id="q13"></a>
 ## Q: What is Git Stash?
 
 **A:**
@@ -260,6 +309,7 @@ You can later apply the stashed changes back to the same branch or to a differen
 
 ---
 
+<a id="q14"></a>
 ## Q: What is Git Cherry-Pick?
 
 **A:**
@@ -273,6 +323,7 @@ git cherry-pick <commit-hash>
 
 ---
 
+<a id="q15"></a>
 ## Q: What is the use of `git log --oneline`? Other filtration commands?
 
 **A:**
@@ -289,6 +340,7 @@ git log --since="YYYY-MM-DD"  or  git log --since="December 6 2025"
 
 ---
 
+<a id="q16"></a>
 ## Q: What is Git Reset? Explain Hard, Soft, and Mixed reset.
 
 **A:**
@@ -324,6 +376,7 @@ git reset --mixed HEAD~5
 
 ---
 
+<a id="q17"></a>
 ## Q: What is Git Revert?
 
 **A:**
@@ -345,6 +398,7 @@ For personal or private repositories, `git reset` can be used if rewriting histo
 
 ---
 
+<a id="q18"></a>
 ## Q: What is the difference between Git Reset and Git Revert?
 
 **A:**
@@ -364,6 +418,7 @@ Git Revert is safe to use in public or shared repositories.
 
 ---
 
+<a id="q19"></a>
 ## Questions Related to Git Branching, Pushing, and Deletion
 
 ```
@@ -382,6 +437,7 @@ git rename -m <old-branch-name> <new-branch-name>
 
 ---
 
+<a id="q20"></a>
 ## Q: How can you delete a specific commit in Git from git commit history?
 
 **A:**
@@ -410,6 +466,7 @@ Use this method mainly for personal or private repositories.
 
 ---
 
+<a id="q21"></a>
 ## Q: What is Git Squash?
 
 **A:**
@@ -434,6 +491,7 @@ Git Squash rewrites commit history, so it should be used mainly on personal bran
 
 ---
 
+<a id="q22"></a>
 ## Q: What is Git Tag and its real-time usage?
 
 **A:**
@@ -476,6 +534,7 @@ git push origin --tags
 
 ---
 
+<a id="q23"></a>
 ## Q. How PR works in GitHub and use branching policies?
 
 **Branching Policies:**
@@ -487,12 +546,14 @@ git push origin --tags
 
 ---
 
+<a id="q24"></a>
 ## Q. What are verified commits in GitHub?
 
 GitHub will verify GPG, SSH, or S/MIME signatures so other people will know that your commits come from a trusted source. GitHub will automatically sign commits you make using the GitHub web interface.
 
 ---
 
+<a id="q25"></a>
 ## Q: What is Git Submodule?
 
 **A:**
@@ -529,6 +590,7 @@ A microservices project using a common configuration or utility repository as a 
 
 ---
 
+<a id="q26"></a>
 ## Q: What is the difference between Monorepo and Multirepo?
 
 **A:**
@@ -573,6 +635,7 @@ Examples: Most traditional enterprise projects, microservices-based architecture
 
 ---
 
+<a id="q27"></a>
 ## Q: What are the branching strategies in Git?
 
 Reference: https://www.gitkraken.com/learn/git/best-practices/git-branch-strategy
@@ -635,6 +698,7 @@ The latest Release branch is merged into the Production branch.
 
 ---
 
+<a id="q28"></a>
 ## Q: Which branching strategy is followed by open-source projects like Kubernetes or Jenkins? Which branching strategy do most enterprise production projects follow? What is the branching strategy in your current project?
 
 **A:**
@@ -677,6 +741,7 @@ Most enterprise production projects follow one of the following strategies, depe
 
 ---
 
+<a id="q29"></a>
 ## Q: What is a Git bare repository and its real-time use case?
 
 **A:**
@@ -705,12 +770,14 @@ git init --bare project.git
 
 ---
 
+<a id="q30"></a>
 ## Q. What is Git Hooks?
 
 Git hooks are scripts that Git executes before or after events such as: commit, push, and receive. Git hooks are a built-in feature - no need to download anything. Git hooks are run locally.
 
 ---
 
+<a id="q31"></a>
 ## Q. How do you deal with merge conflicts in Git?
 
 When you have a merge conflict, Git will mark the conflicted area in the file. You need to resolve the conflict manually. You can use `git status` to check the conflicted files. You can use `git diff` to check the changes in the conflicted files. You can use `git add <file>` to stage the changes. You can use `git commit` to commit the changes.
