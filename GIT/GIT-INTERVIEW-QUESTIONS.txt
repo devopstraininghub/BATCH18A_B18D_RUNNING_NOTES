@@ -1,0 +1,705 @@
+
+
+Q. Git vs GitHub
+Git is a version control tool that tracks changes in your code.
+It enables multiple developers to collaborate on the same codebase efficiently.
+
+GitHub (along with GitLab, Bitbucket, and Azure Repos) is a platform that hosts Git repositories remotely and adds collaboration features like pull requests, issues, and code reviews.
+
+=========================================================================================
+Q: What is the difference between Distributed Version Control System (DVCS)
+   and Centralized Version Control System (CVCS)?
+
+A:
+A Version Control System helps track changes in source code and enables
+collaboration among developers.
+
+Centralized Version Control System (CVCS):
+- There is a single central repository.
+- Developers must connect to the central server to commit or update code.
+- If the central server goes down, collaboration is blocked.
+- Offline work is very limited.
+- Examples: SVN, CVS, Perforce.
+
+Distributed Version Control System (DVCS):
+- Every developer has a full copy of the repository, including history.
+- Developers can commit, branch, and view history locally without internet access.
+- Better performance and reliability.
+- No single point of failure.
+- Examples: Git
+
+
+Key Differences:
+
+CVCS:
+- Single central repository
+- Requires constant network access (INTERNET ACCESS ) 
+- Limited offline capabilities
+- Slower operations
+
+DVCS:
+- Multiple complete repositories
+- Supports offline work
+- Faster operations
+- More reliable and scalable
+
+Conclusion:
+DVCS (like Git) is more flexible, faster, and widely used in modern software development compared to CVCS.
+
+=============================================================================================
+
+Q: What are the basic Git commands you use frequently or on a daily basis?
+
+A:
+
+   git add . – to stage all modified files
+   
+   git commit -m "demo" – to commit changes with a message
+   
+   git push origin <branch> – to push commits to the remote branch
+   
+   git pull origin <branch> – to fetch and merge the latest changes from the remote branch
+   
+   git clone <repo-url> – to create a local copy of a remote repository
+
+=============================================================================================
+
+Q: What is the difference between Git Clone and Fork?
+
+A:
+
+   Git Clone: Creates a copy of the repository on your local machine. You can pull and push changes to the remote repository if you have the required access.
+   
+   Fork: Creates a copy of the repository in your own remote account (for example, on GitHub). It is commonly used when you do not have direct write access to the original repository, and changes are contributed back using a pull request. 
+   
+   
+  for open source contribution. 
+
+Fork is useful when you want to contribute to the original repository. Fork creates a copy of the repository in your GitHub account. You can make changes and raise a pull request to the original repository. This is helpful when you are working on open-source projects. Example if you want to build some new app over kubernetes, you can fork the kubernetes repository and make changes to the code and raise a pull request.
+
+=============================================================================================
+
+Q Can I use both SSH and HTTPS for Git?
+
+git clone https://github.com/devopstraininghub/b17projectrepo.git
+
+git push https://github.com/devopstraininghub/b17projectrepo.git main
+
+A:
+     Yes, you can use both SSH and HTTPS with Git.
+     SSH is generally more secure and convenient because it does not require entering credentials repeatedly, while HTTPS uses a username and password or token.
+     
+     When working with multiple GitHub accounts using SSH, you need to configure multiple SSH keys in the .ssh/config file. This allows Git to identify which SSH key to use for each account.
+
+Example of adding multiple remotes:
+
+     git remote add origin2 git@github.com:devopstraininghub/b17projectrepo.git
+     git remote add origin3 <another-repo-url>
+
+
+=============================================================================================
+
+Q: How can I migrate code from one Git repository to another?
+
+git clone https://github.com/devopstraininghub/b17projectrepo.git
+cd b17projectrepo.git
+git remote -v 
+git remote add new-origin <destination-repo-url>
+git push new-origin --all 
+git push new-origin --tags
+
+
+A:
+   You can migrate code from one repository to another by:
+   
+   Cloning the source repository using git clone <source-repo-url>
+   
+   Adding the destination repository as a new remote using git remote add new-origin <destination-repo-url>
+   
+   Pushing all branches to the new repository using git push new-origin --all
+   
+   Pushing all tags (if required) using git push new-origin --tags
+   
+   This process migrates the complete codebase along with the commit history to the new repository.
+
+=============================================================================================
+What is the difference between Git Pull and Git Fetch?
+
+A:
+Git Fetch:
+Git Fetch downloads the latest changes from the remote repository to your local repository but does not merge them into your current branch. You must manually merge the changes using git merge origin/<branch>.
+
+Git Pull:
+Git Pull is a combination of Git Fetch + Git Merge. It fetches the changes from the remote repository and automatically merges them into your current branch.
+
+
+Git Pull  --- Git Fetch + Git Merge orign
+===============================================================================================
+
+Q: What is the difference between git clone and git pull?
+
+A:
+git clone is used to create a local copy of a remote repository for the first time.
+It downloads the complete repository with full history.
+
+git pull is used to update an existing local repository. It is basically to bring incremental changes / latest updates from cenral repo 
+It fetches and merges the latest changes from the remote branch.
+
+Summary:
+- git clone: First-time setup
+- git pull: Update existing repo
+
+
+===============================================================================================
+GIT MERGE VS REBASE 
+
+     Combines two branches together.
+     Creates a new merge commit to join the histories.
+     Does NOT modify existing history (safe operation / NON DESTRUCTIVE ACTION) 
+	 History shows when and where branches are merged.
+     But the commit graph can become cluttered (more branches and merge commits).
+
+
+REBASE: 
+    Moves your branch’s commits on top of another branch’s latest commit.
+    Rewrites history by changing commit parents.    
+    Produces a clean, linear history    
+    Best for personal feature branches before pushing.
+	Very clean, straight (linear) commit history.
+	But rewriting history can be dangerous if used on shared branches.
+
+The MAIN GOLDEN RULE of rabase is "NEVER REBASE A PUBLIC REPO USED BY MULTIPLE PEOPLE".
+
+===============================================================================================
+
+Q. Git Merge vs Git Rebase?
+Both achieve the same goal of merging the changes from one branch to another branch. But Git Merge will not alter the commit history. But Git Rebase will alter the commit history. Git Rebase is used to make the commit history linear. But if you perform too many rebases, it will create a lot of conflicts which will make the commit history complex.
+
+=======================================================================
+
+What are the GitHub repository size limits?
+
+A:
+GitHub enforces the following repository size limits and recommendations:
+
+Maximum file size:
+A single file cannot be larger than 100 MB.
+
+Recommended repository size:
+GitHub recommends keeping repositories under 1 GB for optimal performance.
+
+Hard repository size limit:
+Repositories larger than 5 GB may face performance issues, and GitHub may restrict operations on excessively large repositories.
+
+Large files:
+For files larger than 100 MB, GitHub requires the use of Git LFS (Large File Storage).
+
+=============================================================
+
+Q: How can we work with large files in Git? What is Git LFS?
+
+A:
+Most Git hosting platforms such as GitHub, GitLab, Bitbucket, and Azure Repos have a maximum file size limit of 100 MB per file. To handle files larger than this limit, we use Git LFS (Large File Storage).
+
+Git LFS stores large files in a separate storage system and keeps only lightweight reference pointers in the Git repository. This helps reduce repository size and improves performance while still allowing version control of large files.
+
+Steps to use Git LFS:
+
+1. Install and initialize Git LFS on your local machine
+   git lfs install
+
+2. Configure Git LFS to track large file types
+   git lfs track "*.iso"
+
+3. Add the Git LFS tracking configuration
+   git add .gitattributes
+
+4. Add and commit the large file
+   git add <large-file>
+   git commit -m "Added large file using Git LFS"
+
+5. Push the changes to the remote repository
+   git push origin <branch>
+
+Using Git LFS ensures large files are managed efficiently without exceeding repository size limits.
+
+===============================================================
+Q: What is Git Stash ?
+
+A:
+Git Stash is used to temporarily save changes in your working directory without committing them.
+It allows you to revert your working directory back to the last commit.
+You can later apply the stashed changes back to the same branch or to a different branch.
+
+Commonly used Git Stash commands:
+
+1. Save changes to stash
+   git stash
+
+2. List all stashed changes
+   git stash list
+
+3. Apply the latest stash and remove it from stash list
+   git stash pop /APPLY /drop
+
+4. Apply a specific stash entry
+   git stash pop stash@{0}
+
+5. Remove all stashed changes
+   git stash clear
+   
+=============================================================== 
+
+
+Q: What is Git Cherry-Pick?
+
+A:
+Git Cherry-Pick is used to apply the changes from a specific commit to the current branch.
+It is commonly used when you want to apply a particular commit, such as a hotfix, without merging the entire branch.
+
+Command:
+git cherry-pick <commit-hash>
+
+=============================================================== 
+Q: What is the use of git log --oneline OTHER FILERATION COMMANDS ?
+
+A:
+The git log --oneline command displays the commit history in a compact, one-line format.
+The git log --oneline --graph command shows the commit history in one line along with a visual representation of branch and merge history.
+
+git log -n 
+git log --oneline 
+git log --oneline -n 
+git log --author kiran
+git log --since="YYYY-MM-DD"  or git log --since="December 6 2025"
+
+
+=============================================================== 
+
+Q: What is Git Reset? Explain Hard, Soft, and Mixed reset.
+
+A:
+Git Reset is used to move the current branch (HEAD) to a specific commit.
+Depending on the reset type, it can affect the commit history, staging area, and working directory.
+
+1. Git Reset --hard
+This resets the commit history, staging area, and working directory.
+All changes and commits after the specified commit are permanently deleted (destructive and causes data loss).
+
+Examples:
+git reset --hard c224fd2
+git reset --hard HEAD~5
+
+2. Git Reset --soft
+This resets only the commit history.
+Changes from the removed commits are kept in the staging area.
+
+Examples:
+git reset --soft 662bfbd
+git reset --soft HEAD~5
+
+3. Git Reset --mixed (default)
+This resets the commit history and staging area.
+Changes from the removed commits are kept in the working directory but unstaged.
+
+Examples:
+git reset --mixed 662bfbd
+git reset --mixed HEAD~5
+
+=============================================================== 
+
+
+Q: What is Git Revert?
+
+A:
+Git Revert is used to undo the changes introduced by a specific commit without deleting the commit history.
+It creates a new commit that reverses the changes of the specified commit.
+
+Examples:
+git revert 662bfbd
+git revert HEAD~5
+
+In the above commands:
+- The changes made in the specified commit or commits are reverted.
+- The original commit history is preserved.
+
+Best Practice:
+It is recommended to use git revert when working with a public or shared repository.
+For personal or private repositories, git reset can be used if rewriting history is acceptable.
+
+
+===========================================================================
+
+Q: What is the difference between Git Reset and Git Revert?
+
+A:
+Git Reset moves the HEAD and branch pointer to a previous commit.
+It can modify or delete commit history and may also affect the staging area and working directory.
+Git Reset is destructive and can cause data loss, so it is mainly used in personal or private repositories.
+
+Git Revert creates a new commit that reverses the changes made by a specific commit.
+It does not delete or rewrite commit history.
+Git Revert is safe to use in public or shared repositories.
+
+Summary:
+- Git Reset rewrites history (destructive).
+- Git Revert preserves history (non-destructive).
+- Use Reset for personal repositories.
+- Use Revert for shared or public repositories.
+
+===========================================================================
+QUESTIONS RELATED TO GIR BRANCHING , PUSHING AND DELETION
+
+git branch 
+git branch <br.name> 
+git checkout <br.name>
+git checkout -b <br.name>
+git merge <br.name> 
+git branch -d <br.name> 
+git branch -D <br.name> 
+git push origin <br.name>
+git push -d origin <br.name>
+git remote -v 
+git rename -m <old-branch-name> <new-branch-name>
+
+===========================================================================
+
+
+
+===========================================================================
+
+Q: How can you delete a specific commit in Git from git commit history?
+
+A:
+You can delete a specific commit using interactive rebase.
+Interactive rebase allows you to modify, reorder, or remove commits from the commit history.
+
+Steps:
+
+1. Start interactive rebase for the last 5 commits
+   git rebase -i HEAD~5
+
+2. In the editor, change the word "pick" to "drop" (or delete the line)
+   for the commit you want to remove, then save and exit.
+
+Alternative:
+You can also start rebase from a specific commit hash (usually the parent of the commit to delete):
+git rebase -i aaac44b
+
+This will remove the selected commit from history.
+
+Note:
+Rewriting history using rebase should be avoided on public/shared branches.
+Use this method mainly for personal or private repositories.
+
+=========================================================================================
+
+Q: What is Git Squash?
+
+A:
+Git Squash is used to combine multiple commits into a single commit.
+It is commonly used to clean up commit history before creating a pull request.
+
+For example, you can squash the last 3 commits into one commit to make the history more readable.
+Git Squash is performed using interactive rebase.
+
+Command:
+git rebase -i aaac44b
+
+During the interactive rebase:
+- Keep "pick" for the first commit.
+- Change "pick" to "squash" (or "s") for the commits you want to combine.
+- Save and exit, then update the commit message if prompted.
+
+Note:
+Git Squash rewrites commit history, so it should be used mainly on personal branches or before merging into shared branches.
+
+
+
+=========================================================================================
+
+q. Git Tag?
+
+Q: What is Git Tag and its real-time usage?
+
+A:
+Git Tag is used to mark a specific commit in the repository with a meaningful name.
+Tags are commonly used to identify release points such as versions.
+
+Types of Git Tags:
+1. Lightweight Tag:
+- Just a pointer to a commit
+- Used for simple labeling
+
+2. Annotated Tag:
+- Stores tag message, author, and date
+- Recommended for releases
+
+Common Commands:
+Create a tag:
+git tag v1.0.0
+
+Create an annotated tag:
+git tag -a v1.0.0 -m "Release version 1.0.0"
+
+Push tags to remote:
+git push origin v1.0.0
+git push origin --tags
+
+Real-Time Usage:
+- Mark production releases (v1.0, v2.0)
+- Roll back to a stable version if needed
+- Track deployments and release history
+- Used in CI/CD pipelines for version-based deployments
+
+
+
+
+=========================================================================================
+Q. How PR works in GitHub and use branching policies?
+
+
+Brancing Policies:
+1. Branch Protection
+2. Required Reviewers
+3. Required Checks
+4. Required Status Checks
+5. Required Pull Request Reviews.
+
+=========================================================================================
+Q. What are verified commits in GitHub?
+
+
+GitHub will verify GPG, SSH, or S/MIME signatures so other people will know that your commits come from a trusted source. GitHub will automatically sign commits you make using the GitHub web interface.
+
+=========================================================================================
+
+Q: What is Git Submodule?
+
+A:
+Git Submodule allows you to include one Git repository inside another Git repository.
+It is used when your project depends on an external repository but you want to
+track it at a specific commit.
+
+The main repository stores only a reference (commit ID) of the submodule,
+not the entire code.
+
+Common Use Cases:
+- Sharing common libraries across multiple projects
+- Managing third-party dependencies
+- Keeping independent repositories linked together
+
+Common Commands:
+Add a submodule:
+git submodule add <repo-url> <path>
+
+Initialize and update submodules after clone:
+git submodule init
+git submodule update
+
+Clone repository with submodules:
+git clone --recurse-submodules <repo-url>
+
+Real-Time Example:
+A microservices project using a common configuration or utility repository
+as a submodule.
+
+
+=========================================================================================
+
+Q: What is the difference between Monorepo and Multirepo?
+
+A:
+Monorepo:
+A Monorepo stores multiple projects or services in a single Git repository.
+
+Advantages:
+- Single source of truth
+- Easier code sharing and refactoring
+- Unified CI/CD pipeline
+- Consistent tooling and standards
+
+Disadvantages:
+- Large repository size
+- Complex access control
+- CI/CD can become slower if not optimized
+
+Examples:
+Google, Facebook, Uber
+
+Multirepo:
+A Multirepo uses separate Git repositories for each project or service.
+
+Advantages:
+- Clear ownership per repository
+- Smaller repositories
+- Independent release cycles
+- Better access control
+
+Disadvantages:
+- Harder to share code
+- Dependency version management is complex
+- Multiple CI/CD pipelines to manage
+
+Examples:
+Most traditional enterprise projects, microservices-based architectures
+
+Summary:
+- Monorepo: One repository for many projects
+- Multirepo: One repository per project
+- Monorepo suits tightly coupled systems
+- Multirepo suits loosely coupled services
+
+
+=====================================================================================
+Q. Braching Strategies in Git?
+https://www.gitkraken.com/learn/git/best-practices/git-branch-strategy
+
+Q: What are the branching strategies in Git?
+
+A:
+Branching strategies define how branches are used and managed in a Git repository
+to support development, releases, and production fixes.
+
+1. Git Flow
+Git Flow uses multiple long-lived branches.
+
+Branches:
+- Production (main/master) branch
+- Development (develop) branch
+- Feature branches
+- Release branches
+- Hotfix branches
+
+Hotfix Flow:
+- Create a hotfix branch from the Production branch
+- Fix the issue in the hotfix branch
+- Merge the hotfix branch back into the Production branch
+- Also merge the hotfix branch into the Development branch
+
+2. GitHub Flow
+GitHub Flow is a simple and lightweight branching strategy.
+It is suitable for small teams or applications that do not need to maintain multiple versions.
+
+Branches:
+- Main branch
+- Feature branches
+
+Workflow:
+- Create a feature branch from the Main branch
+- Complete development and testing
+- Merge the feature branch back into the Main branch
+
+3. GitLab Flow
+GitLab Flow is a combination of Git Flow and GitHub Flow.
+It focuses on environment-based branching.
+
+Branches:
+- Production branch
+- Pre-production (staging) branch
+
+Changes flow from development to pre-production and then to production.
+
+4. Trunk-Based Development
+Trunk-Based Development focuses on frequent integration into a single main branch.
+
+a. Web application without mobile versions:
+- One Production branch
+- One Development branch
+
+b. Web application with mobile versions:
+- One Production branch
+- One Development branch
+- One Release branch
+
+The latest Release branch is merged into the Production branch.
+
+=========================================
+
+Q: Which branching strategy is followed by open-source projects like Kubernetes or Jenkins?
+   Which branching strategy do most enterprise production projects follow?
+   
+Q. what is the branching strategy in your current project ?   
+
+A:
+Most large open-source projects such as Kubernetes and Jenkins follow a
+Trunk-Based Development–style branching strategy with release branches.
+
+Open-Source Projects (Kubernetes, Jenkins, etc.):
+- A single main (trunk) branch is used for continuous development.
+- Short-lived feature branches are created and merged frequently.
+- Separate release branches are created for stable versions (for example: release-1.28).
+- Bug fixes are cherry-picked from the main branch into release branches when required.
+
+This approach supports:
+- Continuous integration
+- Multiple supported versions
+- Faster and safer releases
+
+Enterprise Production Projects:
+Most enterprise production projects follow one of the following strategies,
+depending on team size, release frequency, and product type:
+
+1. Trunk-Based Development (Most Common in Modern Enterprises)
+- Main (trunk) branch for continuous integration
+- Short-lived feature branches
+- Release branches for versioned releases
+- Hotfixes are merged back to main
+
+Used by:
+- Large-scale enterprises
+- Microservices-based applications
+- DevOps and CI/CD-driven environments
+
+2. Git Flow (Used in Traditional Enterprises)
+- Separate Development and Production branches
+- Feature, Release, and Hotfix branches
+- Suitable for projects with scheduled releases and strict version control
+
+Summary:
+- Open-source projects like Kubernetes and Jenkins: Trunk-Based Development with release branches
+- Modern enterprises: Trunk-Based Development
+- Traditional enterprises with slower release cycles: Git Flow
+
+
+===============================================================================================
+Q: What is a Git bare repository and its real-time use case?
+
+A:
+A Git bare repository is a repository that does not have a working directory.
+It contains only the Git metadata (commits, branches, tags, and objects).
+
+In a bare repository:
+- There are no source files to edit
+- You cannot run git status, edit code, or commit changes directly
+- It is used only as a central repository
+
+How to create a bare repository:
+git init --bare project.git
+
+Real-Time Use Cases:
+- Used as a central remote repository on a server
+- Acts as a shared repository for team collaboration
+- Commonly used in Git servers, CI/CD systems, and deployment pipelines
+- Used for mirroring repositories or backup purposes
+
+Examples:
+- GitHub, GitLab, Bitbucket repositories are bare repositories internally
+- On-prem Git servers hosting central repos
+
+
+
+===================================================================
+
+Q. What is Git Hooks?
+Git hooks are scripts that Git executes before or after events such as: commit, push, and receive. Git hooks are a built-in feature - no need to download anything. Git hooks are run locally.
+
+
+===================================================================
+
+Q. How do you deal with merge conflicts in Git?
+When you have a merge conflict, Git will mark the conflicted area in the file. You need to resolve the conflict manually. You can use git status to check the conflicted files. You can use git diff to check the changes in the conflicted files. You can use git add <file> to stage the changes. You can use git commit to commit the changes.
+
+
+==============================================================================
+
