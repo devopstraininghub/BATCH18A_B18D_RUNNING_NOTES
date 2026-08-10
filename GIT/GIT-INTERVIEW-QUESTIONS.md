@@ -91,11 +91,11 @@ DVCS (like Git) is more flexible, faster, and widely used in modern software dev
 **A:**
 
 ```
-git add .                    – to stage all modified files
-git commit -m "demo"         – to commit changes with a message
-git push origin <branch>     – to push commits to the remote branch
-git pull origin <branch>     – to fetch and merge the latest changes from the remote branch
-git clone <repo-url>         – to create a local copy of a remote repository
+git add .                                                             – to stage all modified files
+git commit -m "demo"                                                  – to commit changes with a message
+git push origin <branch>                                              – to push commits to the remote branch
+git pull origin <branch>                                              – to fetch and merge the latest changes from the remote branch
+git clone https://github.com/devopstraininghub/b18projectrepo.git     – to create a local copy of a remote repository
 ```
 
 ---
@@ -117,8 +117,8 @@ Fork is useful when you want to contribute to the original repository. Fork crea
 ## Q: Can I use both SSH and HTTPS for Git?
 
 ```
-git clone https://github.com/devopstraininghub/b17projectrepo.git
-git push https://github.com/devopstraininghub/b17projectrepo.git main
+git clone https://github.com/devopstraininghub/b18projectrepo.git
+git push https://github.com/devopstraininghub/b18projectrepo.git main
 ```
 
 **A:**
@@ -130,7 +130,7 @@ When working with multiple GitHub accounts using SSH, you need to configure mult
 Example of adding multiple remotes:
 
 ```
-git remote add origin2 git@github.com:devopstraininghub/b17projectrepo.git
+git remote add origin2 git@github.com:devopstraininghub/b18projectrepo.git
 git remote add origin3 <another-repo-url>
 ```
 
@@ -140,8 +140,8 @@ git remote add origin3 <another-repo-url>
 ## Q: How can I migrate code from one Git repository to another?
 
 ```
-git clone https://github.com/devopstraininghub/b17projectrepo.git
-cd b17projectrepo.git
+git clone https://github.com/devopstraininghub/b18projectrepo.git
+cd b18projectrepo
 git remote -v
 git remote add new-origin <destination-repo-url>
 git push new-origin --all
@@ -571,7 +571,7 @@ The main repository stores only a reference (commit ID) of the submodule, not th
 
 Add a submodule:
 ```
-git submodule add <repo-url> <path>
+git submodule add https://github.com/devopstraininghub/b18projectrepo.git shared/b18projectrepo
 ```
 
 Initialize and update submodules after clone:
@@ -582,11 +582,11 @@ git submodule update
 
 Clone repository with submodules:
 ```
-git clone --recurse-submodules <repo-url>
+git clone --recurse-submodules https://github.com/devopstraininghub/b18projectrepo.git
 ```
 
 **Real-Time Example:**
-A microservices project using a common configuration or utility repository as a submodule.
+A microservices project using a common configuration or utility repository (like `b18projectrepo`) as a submodule.
 
 ---
 
