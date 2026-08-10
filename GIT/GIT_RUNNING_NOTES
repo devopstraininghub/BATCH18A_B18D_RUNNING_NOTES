@@ -647,6 +647,8 @@ git revert
    
 =============================================
 
+DATE: 10 AUG 2026
+
 SVN VS GIT
 CENTRALIZED VS DISTRIBUTED VERSION CONTROL SYSTEMS
 
@@ -654,4 +656,18 @@ CENTRALIZED VS DISTRIBUTED VERSION CONTROL SYSTEMS
 -----------
 GIT QUIZ 
 
-https://forms.gle/WbaWPyq1kzS6AbbbA
+https://docs.google.com/forms/d/e/1FAIpQLScSnrE9QXhxNgHDbwyLy2gCfWSLeyE5kYJOjl7x_NWUSqXSlw/viewform
+
+================
+git clean -fd
+
+git diff
+
+
+
+
+
+
+
+
+

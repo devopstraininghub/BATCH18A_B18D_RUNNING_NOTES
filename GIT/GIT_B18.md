@@ -447,6 +447,52 @@ This is more of a "why Git won" theory topic, but important to know for intervie
 
 ---
 
+## 21. `git diff` and `git clean -fd` — checking changes and cleaning up
+
+### `git diff` — see exactly what changed, line by line
+
+`git status` only tells you *which* files changed. `git diff` goes one step further and shows you *exactly what* changed inside those files — line by line, before you even stage anything.
+
+```
+$ echo "port=8080" > config.txt
+$ git add . && git commit -m "initial config"
+
+$ echo "port=9090" > config.txt
+$ git diff
+diff --git a/config.txt b/config.txt
+--- a/config.txt
++++ b/config.txt
+-port=8080
++port=9090
+```
+Lines starting with `-` (usually shown in **red**) are what got removed, lines starting with `+` (shown in **green**) are what got added. Once you `git add` the file, plain `git diff` will go silent — for that you switch to `git diff --staged` (or `--cached`), which shows the diff of what's sitting in the staging area, waiting to be committed.
+
+**Real-time example:** Suppose you changed 15 lines across 3 files this morning, but you honestly don't remember all of what you touched. Before committing, run `git diff` — Git will show you every single line you added or removed, so you can proofread your own work, catch an accidental `console.log` or a leftover debug line, before it goes into permanent history. Exactly like reading through your exam paper once before submitting it — small habit, saves a lot of embarrassment later.
+
+### `git clean -fd` — throwing out untracked files and folders
+
+`git clean` removes files that Git is **not tracking at all** — the ones shown in red under "Untracked files" in `git status`. This is different from `git reset --hard`, which only affects files Git already knows about (tracked files); `git clean` is specifically for the junk lying around that was *never* added.
+
+```
+$ git status
+Untracked files:
+  temp_notes.txt
+  build/
+
+$ git clean -n          # DRY RUN first — just shows what WOULD be deleted, deletes nothing
+Would remove temp_notes.txt
+Would remove build/
+
+$ git clean -fd         # actually delete: -f = force (required, Git refuses without it), -d = include directories too
+Removing temp_notes.txt
+Removing build/
+```
+⚠️ There is **no undo** for `git clean -fd` — these files were never committed, so Git has no snapshot of them to restore from. Always run `git clean -n` first to preview, then `-fd` only once you're sure.
+
+**Real-time example:** Say you were experimenting with a new build tool, and it dumped a `build/` folder plus a few stray temp files into your project — none of which you ever `git add`ed. Your folder is now messy, and `git status` is cluttered with untracked junk you don't care about. `git clean -fd` will sweep out all of that in one shot, leaving you with a clean workspace containing only the files Git actually tracks — exactly like clearing out random scrap papers from your study table before starting fresh, keeping only the notebooks that actually matter.
+
+---
+
 ## Quick Recap Table
 
 | Concept | One-line meaning | Real-time analogy |
@@ -465,5 +511,7 @@ This is more of a "why Git won" theory topic, but important to know for intervie
 | Pull Request | Ask to merge your branch into someone else's | Submitting an edit for approval before publishing |
 | Fork | Your own personal copy of someone else's repo | Cloning a recipe to experiment with your own twist |
 | SVN vs Git | Centralized (one server) vs Distributed (full copy locally) | Bank passbook vs offline-capable mobile banking app |
+| `git diff` | Show exact line-by-line changes, before staging | Proofreading your exam paper before submitting |
+| `git clean -fd` | Permanently delete untracked files/folders | Clearing scrap papers off your study table |
 
 That's it, friends — cover these points thoroughly, practice each command with your hands on the keyboard (not just reading), and Git will become second nature within a week or two. All the best!
