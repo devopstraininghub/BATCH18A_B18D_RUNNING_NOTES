@@ -716,7 +716,47 @@ Git Squash rewrites commit history, so it should be used mainly on personal bran
 <a id="q28"></a>
 ## Q. What are verified commits in GitHub?
 
-GitHub will verify GPG, SSH, or S/MIME signatures so other people will know that your commits come from a trusted source. GitHub will automatically sign commits you make using the GitHub web interface.
+**A:**
+
+### Why verified commits are needed in the first place
+
+Here is the key problem — Git itself never checks who you really are. Your commit's author name and email come only from `git config user.name` / `git config user.email`, which anyone can type in as whatever they like. So technically, anybody could set `user.name = "Linus Torvalds"` on their own laptop and push a commit that *looks* like it came from him, when it actually didn't.
+
+**Real-time example:** This is exactly like writing someone else's name on a cheque or a signed document by hand — just writing the name doesn't prove it was really them. GitHub's "Verified" badge is the equivalent of a **notarized signature** — cryptographic proof that the commit truly came from the key-holder, and was not tampered with afterward.
+
+### How a commit becomes "Verified"
+
+GitHub checks the commit against a cryptographic signature, using one of three methods:
+
+1. **GPG (GNU Privacy Guard)** — the most common method, you generate a GPG key pair, upload the *public* key to your GitHub account, and sign your commits locally with your *private* key.
+2. **SSH** — GitHub also allows using your existing SSH key (the same one used for `git push`/`git clone` over SSH) as a signing key.
+3. **S/MIME** — an X.509 certificate-based method, mostly used inside big enterprises that already run their own internal certificate authority.
+
+When you push a signed commit, GitHub matches the signature against the public key registered on your account. If it matches, you get a green **"Verified"** badge next to that commit. If the signature doesn't match, or there's no signature at all, GitHub shows **"Unverified"** (or nothing).
+
+### Setting up GPG signing — step by step
+
+```
+gpg --full-generate-key                    # generate a new GPG key pair
+gpg --list-secret-keys --keyid-format=long # note down your key ID
+
+gpg --armor --export <key-id>              # print your PUBLIC key
+```
+Copy that public key and add it under **GitHub → Settings → SSH and GPG keys → New GPG key**.
+
+Then tell Git to use it and sign automatically:
+```
+git config --global user.signingkey <key-id>
+git config --global commit.gpgsign true
+
+git commit -m "my signed commit"           # now this gets signed automatically
+```
+
+**Note:** If you commit directly through the GitHub website (editing a file in the browser, merging a PR via the "Merge" button, etc.), GitHub automatically signs that commit on your behalf using its own key — that's why such commits also show "Verified" without you configuring anything.
+
+### Real-time use case
+
+Suppose your company's production deployment pipeline only allows commits with a "Verified" badge to be merged into `main`. Even if an attacker somehow gets hold of a stolen laptop or a leaked GitHub session, they still cannot push a "Verified" commit unless they also have the actual private GPG/SSH key — which typically sits securely on the real developer's machine, often protected by a passphrase. This gives teams a strong guarantee that every change in production history genuinely came from who it claims to have come from, not just from whoever happened to type in a matching name and email.
 
 ---
 
