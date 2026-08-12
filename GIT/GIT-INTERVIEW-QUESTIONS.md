@@ -447,12 +447,59 @@ git push origin --tags
 <a id="q20"></a>
 ## Q. How PR works in GitHub and use branching policies?
 
-**Branching Policies:**
-1. Branch Protection
-2. Required Reviewers
-3. Required Checks
-4. Required Status Checks
-5. Required Pull Request Reviews
+**A:**
+
+### What is a Pull Request (PR)?
+
+A Pull Request is simply a formal request you raise on GitHub, asking the team/maintainer: "please review my changes, and if okay, merge them into the main branch." It is not a Git command — it is a GitHub feature, built on top of Git, mainly used for code review and safe collaboration.
+
+**Real-time example:** Think of it exactly like submitting your answer sheet to an examiner. You (the developer) don't directly write your marks into the final result — you first submit your paper (raise a PR), the examiner (reviewer) checks it, points out mistakes if any, and only after approval, your answer goes into the "final result" (the main branch).
+
+### How the PR flow works, step by step
+
+1. Create a new branch from `main` for your feature/fix.
+   ```
+   git checkout -b feature-login
+   ```
+2. Make your changes, commit, and push that branch to GitHub.
+   ```
+   git add .
+   git commit -m "Added login feature"
+   git push origin feature-login
+   ```
+3. On GitHub, click **"Compare & pull request"** — this opens a PR comparing your branch against `main`, showing exactly what changed (the diff).
+4. Reviewers (your teammates) go through the code, leave comments, and can request changes if something is wrong.
+5. Automated checks / CI pipelines (build, tests, linting) run automatically in the background, and GitHub shows a pass ✅ or fail ❌ status right inside the PR.
+6. Once all checks pass and required reviewers approve, the **Merge** button becomes clickable, and the PR gets merged into `main`.
+7. The feature branch is usually deleted after merging, since its job is done.
+
+### Branching Policies — rules to protect important branches like `main`
+
+These are settings a repo admin configures on GitHub (**Settings → Branches → Branch protection rules**), so that nobody can carelessly break an important branch. Think of these as "security guards" standing in front of `main`.
+
+1. **Branch Protection**
+   The umbrella rule that locks down a branch (usually `main`/`production`) so that nobody can push directly to it. Every change must go through a Pull Request.
+   **Real-time example:** Like a bank locker — nobody, not even a bank employee, can just open it directly. It must go through the proper process every single time.
+
+2. **Required Reviewers**
+   At least one (or a specific number, say 2) teammates must review and approve the PR before it is allowed to merge.
+   **Real-time example:** Like a cheque above a certain amount needing two signatures before the bank processes it — one person's okay alone is not considered enough.
+
+3. **Required Checks**
+   Certain automated checks — build must succeed, unit tests must pass, code style/lint must pass — must all complete successfully before the merge option is even available.
+   **Real-time example:** Like a vehicle not getting its fitness certificate until it clears the pollution test and brake test first — the machine checks it before any human even signs off.
+
+4. **Required Status Checks**
+   Very close to "Required Checks," but specifically about the CI/CD pipeline (Jenkins, GitHub Actions, etc.) reporting a status back to GitHub — "success" or "failure" — against that exact commit. Until that pipeline shows a green tick, GitHub blocks the merge button, no matter how good the reviewer's comments are.
+   **Real-time example:** Like your online exam result showing "pending" — you simply cannot download your certificate until that status changes to "pass."
+
+5. **Required Pull Request Reviews**
+   This is the exact GitHub setting name — "Require pull request reviews before merging" — which enforces point 2 above at the platform level. It usually also has an extra option: "Dismiss stale approvals when new commits are pushed," meaning if someone pushes a new commit *after* getting approval, that old approval is cancelled automatically, and the reviewer must check again.
+   **Real-time example:** Like a manager approving your leave request, but if you edit the dates *after* getting the approval, the request goes back for re-approval — the old "okay" no longer counts.
+
+### Why all these policies matter — real-time example
+
+Imagine a live production e-commerce application. If any developer could push directly to `main` without review or tests, one small careless mistake (say, a wrong database query) could bring down checkout for lakhs of users, instantly. Branch protection, required reviewers, and required checks together act like multiple safety nets stacked one behind another — even if one net misses the mistake, another one is likely to catch it. This is exactly why almost every serious company enforces these policies on their `main`/`production` branch.
 
 ---
 
