@@ -33,6 +33,7 @@
 29. [What is Git Submodule?](#q29)
 30. [Difference between Monorepo and Multirepo](#q30)
 31. [What is a Git bare repository and its real-time use case?](#q31)
+32. [What is Git Bisect and how is it used to find a bug?](#q32)
 
 ---
 
@@ -868,3 +869,64 @@ git init --bare project.git
 **Examples:**
 - GitHub, GitLab, Bitbucket repositories are bare repositories internally
 - On-prem Git servers hosting central repos
+
+---
+
+<a id="q32"></a>
+## Q: What is Git Bisect and how is it used to find a bug?
+
+**A:**
+
+### The problem it solves
+
+Suppose your application is working fine, but suddenly somebody finds a bug — and there have been 200 commits since the last time it was known to be working. Manually opening each commit one by one and testing it would take forever. `git bisect` solves exactly this — it finds the **exact commit that introduced a bug**, using a fast **binary search** through your commit history, instead of checking commits one by one from start to end.
+
+**Real-time example:** This is exactly like the "guess the number between 1 and 100" game — instead of guessing 1, 2, 3, 4... one by one, you guess 50 first. If the answer is higher, you jump to 75; if lower, you jump to 25. Each guess cuts the remaining possibilities in half. `git bisect` does the same thing to your commit history — instead of checking 200 commits one at a time, it typically finds the guilty commit in about 7-8 checks (since 2^8 is already more than 200).
+
+### How it works, step by step
+
+1. Start the bisect session:
+   ```
+   git bisect start
+   ```
+2. Tell Git a commit where the bug is definitely present (usually the latest/current commit):
+   ```
+   git bisect bad
+   ```
+3. Tell Git a commit where things were definitely working fine (an older, known-good commit or tag):
+   ```
+   git bisect good v1.0
+   ```
+4. Git now automatically checks out a commit exactly in the middle of that range. You test your application at this point (run it, run your test suite, whatever proves the bug exists or not), and tell Git the result:
+   ```
+   git bisect good     # if the bug is NOT present here
+   git bisect bad       # if the bug IS present here
+   ```
+5. Git keeps narrowing the range in half, checking out a new "middle" commit each time, until only one commit is left. Git will then report:
+   ```
+   <commit-hash> is the first bad commit
+   ```
+6. Once you're done, exit bisect mode and return to your original branch:
+   ```
+   git bisect reset
+   ```
+
+### Automating it (no manual testing needed)
+
+If you already have a script or test command that returns exit code `0` for "good" and non-zero for "bad" (for example, a test suite), you can automate the entire process in one line:
+```
+git bisect start HEAD v1.0
+git bisect run npm test
+```
+Git will automatically checkout each middle commit, run `npm test`, read the exit code, and keep narrowing down — completely hands-free — until it prints the exact commit that broke things.
+
+### Real-time use case
+
+Say a production application was working fine last Friday (tagged `v2.3`), but today, after 150 commits from 5 different developers, QA reports that "login is broken." Instead of asking every developer "did you touch the login code?" one by one, you simply run:
+```
+git bisect start
+git bisect bad HEAD
+git bisect good v2.3
+git bisect run ./run-login-test.sh
+```
+Within about 8 test runs, Git tells you the exact commit (and therefore the exact developer and exact change) that introduced the bug — turning a painful, hours-long manual hunt into a few minutes of automated searching.
