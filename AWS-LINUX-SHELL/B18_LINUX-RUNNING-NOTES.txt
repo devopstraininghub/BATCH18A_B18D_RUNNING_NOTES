@@ -1,0 +1,594 @@
+
+AWS LINUX
+
+============================
+ON-PREMISES : What is On-Premises?
+============================
+
+On-premises means:
+You own and manage everything yourself (your own datacenter) 
+
+This includes:
+- Servers (big computers)
+- Storage
+- Networking equipment
+- Power
+- Cooling
+- Security
+- IT staff to maintain it
+
+
+============================
+CLOUD : What is Cloud?
+============================
+
+Cloud means:
+Using someone else’s computers (servers) over the internet
+instead of owning and managing your own.
+
+
+============================
+EXAMPLE: Running a Website
+============================
+
+ON-PREMISES:
+
+- Buy a server
+- Install OS and software
+- Set up networking
+- Handle power & cooling
+- Fix hardware issues
+- Upgrade when traffic grows
+- Limited storage - External hard drive or  server
+- Limited space
+- If it breaks → data loss risk
+
+Result:
+- Takes time
+- High cost
+- Requires expertise
+
+
+CLOUD:
+
+- Create an account
+- Click "Create Server"
+- Choose server size
+- Pay per hour or usage
+- Scale up or down anytime AS PER REQUIREMENT 
+
+Result:
+- Fast
+- Flexible
+- Beginner-friendly
+
+
+============================
+KEY BENEFITS OF CLOUD
+(Why Cloud is Popular)
+============================
+
+- No hardware to buy
+- Pay only for what you use (Ondemand )
+- Easy to scale resources
+- High availability
+- High Scalability
+- Faster to start
+- Global access from anywhere
+
+
+============================
+WHEN ON-PREMISES IS STILL USED
+============================
+
+Some companies prefer on-premises when:
+
+- Strict data security laws exist
+- Internet is not reliable
+- Legacy systems are in use
+- Full control over systems is required
+
+=========================================================================
+LINUX BASICS FOR CLOUD
+
+=====================================
+1) WHY LINUX? WHY NOT WINDOWS?
+=====================================
+
+Simple Answer:
+Cloud runs mostly on Linux, not Windows.
+
+
+Why Linux?
+
+- Free (open source) 
+- Stable (Runs for years)
+- Lightweight
+- Secure & Reliable 
+- Highly customizable
+- Perfect for servers
+
+Why not Windows?
+
+- Windows is mainly designed for desktop users
+- Heavier OS
+- Paid license
+- Less suitable for large-scale servers
+
+
+=====================================
+LINUX vs WINDOWS 
+=====================================
+
+Feature           Linux                     Windows
+------------------------------------------------------------
+Cost              Free (Open-source)        Paid license
+Performance       Fast & lightweight        Heavy
+Stability         Runs for years             Needs restarts
+Security          Very secure               More virus-prone
+Automation        Excellent (CLI-based)     Limited
+Server usage      Very high                 Less
+Cloud support     Default choice             Secondary
+
+
+=====================================
+UNIX (ORIGINAL)
+=====================================
+
+- Old operating system
+- Created in the 1970s
+- Expensive
+- Mostly used in big enterprises
+- Examples:
+  - AIX
+  - Solaris
+  - HP-UX
+
+
+=====================================
+LINUX (INSPIRED BY UNIX)
+=====================================
+
+- Open-source
+- Free
+- Created in 1991
+- Community-driven
+- Runs everywhere:
+  - Cloud
+  - Mobile
+  - Servers
+
+
+=====================================
+UNIX vs LINUX 
+=====================================
+
+UNIX                     Linux
+------------------------------------------------
+Proprietary              Open-source
+Paid                     Free
+Limited vendors          Huge community
+Less flexible            Highly customizable
+Legacy systems           Used everywhere today
+
+
+=====================================
+FEW IMPORTANT FACTS
+=====================================
+
+- Android is based on Linux
+- AWS runs mostly on Linux
+- Google runs on Linux
+- Facebook runs on Linux
+- Around 90% of internet servers run Linux
+- Linux is the backbone of Cloud.
+
+
+
+MAJOR LINUX DISTRIBUTION FAMILIES 
+
+
+RHEL 
+UBUNTU
+AMAZON LINUX 
+DEBIAN
+
+
+
+==================================================
+
+LINUX ARCHITECTURE:
+
+
+
+==================================================
+AWS FREE TIER 
+
+
+AWS Free Tier allows new users to try AWS services
+without paying immediately.
+
+It is mainly used for:
+- Learning AWS
+- Practice
+- Small experiments
+- Beginners in Cloud
+
+
+========================================
+AWS FREE TIER – CURRENT USAGE MODEL
+(NEW ACCOUNTS)
+========================================
+
+For new AWS accounts:
+
+- AWS offers a Free Plan with credits
+- You can get up to $200 AWS credits
+  - $100 at signup
+  - Up to $100 by completing learning activities
+
+- Valid for:
+  - 6 months
+  - OR until credits are used (whichever comes first)
+
+- No charges unless you upgrade to Paid Plan
+
+
+========================================
+IS IT FREE FOR 1 YEAR OR 6 MONTHS?
+========================================
+
+- Older AWS accounts (created earlier):
+  - Had 12 months Free Tier for many services
+
+- New AWS accounts:
+  - Mostly follow 6-month Free Plan with credits
+
+Note:
+- AWS model may change over time
+- Always check usage limits in AWS console
+
+
+========================================
+ALWAYS FREE SERVICES
+(NO EXPIRY – WITH LIMITS)
+========================================
+
+Some services are free every month
+within certain limits, even after credits end.
+
+Examples:
+- AWS Lambda
+  - 1 million free requests per month
+- Amazon S3
+  - Limited free storage
+- Amazon DynamoDB
+  - Free storage and read/write capacity
+
+(Usage limits apply)
+
+
+========================================
+IMPORTANT POINTS TO REMEMBER
+========================================
+
+- Credit card is required to create AWS account
+- AWS follows pay-as-you-use model
+- If you exceed free limits → you will be charged
+- Always monitor billing dashboard
+
+
+========================================
+FINAL SUMMARY
+========================================
+
+AWS Free Tier is a starter pack for beginners.
+
+- New users get free credits (valid ~6 months)
+- Some services are always free within limits
+- Best way to learn AWS hands-on
+- Be careful with usage to avoid charges
+
+
+=============================================================
+
+DATE: 14 AUG 2026
+
+AWS FREE TIER ACCOUNT CREATED
+
+SERVER ( EC2 - INSTANCE ) 
+
+CONNECT: 
+
+ec2-user ---> whoami 
+
+sudo su -   --> to switch to root user
+
+hostnamectl set-hostname linux 
+
+exit 
+
+sudo su - 
+
+hostname 
+
+
+uname 
+
+uname -a 
+
+-----------------------------------
+
+WIDNWOS --> basic operations discussed 
+
+linux pracitce on windows Git bash
+
+pwd 
+
+ls 
+ll
+ls -lrth 
+
+
+touch file1 file2 file3 
+
+mkdir dir1 dir2 dir3 
+
+clear / ctrl +L 
+
+rm -rf fname/dir 
+
+rm -rf * 
+
+cat fname 
+
+cd <dirname>
+
+cd ..
+
+history
+
+==============================
+
+DATE: 17 AUG 2026
+
+server created 
+
+loged in 
+
+
+sudo su - 
+
+hostnamectl set-hostname <ser-name>
+
+hostname 
+
+hostname -I 
+
+uptime 
+
+uname 
+
+uname -a 
+
+lscpu 
+
+free 
+free -m 
+free -g 
+
+===================
+user operations :
+
+useradd madhu 
+passwd madhu 
+
+su - madhu 
+
+whoami --> madhu 
+exit 
+
+user home :  /home/<uname> 
+
+cat /etc/passwd 
+
+user stanga:
+
+ec2-user:x:1000:1000:EC2 Default User:/home/ec2-user:/bin/bash
+madhu:x:1001:1001::/home/madhu:/bin/bash
+
+-----
+usermod -c "DevOps User" madhu
+
+userdel -r kiran
+
+=========================================
+wc /etc/passwd
+wc -l 
+wc -w 
+wc -c 
+
+
+====================
+tail -n 3 /etc/passwd
+tcpdump:x:72:72::/:/sbin/nologin
+ec2-user:x:1000:1000:EC2 Default User:/home/ec2-user:/bin/bash
+madhu:x:1001:1001::/home/madhu:/bin/bash
+
+=============
+ head -n 2 /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+
+============
+more /etc/passwd 
+
+=================
+
+file cretion :
+
+touch fname
+
+echo "get ready to workhard" > b18file 
+
+echo "adding new content" >> b18file 
+
+vi / nano editor in linux 
+
+vim fname 
+
+
+editor: vi / vim / NANO
+
+
+vim fname 
+
+esc -- i    < insert mode > 
+
+   ----- data ----
+   ----- data ----
+   ----- data ----
+esc : w
+
+esc : q
+
+esc : wq!
+
+=========
+date
+
+
+history
+    1  whoami
+    2  hostname
+    3  hostnamectl set-hostname b18linux
+    4  exit
+    5  hostname
+    6  hostname -I
+    7  uptime
+    8  uname
+    9  uname -a
+   10  pwd
+   11  ll
+   12  ls
+   13  ls -la
+   14  ll
+   15  ll -a
+   16  ls
+   17  ll
+   18  touch chiru naga venky bala
+   19  ll
+   20  mkdir prabhas mahesh
+   21  ll
+   22  cd mahesh/
+   23  pwd
+   24  touch sitara
+   25  ll
+   26  mkdir krishan
+   27  ll
+   28  pwd
+   29  cd krishan/
+   30  clear
+   31  pwd
+   32  cd ..
+   33  pwd
+   34  ll
+   35  rm -rf venky naga chiru mahesh/
+   36  ll
+   37  lscpu
+   38  free
+   39  free -m
+   40  free -g
+   41  whoami
+   42  useradd madhu
+   43  passwd madhu
+   44  cat /etc/passwd
+   45  usermod -c "DevOps User" madhu
+   46  cat /etc/passwd
+   47  useradd kiran
+   48  cat /etc/passwd
+   49  usermod -C "Cloud user" kiran
+   50  usermod -c "Cloud User" kiran
+   51  cat /etc/passwd
+   52  cd /home/
+   53  ll
+   54  su - madhu
+   55  ll
+   56  userdel -r kiran
+   57  ll
+   58  cat /etc/passwd
+   59  userdel madhu
+   60  ll
+   61  cat /etc/passwd
+   62  ll
+   63  pwd
+   64  cat /etc/group
+   65  useradd madhu
+   66  cat /etc/passwd
+   67  cat /etc/group
+   68  cat /etc/shadow
+   69  cat /etc/passwd
+   70  wc /etc/passwd
+   71  cat /etc/passwd
+   72  wc /etc/passwd
+   73  wc -l /etc/passwd
+   74  wc -w /etc/passwd
+   75  wc -c /etc/passwd
+   76  wc /etc/passwd
+   77  cat  /etc/passwd
+   78  tail -n 3 /etc/passwd
+   79  head -n 2 /etc/passwd
+   80  more /etc/passwd
+   81  l
+   82  ll
+   83  pwd
+   84  cd /opt
+   85  pwd
+   86  ll
+   87  touch madhu
+   88  touch kiran ramesh rahul
+   89  ll
+   90  echo "madhu"
+   91  echo "kiran"
+   92  echo "My name is madhukiran" > madhukiran
+   93  ll
+   94  cat madhukiran
+   95  echo "WELCOME 2 AWS DEVOPS" > b18
+   96  ll
+   97  cat b18
+   98  echo "get ready to workhard" > b18
+   99  ll
+  100  cat b18
+  101  echo "Lets be ready to work hard for our bright future" >> b18
+  102  ll
+  103  cat b18
+  104  ll
+  105  vim Mahesh
+  106  ll
+  107  cat Mahesh
+  108  l
+  109  ll
+  110  vim Mahesh
+  111  ll
+  112  cat Mahesh
+  113  history
+  114  date
+  115  history
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
