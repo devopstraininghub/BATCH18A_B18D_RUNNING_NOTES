@@ -1,8 +1,8 @@
 # Batch 18 — Linux Running Notes: 19 August 2026
 
-**Topic: Linux File System Hierarchy, Copy/Move Operations, Compression (zip/tar)**
+**Topic: Linux File System Hierarchy, Vi/Vim Navigation & Editing, Copy/Move Operations, Compression (zip/tar)**
 
-Friends, today we understood how Linux **organizes** all its files and folders (the "file system hierarchy"), practiced copying and moving files around properly, and learned how to download, compress, and extract files — all things you will use constantly in real DevOps work, especially when installing software like Tomcat on a server.
+Friends, today we understood how Linux **organizes** all its files and folders (the "file system hierarchy"), went deeper into vim's actual navigation and editing commands, practiced copying and moving files around properly, and learned how to download, compress, and extract files — all things you will use constantly in real DevOps work, especially when installing software like Tomcat on a server.
 
 ---
 
@@ -98,7 +98,75 @@ Complete!
 
 ---
 
-## 3. Creating nested folders in one shot: `mkdir -p`
+## 3. Vi/Vim — navigation and editing commands (going beyond `i`, `Esc`, `:wq`)
+
+On 17 August we learned just enough vim to survive — insert mode, save, quit. Today we went a level deeper into vim's actual **navigation and editing** commands, which is where vim genuinely becomes faster than a normal editor once your fingers get used to it. All of these are typed in **Normal mode** — press `Esc` first, since typing them in Insert mode would just type those letters into the file as text.
+
+| Command | Action |
+|---|---|
+| `gg` | Jump to the top (first line) of the file |
+| `G` | Jump to the bottom (last line) of the file |
+| `yy` | Copy (yank) the current line |
+| `n` + `yy` | Copy `n` lines — e.g. `3yy` copies 3 lines starting from the cursor |
+| `p` | Paste after the cursor — pastes whatever was last yanked or deleted |
+| `dd` | Delete (cut) the current line — it also gets copied, so `p` can paste it elsewhere |
+| `n` + `dd` | Delete `n` lines — e.g. `3dd` deletes 3 lines |
+| `u` | Undo the last change |
+| `dw` | Delete a single word |
+| `:set nu` | Show line numbers on the left |
+| `:set nonu` | Hide line numbers again |
+| `/pattern` | Search forward for `pattern` — e.g. `/madhu`, `/touch`, `/useradd` |
+| `n` (after a search) | Jump to the next occurrence of the last search |
+
+**Sample output — searching inside a file:**
+```
+$ vim notes.txt
+
+:set nu
+  1 useradd madhu
+  2 passwd madhu
+  3 touch mcfile
+  4 su - madhu
+  5 userdel madhu
+
+/madhu
+  1 useradd madhu    <-- cursor jumps here (first match)
+
+n
+  4 su - madhu        <-- next match
+
+n
+  5 userdel madhu     <-- next match after that
+```
+
+**Sample output — copying and moving a line:**
+```
+Before (cursor on line 2):
+  1 line one
+  2 line two
+  3 line three
+
+yy      → copies "line two"
+G       → jump to last line
+p       → pastes "line two" after it
+
+After:
+  1 line one
+  2 line two
+  3 line three
+  4 line two
+```
+
+**Real-time example:** This is exactly the kind of thing you'll do constantly while editing a `Jenkinsfile` or a Kubernetes YAML manifest directly over SSH. Say a Jenkinsfile has 200 lines and you need to check a `stage` block near the bottom — instead of scrolling line by line, `G` jumps you straight to the end, `gg` jumps you straight back to the top. If your teammate says "there's a typo in the line with `useradd`," `/useradd` finds it instantly instead of you eyeballing the whole file. And `dd` + `p` is exactly how you move a line up or down in a YAML file — cut the line with `dd`, move the cursor, paste it back with `p`.
+
+**More examples:**
+- `:set nu` before reporting a bug to a teammate — so you can say "the problem is on line 42" instead of "somewhere in the middle of the file."
+- `5dd` — deleting 5 lines in one shot, e.g. removing an old, unused block of environment variables from a config file.
+- `/ERROR` inside a large log file opened in vim, to jump straight to the first occurrence of "ERROR" instead of scrolling through hundreds of lines.
+
+---
+
+## 4. Creating nested folders in one shot: `mkdir -p`
 
 ```
 mkdir -p a/b/c/d/e
@@ -128,7 +196,7 @@ All four missing parent folders (`b`, `c`, `d`, `e`) got created in one shot, wi
 
 ---
 
-## 4. Copying and moving files: `cp -rp` and `mv`
+## 5. Copying and moving files: `cp -rp` and `mv`
 
 ```
 cp -rp src.path dest.path
@@ -173,7 +241,7 @@ Notice `f2` disappeared from the listing — `mv` renamed it to `file2` in place
 
 ---
 
-## 5. Downloading files from the internet: `wget`
+## 6. Downloading files from the internet: `wget`
 
 ```
 wget <link>
@@ -206,7 +274,7 @@ apache-tomcat-9.0.121.zip   100%[=================================>]  11.27M  8.
 
 ---
 
-## 6. Compressing and extracting files: zip/unzip and tar
+## 7. Compressing and extracting files: zip/unzip and tar
 
 ### zip / unzip
 
@@ -306,6 +374,9 @@ apache-tomcat-9.0.121  tomcat.tar.gz
 | Absolute path | Full address, works from anywhere | Always use in Jenkins pipelines/cron jobs to avoid path bugs |
 | Relative path | Address relative to where you stand now | Works fine manually, but can silently fail inside a pipeline job |
 | `yum install <pkg>` | Installs software from the internet | First command run on a fresh EC2 instance — installing Java, Git, Docker |
+| `gg` / `G` | Jump to top / bottom of file in vim | Jumping to the end of a long Jenkinsfile instead of scrolling |
+| `yy` / `dd` / `p` | Copy / cut / paste a line in vim | Moving a line up/down in a YAML manifest |
+| `/pattern` + `n` | Search a file in vim, jump to next match | Finding `useradd` or `ERROR` instantly in a large file |
 | `mkdir -p a/b/c` | Creates nested folders in one shot | Deployment scripts creating `/opt/myapp/releases/current` in one go |
 | `cp -rp` | Copies files/folders, keeping original details | Backing up a config file before overwriting it during a deployment |
 | `mv` | Moves or renames a file/folder | Swapping in a new release folder with minimal downtime |

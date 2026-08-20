@@ -617,7 +617,31 @@ drwxr-xr-x.  19 root root   266 Aug 19 14:09 var
 
 yum install <pkg> 
 
-vi editor shortcuts 
+vi editor 
+LINUX ---> VIM / NANO 
+VI/VIM EDITOR:
+
+gg - TOP LINE
+G - Ground 
+yy -- copy 
+n-yy - 
+p - paste 
+
+dd - delete a line 
+n-dd 
+
+u - undo 
+dw - delete word 
+
+----
+set nu
+set nonu 
+-------
+/madhu  (to search) 
+/touch
+/useradd
+
+n --> next 
 
 
 mkdir -p a/b/c/d/earlier
