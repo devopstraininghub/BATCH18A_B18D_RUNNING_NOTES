@@ -56,6 +56,11 @@ yum install <pkg>
 
 **Real-time example:** You'll use `yum install` (or `apt install` on Ubuntu/Debian) to set up almost every tool you need on a fresh server — Java, Git, Docker, Jenkins, Ansible. It's usually one of the very first commands run on any brand-new EC2 instance, right after connecting to it, before installing your actual DevOps toolchain on top.
 
+**More examples:**
+- `yum install -y docker` — the `-y` flag auto-confirms the install, which is essential inside automation scripts, since nobody is sitting there to type "y" manually.
+- `yum list installed | grep java` — checking whether a package is already installed before trying to install it again.
+- `yum remove <pkg>` — the opposite command, used to uninstall old/unused software from a server during cleanup.
+
 ---
 
 ## 3. Creating nested folders in one shot: `mkdir -p`
@@ -66,6 +71,11 @@ mkdir -p a/b/c/d/e
 Normally, `mkdir` can only create one folder at a time, and it fails if the parent folder doesn't exist yet. The `-p` flag (**parents**) tells Linux: "create every folder in this path that doesn't already exist, all in one go."
 
 **Real-time example:** This is exactly how you'd set up a standard deployment folder structure on a new server in a single command — for example, `mkdir -p /opt/myapp/releases/current`. Deployment scripts use `mkdir -p` constantly so they don't fail just because a parent folder happens to be missing on a fresh server.
+
+**More examples:**
+- `mkdir -p /opt/app/{logs,config,releases}` — creating multiple subfolders for a new application setup, all in one shot.
+- `mkdir -p ~/backups/$(date +%Y-%m-%d)` — auto-creating a dated backup folder inside a script, without worrying whether the parent `backups` folder already exists.
+- Used at the start of almost every install/setup script, to guarantee the target folder structure exists before copying any files into it.
 
 ---
 
@@ -83,6 +93,12 @@ mv src dest
 
 **Real-time example:** Before overwriting a config file during a deployment, a careful DevOps engineer always takes a backup first: `cp -rp app.properties app.properties.bak` — the `-p` matters here because it preserves the original timestamp, which is exactly what you need when comparing "what changed and when" during an incident review. `mv` is used in real deployments to swap in a new application version with minimal downtime — build the new release in a temp folder, then `mv` it into the live `current` folder (or symlink) in one atomic step, which is the basic idea behind blue-green style deployments.
 
+**More examples:**
+- `cp -rp /opt/app/current /opt/app/backup_before_upgrade` — taking a full backup of a live application folder before attempting a risky upgrade.
+- `cp -rp ~/.ssh/id_rsa ~/.ssh/id_rsa.bak` — backing up an SSH key before regenerating or modifying it, just in case.
+- `mv app-v2.war app.war` — renaming a freshly built artifact to the exact filename Tomcat expects, so it gets auto-deployed correctly.
+- `mv old_config.yaml old_config.yaml.old` — a quick way to "disable" a config file by renaming it, without actually deleting it, in case you need to roll back.
+
 ---
 
 ## 5. Downloading files from the internet: `wget`
@@ -95,6 +111,11 @@ wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121
 `wget` **downloads a file directly from a URL** onto your server — no browser needed, works purely from the command line. This is extremely useful on servers, since servers usually don't have a graphical browser at all.
 
 **Real-time example:** This is exactly how we downloaded Apache Tomcat onto our EC2 server, and it's the same pattern you'll use to pull any installer, binary, or artifact directly onto a headless server — a specific JDK version, a Jenkins WAR file, a Maven binary, or even an application build artifact copied from an S3 bucket URL.
+
+**More examples:**
+- `wget -O jdk.tar.gz <url>` — downloading a file but saving it under a custom filename using `-O`, instead of whatever name the URL gives it.
+- `wget -q <url>` — quiet mode, useful inside automation scripts where you don't want the download progress bar cluttering up your pipeline logs.
+- `wget <url> -P /opt/downloads` — downloading straight into a specific target folder, instead of wherever you currently happen to be standing.
 
 ---
 
@@ -114,6 +135,11 @@ zip -r devopskeys.zip devopskeys
 
 **Real-time example:** In real projects, build tools like Maven package your entire application into a single deployable file (a `.war` or `.jar`) — a very similar idea to zipping. On the server side, you often need to `unzip`/extract an artifact that was copied over from a CI/CD pipeline before actually deploying it to Tomcat.
 
+**More examples:**
+- `unzip -l file.zip` — lists the contents of a zip file first, **without** extracting it, so you can check what's inside before unpacking.
+- `unzip file.zip -d /opt/app` — extracts directly into a specific target folder using `-d`, instead of dumping everything into the current folder.
+- `zip -r backup.zip /opt/app/config` — zipping up just the config folder for a quick backup/sharing, instead of the entire application.
+
 ### tar — the other common compression format
 
 ```
@@ -129,6 +155,11 @@ tar -cvf tomcat.tar.gz apache-tomcat-9.0.121
 Here `-c` means **create** a new archive (instead of extracting), packing the `apache-tomcat-9.0.121` folder into `tomcat.tar.gz`. `-v` and `-f` mean the same as above.
 
 **Real-time example:** This is precisely how we prepared Tomcat for use in a real project: download it as `.tar.gz`, extract it with `tar -xvf` into `/opt`. Later, if you need to move that installed application to another server, or take a backup before an upgrade, you'd package it back up with `tar -cvf`. In real DevOps work, `.tar.gz` is what you'll see used to distribute almost every open-source tool you install — Tomcat, Maven, Jenkins agents, Prometheus, and more.
+
+**More examples:**
+- `tar -tvf file.tar.gz` — lists the contents of a tar archive **without** extracting it, so you can check what's inside first, same idea as `unzip -l`.
+- `tar -xvf file.tar.gz -C /opt` — extracts directly into a specific target folder using `-C`, instead of the current directory.
+- `tar -czvf backup.tar.gz /opt/app` — the extra `z` flag adds gzip compression while creating the archive, giving you a smaller file than a plain `-cvf`.
 
 **Quick memory trick:** think of `tar -x` as "e**X**tract" and `tar -c` as "**C**reate" — the letter itself hints at what it does.
 
