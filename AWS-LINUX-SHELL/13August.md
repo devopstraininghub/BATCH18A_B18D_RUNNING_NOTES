@@ -132,6 +132,27 @@ Why not Windows (for servers)?
 
 **Real-time example:** On a real project, you'll notice a company usually standardizes on **one** distro across their entire server fleet — say, all EC2 instances on Amazon Linux, or all on-prem servers on RHEL. That's not a random choice: mixing distros means your Ansible playbooks, package manager commands (`yum` on RHEL/Amazon Linux vs `apt` on Ubuntu/Debian), patching schedules, and security hardening steps all differ per distro — doubling the maintenance work for the DevOps team. Interviewers often ask "which distro have you worked with" for exactly this reason.
 
+### Linux Architecture — how a command you type actually gets executed
+
+```mermaid
+graph TD
+    A["Hardware<br/>(CPU, RAM, Disk, Network Card)"]
+    B["Kernel<br/>(Process Mgmt, Memory Mgmt, Device Drivers, System Calls)"]
+    C["Shell<br/>(Command Interpreter: bash, zsh, sh)"]
+    D["Applications / Utilities<br/>(User programs: ls, vim, Jenkins, Docker)"]
+
+    D --> C --> B --> A
+```
+
+**Layers, bottom to top:**
+
+1. **Hardware** — the physical CPU, RAM, disk, network card. Everything ultimately runs on this.
+2. **Kernel** — the core of Linux; manages processes, memory, and device drivers, and is the only layer that talks directly to the hardware.
+3. **Shell** — the command interpreter (`bash`, for example) that takes what you type and asks the kernel to carry it out.
+4. **Applications/Utilities** — the actual programs you use day to day: `ls`, `vim`, Jenkins, Docker, your own application.
+
+**Real-time example:** When you type `free -m` and hit Enter, the **shell** reads your command, the **kernel** fetches the actual memory numbers from the hardware, and the result gets printed back to you through the shell. Understanding this chain is exactly why, when a command "hangs" or a server feels slow, DevOps engineers check things layer by layer — first the application/process (`top`), then the kernel/resource level (`free`, `df`), then the actual hardware (via the AWS console, checking if the underlying EC2 host itself has an issue).
+
 ---
 
 ## 6. AWS Free Tier — how to practice AWS without worrying about billing
