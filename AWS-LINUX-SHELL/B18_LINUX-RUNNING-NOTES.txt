@@ -793,3 +793,101 @@ tar -cvf tomcat.tar.gz
   121  ll /home/
   122  history
 
+================================================================
+
+20 AUG 2026
+
+In the last class, we saw how to download Tomcat using the wget command. We downloaded both the ZIP and TAR files and also covered compression and decompression operations.
+
+Today, let's start with Tomcat. We will have a separate detailed session for Tomcat, but first, let me quickly show you how to start Tomcat.
+
+Then, we'll see:
+
+How to stop Tomcat
+How to check the Tomcat process
+What exactly a process is
+Important process-related Linux commands
+
+
+tar -xvf apache-tomcat-9.0.121.tar.gz
+
+ll apache-tomcat-9.0.121
+
+cd /opt/apache-tomcat-9.0.121
+
+cd bin 
+
+./startup.sh
+
+./shutdown.sh 
+
+access IP:8080
+
+
+
+
+----------------------------------------------------------
+ps --> running processes on a system. It provides a snapshot of the currently active processes, including details like process IDs (PIDs), memory usage, CPU time, and more.
+
+ps -ef 
+Shows processes for all users, not just the current session.
+
+
+ps -ef | grep tomcat 
+
+
+kill -9 pid 
+
+----------------------------------------------------------
+GREP:
+
+grep -i "madhu" linuxfile
+
+grep -iR "madhu"
+
+
+
+fiel creation using  3 ways 
+
+
+create a file using touch , vim , echo 
+
+echo " docker k8s terraform jenkins " > file2  ( overwrite) 
+echo " aws linux git github " >> file2  ( append) 
+
+
+=================
+
+diff file1 file2
+sdiff file1 file2
+==============
+
+top 
+top -Bn1
+
+========================================================
+-------------------------------------------------
+
+find / -name <fname/dirname> 
+
+find / -name docker -type f
+find / -name docker -type 
+
+========================================================
+
+sed command --> sed 's/madhu/batch17/' test > test2
+
+Replaces occurrences of a pattern with a specified replacement.
+Syntax: s/pattern/replacement/flags
+
+sed 's/madhu/kiran/' input.txt     # Replace first occurrence of 'madhu' with 'madhumadhu' in each line
+sed 's/madhu/kiran/g' input.txt    # Replace all occurrences of 'madhu' with 'madhumadhu' in each line
+sed 's/madhu/kiran/2' input.txt    # Replace the second occurrence of ''madhu' with 'madhumadhu' in each line
+
+
+sed 's/userstanga/madhustanga/' jenkins
+sed 's/userstanga/madhustanga/' jenkins  > jenkins2file
+
+
+sed -i 's/yum/apt/g' jenkins 
+
