@@ -957,14 +957,11 @@ r – read permission
 w – write permission
 x – execute permission
 
-
-
 Numeric (Octal) Notation
 4 – read permission
 2 – write permission
 1 – execute permission
 
-The numeric mode is a combination of these values. For example:
 
 7 – read, write, and execute (4 + 2 + 1)
 6 – read and write (4 + 2)
@@ -981,6 +978,35 @@ Make a script executable:
 Secure private SSH keys:
 Set directory to allow access only to owner:
 ================================================
+
+
+
+CHOWN :
+
+change the ownership of files and directories.
+
+FILE & DIRECTORY OWNERSHIP :
+
+The chown command in Linux is used to change the ownership of files and directories. This command allows you to change both the user and group ownership of a file or directory.
+
+chown [options] user[:group] file(s)
+
+1. Change the Owner of a File:
+
+      chown newuser filename
+	  
+2. Change the Group of a File:
+	  
+	  chown :newgroup filename
+
+3.Change Both the Owner and Group of a File:
+     
+	  chown newuser:newgroup filename
+	  
+4. Change the Owner and Group of Multiple Files:
+
+     chown newuser:newgroup file1 fllile2 file3
+=============================================================================
 
 
 

@@ -1,6 +1,6 @@
 # Batch 18 — Linux Running Notes: 24 August 2026
 
-**Topic: Disk usage (`df`, `du`), File Permissions & Ownership (`chmod`), Networking commands (`ping`, `traceroute`, `telnet`, `netstat`)**
+**Topic: Disk usage (`df`, `du`), File Permissions & Ownership (`chmod`, `chown`), Networking commands (`ping`, `traceroute`, `telnet`, `netstat`)**
 
 Friends, so far we've been creating files, copying them, editing them, and running Tomcat as a process. Today we look at three practical, everyday topics: how to check how much disk space is used up on a server (`df`, `du`), how to control **who is allowed to read/write/run** a file (`chmod` — file permissions), and finally the basic networking commands (`ping`, `traceroute`, `telnet`, `netstat`) you'll use to check whether a server or a port is even reachable in the first place.
 
@@ -125,7 +125,42 @@ Before `chmod`, the `x` was missing, so even the owner couldn't run `./deploy.sh
 
 ---
 
-## 3. Networking commands — `ping`, `traceroute`, `telnet`, `netstat`
+## 3. `chown` — changing file/directory ownership
+
+`chmod` controls **what** the owner/group/others are allowed to do; `chown` (**ch**ange **own**er) controls **who** the owner and group actually are in the first place. Every file has both a user-owner and a group-owner, and `chown` is how you change either or both.
+
+```
+chown newuser filename
+chown :newgroup filename
+chown newuser:newgroup filename
+chown newuser:newgroup file1 file2 file3
+```
+- `chown newuser filename` — changes only the **user (owner)** of the file, leaving the group untouched.
+- `chown :newgroup filename` — the leading `:` means only the **group** is changed, leaving the owner untouched.
+- `chown newuser:newgroup filename` — changes **both** owner and group in one shot.
+- `chown` also accepts multiple filenames at once, applying the same ownership change to all of them together.
+
+**Sample output:**
+```
+$ ll deploy.sh
+-rwxr-xr-x. 1 ec2-user ec2-user 128 Aug 24 11:05 deploy.sh
+
+$ sudo chown madhu:devops deploy.sh
+$ ll deploy.sh
+-rwxr-xr-x. 1 madhu devops 128 Aug 24 11:05 deploy.sh
+```
+Notice only the 3rd and 4th columns (owner, group) changed from `ec2-user ec2-user` to `madhu devops` — the permission bits (`rwxr-xr-x`) themselves are completely unaffected by `chown`, since that's `chmod`'s job, not `chown`'s. Also notice the `sudo` — changing a file's ownership to someone else is a privileged operation, so you normally need root/sudo access to run `chown`.
+
+**Real-time example:** A very common real scenario — a deployment script or a build tool (running as `root`, or as a `jenkins` service account) creates files on a server, and those files end up owned by that account. But the application itself needs to run as a different, unprivileged user (say `tomcat` or `appuser`) for security reasons — and that user can't manage files it doesn't own. `chown -R tomcat:tomcat /opt/apache-tomcat-9.0.121/webapps` fixes exactly this, handing ownership of the whole deployed app over to the account that should actually be running it.
+
+**More examples:**
+- `chown -R appuser:appgroup /var/www/myapp` — `-R` (recursive), just like with `chmod`, applies the ownership change to an entire folder tree at once — the usual way to fix ownership after deploying a whole application folder.
+- Using `chmod` and `chown` together right after a deployment: `chown` to set the correct owner/group, then `chmod` to set the correct permissions — two different jobs, almost always done as a pair in a real deployment script.
+- `ll` before and after a `chown`, the same habit as with `chmod` — always confirm the owner/group columns changed to exactly what you intended, especially before running it with `-R` on a large folder.
+
+---
+
+## 4. Networking commands — `ping`, `traceroute`, `telnet`, `netstat`
 
 Before you even worry about "why isn't my application working," you first need to know: **is the server reachable at all**, and **is the specific port open**? These four commands answer exactly that.
 
@@ -218,9 +253,10 @@ tcp        0      0 10.0.1.15:22            203.0.113.5:51022       ESTABLISHED
 | `du -sh <folder>` | Total size of one specific folder/file | Hunting down exactly which folder is eating up disk space |
 | `chmod 755 file` / `chmod +x file` | Change read/write/execute permissions | Making a deployment script executable before running it |
 | `chmod 400 key.pem` | Restrict a file to owner-read-only | Securing an SSH private key so SSH will actually accept it |
+| `chown user:group file` | Change a file's owner and/or group | Handing a deployed app's files over to the correct service account |
 | `ping -c 4 <host>` | Test basic network reachability | First troubleshooting step — is the server even reachable? |
 | `traceroute <host>` | Show the network path/hops to a host | Narrowing down exactly where a connection is breaking |
 | `telnet <host> <port>` | Test whether a specific port is open | Confirming a Security Group/firewall is really letting a port through |
 | `netstat -an` | List listening ports & active connections on this machine | Confirming an app (e.g. Tomcat) is really listening on its port |
 
-That's today's session, friends — `df`/`du` for disk space, `chmod` for permissions, and `ping`/`traceroute`/`telnet`/`netstat` for basic network troubleshooting. Between today and the earlier `ps`/`grep`/`find`/`sed` session, you now have the core toolkit every DevOps engineer reaches for when something "isn't working" and you need to figure out why — practice running these on your own EC2 instance until they feel automatic.
+That's today's session, friends — `df`/`du` for disk space, `chmod`/`chown` for permissions and ownership, and `ping`/`traceroute`/`telnet`/`netstat` for basic network troubleshooting. Between today and the earlier `ps`/`grep`/`find`/`sed` session, you now have the core toolkit every DevOps engineer reaches for when something "isn't working" and you need to figure out why — practice running these on your own EC2 instance until they feel automatic.
