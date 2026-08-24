@@ -1,23 +1,28 @@
 # Batch 18 — Linux Running Notes: 24 August 2026
 
-**Topic: Disk usage (`df`, `du`) · File Permissions (`chmod`) · Groups · Ownership (`chown`) · Networking (`ping`, `traceroute`, `telnet`, `netstat`)**
-
-Friends, today's session is all about the questions you'll get asked constantly once you're on a real project: "Is the disk full?", "Why can't I run this script?", "Who's allowed to touch this file?", and "Is the server even reachable?" We cover disk space (`df`/`du`), permissions and ownership (`chmod`, groups, `chown`), and the basic networking commands (`ping`, `traceroute`, `telnet`, `netstat`) that answer that last question.
+**Topic:** Disk Usage | File Permissions | Groups | Ownership | Networking
 
 ---
 
-## 1. Disk usage — `df` and `du`
+## 1. Disk Usage — `df` and `du`
 
-`df` reports space at the level of the whole **filesystem**; `du` reports space used by one specific **file or folder**. You'll almost always use them together.
+**What is disk usage?**
 
-```
-df
-df -h
-df -m
-```
-`df` alone shows Filesystem, Total size, Used, Available, Use%, and Mount point — but in raw blocks, which is hard to read. `-h` gives **human-readable** sizes (GB/MB); `-m` forces everything into megabytes.
+Used to check:
+- Total disk space
+- Used disk space
+- Available disk space
+- Which files/folders are consuming space
 
-**Sample output:**
+### `df` command
+
+`df` = Disk Free — checks disk/filesystem-level usage.
+
+- `df` — shows disk usage in blocks
+- `df -h` — human-readable format
+- `df -m` — shows values in MB
+
+**Example:**
 ```
 $ df -h
 Filesystem      Size  Used Avail Use% Mounted on
@@ -25,17 +30,41 @@ Filesystem      Size  Used Avail Use% Mounted on
 tmpfs           487M     0  487M   0% /dev/shm
 ```
 
-**A point that trips up people coming from Windows:** Windows gives every disk its own drive letter — `C:`, `D:`, `E:` — each a separate little world. **Linux has no drive letters at all.** There's just one single tree starting at `/` (root), and every disk/partition gets **mounted** onto some folder inside that same tree — so a folder like `/opt` could secretly be its own separate disk, and you'd never know just by looking at it. `df -h` is what tells you what's really mounted where.
+**What `df` shows:**
 
-**Real-time example:** An application "just stops working" — nine times out of ten, `df -h` is the very first command you run. If `Use%` shows `100%`, the disk is full, full stop — the app can't write logs, can't write temp files, sometimes can't even start. Once you know *that* it's full, you switch to `du` to find out *what* filled it.
+| Column | Meaning |
+|---|---|
+| Filesystem | disk/filesystem |
+| Size | total size |
+| Used | used space |
+| Avail | available space |
+| Use% | percentage used |
+| Mounted on | location where filesystem is mounted |
 
-```
-du -h <folder>
-du -sh <folder>
-```
-`du -h` lists the size of every subfolder inside — can be a wall of output for a big folder. `-s` gives just the **summary**, one total number for that folder.
+**Real-time use case:** Application suddenly stops working → first check `df -h`. If `Use% = 100%`, disk is full. Application may not be able to:
+- Write logs
+- Create temporary files
+- Write application data
+- Start properly
 
-**Sample output:**
+### Linux mounting concept
+
+Windows: `C:`, `D:`, `E:` — separate drive letters.
+
+Linux does **not** use drive letters. Linux has one filesystem tree: `/`. Different disks/partitions can be **mounted** to directories.
+
+Example: `/opt`, `/var`, `/home` could each potentially be separate filesystems. Use `df -h` to see what filesystem is mounted where.
+
+### `du` command
+
+`du` = Disk Usage — finds how much space a file or directory is consuming.
+
+- `du -h /opt` — human-readable directory usage
+- `du -sh /var/log` — total size only (`-s` = summary, `-h` = human-readable)
+- `du -sh *` — size of each item in the current directory
+- `du -sh /var/*` — quickly identify large directories
+
+**Example:**
 ```
 $ du -sh /var/log
 4.5G    /var/log
@@ -46,98 +75,113 @@ $ du -sh /var/*
 8.0K    /var/mail
 ```
 
-**More examples:**
-- `du -sh *` run inside a folder — quickly spot which of its immediate subfolders is the biggest space hog.
-- `du -sh --max-depth=1 /opt` — one level deep only, for a quick overview without drowning in nested output.
+### `df` vs `du`
 
-**Easy memory trick:** `df` → "How much disk space is **available**?" `du` → "Which files/folders are **using** the space?"
+| Command | Shows | Question it answers |
+|---|---|---|
+| `df` | filesystem/disk space | "How much disk space is available?" |
+| `du` | file/directory usage | "What is consuming the disk?" |
+
+**Easy memory trick:** `df` → Disk Free. `du` → Disk Usage.
 
 ---
 
-## 2. File permissions — `chmod`
+## 2. File Permissions — `chmod`
 
-Every file has an **owner**, a **group**, and permissions deciding who can read, write, or run it.
+Every Linux file has an **owner**, a **group**, and **permissions**. Permissions control who can read, write, execute.
 
-| Who | Symbol | Meaning |
+**Permission types:** `r` = read, `w` = write, `x` = execute
+
+**Who gets permissions:** `u` = user/owner, `g` = group, `o` = others, `a` = all
+
+**Meaning of r, w, x:**
+
+| | For a file | For a directory |
 |---|---|---|
-| User | `u` | the file's owner |
-| Group | `g` | the group the file belongs to |
-| Others | `o` | everyone else |
-| All | `a` | user + group + others |
+| `r` | read/view the file | list directory contents |
+| `w` | modify the file | create/delete files inside |
+| `x` | execute the file | enter/access the directory |
 
-| Permission | Symbol | Meaning |
-|---|---|---|
-| Read | `r` | view a file / list a folder |
-| Write | `w` | modify a file / create-delete inside a folder |
-| Execute | `x` | run a file as a program / enter a folder |
+**Example:**
+```
+$ ls -l deploy.sh
+-rwxr-xr--
+```
+Break into 3 groups: `rwx` (user) `r-x` (group) `r--` (others).
 
-A line like `rwxr-xr--` (seen via `ls -l` or `ll`) is really three groups of three: `rwx` (owner) `r-x` (group) `r--` (others).
+### Numeric permissions
 
-**Numeric (octal) notation** — add up `r=4`, `w=2`, `x=1` per category, giving one digit each for owner/group/others:
+`r = 4`, `w = 2`, `x = 1`
 
-| Number | Meaning | Made from |
-|---|---|---|
-| `7` | rwx | 4+2+1 |
-| `6` | rw- | 4+2 |
-| `5` | r-x | 4+1 |
-| `4` | r-- | 4 |
-| `0` | --- | no permission |
+| Value | Meaning |
+|---|---|
+| `7` = rwx | 4+2+1 |
+| `6` = rw- | 4+2 |
+| `5` = r-x | 4+1 |
+| `4` = r-- | 4 |
+| `0` = --- | no permission |
+
+**Common permissions:**
+
+| Value | Owner | Group | Others |
+|---|---|---|---|
+| `755` | rwx | r-x | r-x |
+| `644` | rw- | r-- | r-- |
+| `700` | rwx | --- | --- |
+| `400` | r-- | --- | --- |
+
+### `chmod` command
+
+`chmod` = Change Mode — used to change file permissions.
 
 ```
 chmod 755 deploy.sh
 chmod -R 755 webapps/
 ```
-`chmod 755` means owner gets `7` (full rwx), group and others get `5` (r-x) each — the standard permission set for a script. `-R` = recursive, applies to every file/subfolder inside a directory too.
+`-R` = recursive — applies permissions to files/subdirectories inside.
 
-**Sample output:**
+**Make script executable:**
 ```
-$ ll deploy.sh
--rw-r--r--. 1 ec2-user ec2-user 128 Aug 24 11:05 deploy.sh
+chmod +x deploy.sh
+./deploy.sh
+```
 
+**Before `chmod`:**
+```
+-rw-r--r--  deploy.sh
+```
+No execute permission.
+
+**After:**
+```
 $ chmod 755 deploy.sh
-$ ll deploy.sh
--rwxr-xr-x. 1 ec2-user ec2-user 128 Aug 24 11:05 deploy.sh
-
-$ ./deploy.sh
-Deploying application...
+-rwxr-xr-x  deploy.sh
 ```
-Before `chmod`, the `x` was missing — even the owner couldn't run `./deploy.sh`, it would fail with "Permission denied." That's exactly what "make a script executable" means.
+Now `./deploy.sh` can execute.
 
-**Real-time example:** Three situations you'll hit constantly:
-- **Make a script executable** — `chmod +x deploy.sh`. Jenkins pulls a script from your repo and tries to run it; without the execute bit, it fails with `Permission denied` — one of the most common pipeline errors there is.
-- **Secure a private SSH key** — `chmod 400 mykey.pem`. A `.pem` key *must* be readable only by its owner; if it's too open, SSH itself refuses it outright with an "UNPROTECTED PRIVATE KEY FILE" error.
-- **Restrict a folder to the owner only** — `chmod 700 /home/madhu/secrets` — `7` for owner, `0` for everyone else, for anything sensitive that only one account should ever touch.
+**Real-time `chmod` examples:**
+1. **Jenkins deployment script** — `chmod +x deploy.sh` — allows Jenkins to execute the script.
+2. **SSH private key** — `chmod 400 mykey.pem` — restricts the key so only the owner can read it.
+3. **Private directory** — `chmod 700 /home/madhu/secrets` — only the owner gets access.
 
-**Easy memory trick:** `chmod` → "Who can **do** what?"
+**Easy memory trick:** `chmod` → "Who can DO what?"
 
 ---
 
 ## 3. Groups
 
-A group is a **collection of users**, so you can hand out the same access to several people at once instead of one by one. Every file is owned by exactly one user **and** exactly one group.
+A group is a collection of users. Groups let multiple users receive the same access permissions.
 
-```
-cat /etc/group
-```
-Lists every group on the system and its members.
+- `cat /etc/group` — check groups
+- `groupadd devops` — create group
+- `usermod -aG devops madhu` / `usermod -aG devops kiran` — add user to group
+- `groups madhu` — check user's groups
 
-```
-groupadd devops
-usermod -aG devops madhu
-usermod -aG devops kiran
-```
-`groupadd devops` creates the group. `usermod -aG devops madhu` adds `madhu` into it — `-a` (append) matters: without it, you'd wipe out every other group `madhu` already belongs to.
+`-a` = append, `-G` = add user to supplementary group.
 
-**Sample output:**
-```
-$ groupadd devops
-$ usermod -aG devops madhu
-$ usermod -aG devops kiran
-$ cat /etc/group | grep devops
-devops:x:1001:madhu,kiran
-```
+⚠️ **Important:** Do NOT forget `-a`. Without it, existing supplementary group memberships can be replaced.
 
-**Real-time example — a shared team directory**, the classic reason groups exist. `madhu` and `kiran` are on the same team and need to share one project folder, nobody else should get in:
+**Real-time group example:** `madhu` and `kiran` are DevOps team members, both need access to `/project`.
 ```
 groupadd devops
 usermod -aG devops madhu
@@ -146,172 +190,185 @@ mkdir /project
 chown root:devops /project
 chmod 770 /project
 ```
-`chown root:devops /project` sets the folder's group-owner to `devops`; `chmod 770` gives owner and group full `rwx` while others get nothing. Result: both teammates work freely inside `/project`, nobody outside the group can even look in. Group + `chown` + `chmod` together is exactly how shared project/deployment folders get set up on real servers.
-
-**More examples:**
-- `groups madhu` — quick check of every group a user belongs to.
-- `usermod -aG docker jenkins` — adding the `jenkins` service account to the `docker` group so build jobs can run Docker commands without full root access.
+Result: Owner → full access, Group → full access, Others → no access.
 
 ---
 
-## 4. `chown` — changing ownership
+## 4. `chown` — Ownership
 
-`chmod` controls **what** owner/group/others can do; `chown` (change owner) controls **who** the owner and group actually are.
+`chown` = Change Owner — used to change file owner, file group, or both.
 
+**Check ownership:**
 ```
-chown newuser filename
-chown :newgroup filename
-chown newuser:newgroup filename
-chown -R newuser:newgroup dir/
+$ ls -l deploy.sh
+-rwxr-xr-x 1 ec2-user ec2-user deploy.sh
 ```
-- `chown newuser file` — changes only the owner.
-- `chown :newgroup file` — the leading `:` means only the group changes.
-- `chown newuser:newgroup file` — changes both together.
-- `-R` — recursive, applies to a whole directory tree, the usual move right after deploying an app folder.
+Owner = `ec2-user`, Group = `ec2-user`.
 
-**Sample output:**
+- `chown madhu deploy.sh` — owner becomes `madhu`
+- `chown :devops deploy.sh` — group becomes `devops`
+- `chown madhu:devops deploy.sh` — owner `madhu`, group `devops`
+- `chown -R madhu:devops /opt/app` — recursive, applies to directory + everything inside
+
+### `chmod` vs `chown`
+
+| Command | Changes | Example |
+|---|---|---|
+| `chmod` | permissions | `chmod 755 deploy.sh` |
+| `chown` | ownership | `chown madhu:devops deploy.sh` |
+
+**Easy memory trick:** `chmod` → Who can DO what? `chown` → Who OWNS it?
+
+**Real-time `chown` example:** Deployment creates `/opt/app`, but the application must run as `tomcat`.
 ```
-$ ll deploy.sh
--rwxr-xr-x. 1 ec2-user ec2-user 128 Aug 24 11:05 deploy.sh
-
-$ sudo chown madhu:devops deploy.sh
-$ ll deploy.sh
--rwxr-xr-x. 1 madhu devops 128 Aug 24 11:05 deploy.sh
+chown -R tomcat:tomcat /opt/app
 ```
-Only the owner/group columns changed — permission bits are untouched, since that's `chmod`'s job, not `chown`'s. Notice the `sudo` — changing ownership to someone else needs root/sudo access.
-
-**Real-time example:** A deployment script (running as `root` or a `jenkins` account) drops files on the server, but the app itself must run as an unprivileged user like `tomcat` for security. `chown -R tomcat:tomcat /opt/apache-tomcat-9.0.121/webapps` hands ownership over to the account that should actually run it — `chmod`/`chown` are almost always used as a pair right after a deployment.
-
-**Easy memory trick:** `chown` → "Who **owns** it?" (vs `chmod` → "Who can **do** what?")
+Now the Tomcat user owns the application files.
 
 ---
 
-## 5. Networking commands
+## 5. Networking Commands
 
-Before debugging an application, you first need to know: is the server reachable, and is the port open?
+Common networking troubleshooting: is the server reachable? is the network path working? is the port open? is the application listening?
 
+### `ping`
+
+Tests basic network reachability.
 ```
 ping google.com
-ping -c 4 example.com
+ping -c 4 google.com
 ```
-Sends test packets to check basic reachability. Plain `ping` runs forever until `Ctrl+C`; `-c 4` sends exactly 4 and stops — friendlier for a quick check or a script.
+`-c 4` = send 4 packets and stop.
 
-**Sample output:**
-```
-$ ping -c 4 google.com
-64 bytes from 142.250.193.78: icmp_seq=1 ttl=115 time=3.21 ms
-64 bytes from 142.250.193.78: icmp_seq=2 ttl=115 time=3.05 ms
-64 bytes from 142.250.193.78: icmp_seq=3 ttl=115 time=3.44 ms
-64 bytes from 142.250.193.78: icmp_seq=4 ttl=115 time=3.11 ms
+**Real-time example:** `ping server-ip` — if replies are received, basic connectivity exists.
 
---- google.com ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss
-```
+⚠️ **Important:** Ping failure does NOT always mean the server is down. ICMP may be blocked by a firewall, AWS Security Group, or Network ACL.
 
-⚠️ **Important:** Ping failure does **not** always mean the server is down — ICMP is very commonly blocked by a firewall, a Security Group, or a Network ACL, especially on AWS. Ping is one check, not final proof.
+### `traceroute`
 
+Shows the network path/hops between source and destination.
 ```
 traceroute google.com
 ```
-Shows every network hop between you and the destination, with the time taken at each one — useful for narrowing down *where* a connection is actually breaking when `ping` fails: right at your own network, or somewhere further out.
+Path: Your Machine → Router → ISP → Internet Routers → Destination.
 
-**Sample output:**
-```
-$ traceroute google.com
- 1  192.168.1.1        1.12 ms
- 2  10.10.0.1           4.20 ms
- 3  * * *
- 4  142.250.193.78      3.40 ms
-```
-A `* * *` just means that hop didn't reply — not always a real problem.
+**Why use it:** troubleshooting network latency, routing problems, connectivity issues.
 
-```
-telnet www.google.com 443
-telnet 100.26.144.255 8080
-```
-Used here not for its old remote-login purpose, but as a fast way to test whether one specific **port** is open on a remote host — `telnet <host> <port>`.
+**Note:** may need to install — `sudo yum install traceroute -y` (RHEL/Amazon Linux) or `sudo apt install traceroute` (Ubuntu).
 
-**Sample output:**
-```
-$ telnet 100.26.144.255 8080
-Trying 100.26.144.255...
-Connected to 100.26.144.255.
-Escape character is '^]'.
-```
-"Connected" = the port is open. Hangs and times out, or "Connection refused" = the port is blocked or nothing's listening on it.
+### `telnet`
 
-**Real-time example:** Right after starting Tomcat, `telnet <server-IP> 8080` is the fastest way to confirm whether the Security Group is actually letting port 8080 through — before you even bother opening a browser.
+Tests whether a TCP port is reachable.
+```
+telnet <host> <port>
+telnet 10.0.1.20 8080
+```
+If connected → port 8080 is reachable.
 
+**Real-time example:** App server `10.0.1.20`, app on port `8080` → `telnet 10.0.1.20 8080`. Path being tested: Client → Network → Server → Port 8080.
+
+⚠️ **Important:** Telnet itself is an old, insecure remote-login protocol. For secure remote login use `ssh`. For modern TCP port testing use `nc -zv <host> <port>`.
+
+### `netstat`
+
+Displays network connections, listening ports, network information.
 ```
 netstat -an
 ```
-Shows active connections and listening ports on the **local** machine. `-a` = all, `-n` = show numeric addresses/ports instead of resolving hostnames.
+`-a` = show all connections/listening sockets. `-n` = show numeric IPs/ports.
 
-**Sample output:**
+**Check specific port:**
 ```
 $ netstat -an | grep 8080
-tcp   0   0 0.0.0.0:8080   0.0.0.0:*   LISTEN
+tcp  0  0 0.0.0.0:8080  0.0.0.0:*  LISTEN
 ```
-`LISTEN` on `0.0.0.0:8080` confirms Tomcat is really up and waiting for connections, on the server itself — check this before blaming the network for a connection failure.
+`LISTEN` = application is listening on port 8080.
+
+**Common DevOps command:**
+```
+netstat -tulnp
+```
+`-t` TCP, `-u` UDP, `-l` listening, `-n` numeric, `-p` process.
+
+**Modern alternative:** `ss -tulnp` — preferred on modern Linux systems, but `netstat` is still common in interviews and on older servers.
 
 **Easy memory trick:**
-- `ping` → "Can I reach the host?"
-- `traceroute` → "What path does traffic take?"
-- `telnet` → "Can I reach this specific port?"
-- `netstat` → "What's actually listening on this machine?"
+- `ping` → Can I reach the host?
+- `traceroute` → What path does traffic take?
+- `telnet` / `nc` → Can I reach this TCP port?
+- `netstat` / `ss` → What is listening on the server?
 
 ---
 
-## Real-time troubleshooting — putting it all together
+## 6. Real-Time Troubleshooting Scenario
 
-**Scenario:** users can't access your application. Here's the order a real DevOps engineer would work through it:
+**Problem:** Users cannot access the application.
 
-| Step | Command | Checking |
+| Step | Command | Question |
 |---|---|---|
-| 1 | `df -h` | Is the disk full? |
-| 2 | `du -sh /var/*` | Which folder is eating the space? |
-| 3 | `ps -ef \| grep java` | Is the app process even running? |
-| 4 | `netstat -an \| grep 8080` | Is the app listening on its port? |
-| 5 | `ping server-ip` | Is the server reachable over the network? |
-| 6 | `traceroute server-ip` | Where exactly is the network path breaking? |
-| 7 | `telnet server-ip 8080` | Is the port reachable from outside? |
-| 8 | `ll /opt/app` | Are permissions/ownership correct? |
-| 9 | `chown -R appuser:appgroup /opt/app` | Fix ownership if wrong |
-| 10 | `chmod -R 755 /opt/app` | Fix permissions if wrong |
-
-Disk → process → port → network → permissions — that's the mental checklist, and it's exactly what today's commands were for.
+| 1 | `df -h` | Is disk usage 100%? |
+| 2 | `du -sh /var/*` | Which directory is consuming space? |
+| 3 | `ps -ef \| grep java` | Is the application running? |
+| 4 | `netstat -an \| grep 8080` or `ss -tulnp \| grep 8080` | Is application listening on 8080? |
+| 5 | `ping server-ip` | Can I reach the server? |
+| 6 | `traceroute server-ip` | Where is traffic going? |
+| 7 | `telnet server-ip 8080` or `nc -zv server-ip 8080` | Can I reach port 8080? |
+| 8 | `ls -l /opt/app` | Is ownership/permission correct? |
+| 9 | `chown -R appuser:appgroup /opt/app` | Fix ownership if required |
+| 10 | `chmod -R 755 /opt/app` | Fix permissions if required |
 
 ---
 
-## Quick Recap Table
+## 7. Quick Recap
 
-| Command | One-line meaning | Real-time (DevOps) example |
-|---|---|---|
-| `df -h` | Disk space used/free per mounted filesystem | First check when a server is running low on disk space |
-| `du -sh <folder>` | Total size of one specific folder/file | Hunting down which folder is eating up disk space |
-| `chmod 755` / `chmod +x` | Change read/write/execute permissions | Making a deployment script executable before running it |
-| `chmod 400 key.pem` | Restrict a file to owner-read-only | Securing an SSH private key so SSH will accept it |
-| `groupadd` / `usermod -aG` | Create a group / add a user to it | Putting teammates in one group to share a project folder |
-| `chown user:group file` | Change a file's owner and/or group | Handing deployed app files to the correct service account |
-| `ping -c 4 <host>` | Test basic network reachability | First troubleshooting step — is the server reachable? |
-| `traceroute <host>` | Show the network path/hops to a host | Narrowing down exactly where a connection is breaking |
-| `telnet <host> <port>` | Test whether a specific port is open | Confirming a Security Group is really letting a port through |
-| `netstat -an` | List listening ports & active connections | Confirming an app is really listening on its port |
+| Command | Meaning |
+|---|---|
+| `df -h` | Check filesystem disk space |
+| `du -sh /var/log` | Check directory size |
+| `chmod 755 file` | Change permissions |
+| `chmod +x script.sh` | Make script executable |
+| `chmod 400 key.pem` | Restrict private key access |
+| `groupadd devops` | Create group |
+| `usermod -aG devops user` | Add user to group |
+| `chown user:group file` | Change owner and group |
+| `ping server-ip` | Test basic connectivity |
+| `traceroute server-ip` | Show network path |
+| `telnet server-ip 8080` | Test TCP port |
+| `netstat -an` | Show network connections |
+| `ss -tulnp` | Show listening ports/processes |
 
 ---
 
-## Interview questions
+## 8. Interview Questions
 
-1. What's the difference between `df` and `du`?
-2. What does `chmod 755` mean, digit by digit?
-3. What's the difference between `chmod` and `chown`?
-4. What are User, Group, and Others permissions?
-5. Why does `usermod -aG` need the `-a`, and what happens if you forget it?
-6. Why would you `chmod 400` an SSH private key?
-7. Does a `ping` failure always mean the server is down? Why not?
-8. What's the difference between `traceroute` and `ping`?
-9. Why use `telnet` to test a port instead of just opening it in a browser?
-10. How do you check whether a specific application is listening on a specific port on a server?
-11. Walk through how you'd troubleshoot a server where users report the app is "not working."
+1. What is the difference between `df` and `du`?
+2. What does `chmod 755` mean?
+3. What is the difference between `chmod` and `chown`?
+4. What are User, Group, and Others?
+5. What are `r`, `w`, and `x` permissions?
+6. Why do we use groups in Linux?
+7. Why do we use `-a` with `usermod -aG`?
+8. Why do we use `chmod 400` for an SSH private key?
+9. Does `ping` failure always mean the server is down?
+10. What is `traceroute` used for?
+11. How do you check whether port 8080 is listening?
+12. What is the difference between `telnet` and `SSH`?
+13. What is `netstat`?
+14. What is the modern alternative to `netstat`?
+15. How would you troubleshoot an application that users cannot access?
 
-That's today's session, friends — practice `df`/`du`, `chmod`/`chown`/groups, and the networking commands on your own EC2 instance until running through that troubleshooting checklist feels automatic.
+---
+
+## Easy Memory Trick — Full Recap
+
+| Command | Trick |
+|---|---|
+| `df` | How much disk space? |
+| `du` | What is consuming the disk? |
+| `chmod` | Who can DO what? |
+| `chown` | Who OWNS it? |
+| `groups` | Who belongs to which group? |
+| `ping` | Can I reach the host? |
+| `traceroute` | What path does traffic take? |
+| `telnet` / `nc` | Can I reach this TCP port? |
+| `netstat` / `ss` | What is listening on the server? |
