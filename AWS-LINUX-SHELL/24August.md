@@ -1,6 +1,8 @@
 # Batch 18 — Linux Running Notes: 24 August 2026
 
-**Topic:** Disk Usage | File Permissions | Groups | Ownership | Networking
+**Topic: Disk Usage (`df`/`du`), File Permissions (`chmod`), Groups, Ownership (`chown`), Networking (`ping`/`traceroute`/`telnet`/`netstat`)**
+
+Friends, in the last class we worked with processes, `grep`, `diff`, `top`, `find`, and `sed`. Today we cover disk space (`df`, `du`), file permissions and ownership (`chmod`, groups, `chown`), and basic networking commands (`ping`, `traceroute`, `telnet`, `netstat`) — the toolkit you'll reach for constantly once you're on a real project: checking if a server is running out of space, controlling who can access a file, and confirming whether a server or port is even reachable.
 
 ---
 
