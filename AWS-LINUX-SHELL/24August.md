@@ -1,8 +1,8 @@
 # Batch 18 — Linux Running Notes: 24 August 2026
 
-**Topic: Disk usage (`df`, `du`), File Permissions & Ownership (`chmod`, `chown`), Networking commands (`ping`, `traceroute`, `telnet`, `netstat`)**
+**Topic: Disk usage (`df`, `du`), File Permissions & Ownership (`chmod`, groups, `chown`), Networking commands (`ping`, `traceroute`, `telnet`, `netstat`)**
 
-Friends, so far we've been creating files, copying them, editing them, and running Tomcat as a process. Today we look at three practical, everyday topics: how to check how much disk space is used up on a server (`df`, `du`), how to control **who is allowed to read/write/run** a file (`chmod` — file permissions), and finally the basic networking commands (`ping`, `traceroute`, `telnet`, `netstat`) you'll use to check whether a server or a port is even reachable in the first place.
+Friends, so far we've been creating files, copying them, editing them, and running Tomcat as a process. Today we look at three practical, everyday topics: how to check how much disk space is used up on a server (`df`, `du`), how to control **who is allowed to read/write/run** a file — first with `chmod` (permissions), then Linux **groups**, then `chown` (ownership) — and finally the basic networking commands (`ping`, `traceroute`, `telnet`, `netstat`) you'll use to check whether a server or a port is even reachable in the first place.
 
 ---
 
@@ -125,7 +125,60 @@ Before `chmod`, the `x` was missing, so even the owner couldn't run `./deploy.sh
 
 ---
 
-## 3. `chown` — changing file/directory ownership
+## 3. Linux groups — `groupadd`, `usermod -aG`
+
+Before we get to `chown`, it helps to understand what a **group** actually is. A group is simply a **collection of users**, created so you can manage permissions for several people at once instead of one by one. Every file in Linux is owned by exactly **one user** and exactly **one group** — you've been seeing this group column in `ll` output all along (e.g. `ec2-user ec2-user`), we just hadn't touched it yet.
+
+```
+cat /etc/group
+```
+`/etc/group` is the file where Linux keeps the list of every group on the system and which users belong to each one — this is how you check what groups already exist.
+
+**Sample output:**
+```
+$ cat /etc/group
+root:x:0:
+wheel:x:10:ec2-user
+docker:x:993:ec2-user
+devops:x:1001:madhu,kiran
+```
+The last field on each line is the comma-separated list of members — the `devops` group here has `madhu` and `kiran` as members.
+
+```
+groupadd devops
+usermod -aG devops madhu
+usermod -aG devops kiran
+```
+`groupadd devops` creates a brand-new group called `devops`. `usermod -aG devops madhu` **adds** the user `madhu` into the `devops` group — `-a` means **append** (add to the existing groups this user is already in) and `-G` specifies the group name; leaving out `-a` would be a mistake, since it would wipe out all of that user's other group memberships and replace them with only this one.
+
+**Sample output:**
+```
+$ groupadd devops
+$ usermod -aG devops madhu
+$ usermod -aG devops kiran
+$ cat /etc/group | grep devops
+devops:x:1001:madhu,kiran
+```
+
+**Real-time example — a shared team directory:** This is the classic, real reason groups exist. Say `madhu` and `kiran` are both on the same DevOps team and need to share one project folder — both should be able to read and write into it, but nobody else on the server should be able to touch it:
+```
+groupadd devops
+usermod -aG devops madhu
+usermod -aG devops kiran
+mkdir /project
+chown root:devops /project
+chmod 770 /project
+```
+Walking through this: create the `devops` group, add both teammates to it, create the shared folder, then `chown root:devops /project` sets the folder's **group-owner** to `devops`, and `chmod 770 /project` gives the owner and the group full `rwx` access while others get nothing (`0`) at all. The result: `madhu` and `kiran` can both freely work inside `/project`, and no one outside the `devops` group can even look inside it. This exact pattern — group + `chown` + `chmod` together — is how shared project/deployment folders are set up on real servers.
+
+**More examples:**
+- `groups madhu` — a quick way to check every group a given user currently belongs to.
+- `usermod -aG docker jenkins` — a very common real-world one: adding the `jenkins` service account to the `docker` group, so Jenkins build jobs can run `docker` commands without needing full `root`/`sudo` access.
+- `su - madhu` — switching into another user's session to actually verify, hands-on, that the new group membership and permissions work the way you expect, rather than just assuming.
+
+---
+
+## 4. `chown` — changing file/directory ownership
 
 `chmod` controls **what** the owner/group/others are allowed to do; `chown` (**ch**ange **own**er) controls **who** the owner and group actually are in the first place. Every file has both a user-owner and a group-owner, and `chown` is how you change either or both.
 
@@ -160,7 +213,7 @@ Notice only the 3rd and 4th columns (owner, group) changed from `ec2-user ec2-us
 
 ---
 
-## 4. Networking commands — `ping`, `traceroute`, `telnet`, `netstat`
+## 5. Networking commands — `ping`, `traceroute`, `telnet`, `netstat`
 
 Before you even worry about "why isn't my application working," you first need to know: **is the server reachable at all**, and **is the specific port open**? These four commands answer exactly that.
 
@@ -253,10 +306,11 @@ tcp        0      0 10.0.1.15:22            203.0.113.5:51022       ESTABLISHED
 | `du -sh <folder>` | Total size of one specific folder/file | Hunting down exactly which folder is eating up disk space |
 | `chmod 755 file` / `chmod +x file` | Change read/write/execute permissions | Making a deployment script executable before running it |
 | `chmod 400 key.pem` | Restrict a file to owner-read-only | Securing an SSH private key so SSH will actually accept it |
+| `groupadd` / `usermod -aG` | Create a group / add a user to a group | Putting teammates in one group to share a project folder |
 | `chown user:group file` | Change a file's owner and/or group | Handing a deployed app's files over to the correct service account |
 | `ping -c 4 <host>` | Test basic network reachability | First troubleshooting step — is the server even reachable? |
 | `traceroute <host>` | Show the network path/hops to a host | Narrowing down exactly where a connection is breaking |
 | `telnet <host> <port>` | Test whether a specific port is open | Confirming a Security Group/firewall is really letting a port through |
 | `netstat -an` | List listening ports & active connections on this machine | Confirming an app (e.g. Tomcat) is really listening on its port |
 
-That's today's session, friends — `df`/`du` for disk space, `chmod`/`chown` for permissions and ownership, and `ping`/`traceroute`/`telnet`/`netstat` for basic network troubleshooting. Between today and the earlier `ps`/`grep`/`find`/`sed` session, you now have the core toolkit every DevOps engineer reaches for when something "isn't working" and you need to figure out why — practice running these on your own EC2 instance until they feel automatic.
+That's today's session, friends — `df`/`du` for disk space, `chmod`/groups/`chown` for permissions and ownership, and `ping`/`traceroute`/`telnet`/`netstat` for basic network troubleshooting. Between today and the earlier `ps`/`grep`/`find`/`sed` session, you now have the core toolkit every DevOps engineer reaches for when something "isn't working" and you need to figure out why — practice running these on your own EC2 instance until they feel automatic.

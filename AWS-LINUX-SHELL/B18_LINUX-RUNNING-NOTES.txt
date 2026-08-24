@@ -978,6 +978,25 @@ Make a script executable:
 Secure private SSH keys:
 Set directory to allow access only to owner:
 ================================================
+What is a Group?
+A group is a collection of users. It helps manage permissions for multiple users efficiently.
+
+Each file in Linux is owned by:
+
+One user (owner)
+
+One group (like devops) 
+
+cat /etc/group
+==================================================================
+Shared Directory for Team::
+
+groupadd devops 
+usermod -aG devops madhu
+usermod -aG devops kiran
+mkdir /project
+chown root:devops /project
+chmod 770 /project
 
 
 
@@ -1005,12 +1024,8 @@ chown [options] user[:group] file(s)
 	  
 4. Change the Owner and Group of Multiple Files:
 
-     chown newuser:newgroup file1 fllile2 file3
+     chown -R newuser:newgroup file1 fllile2 file3
 =============================================================================
-
-
-
-
 
 
 
@@ -1040,3 +1055,91 @@ NETSTAT
 
 The netstat command is a networking tool used to display network connections, routing tables, interface statistics, and more.
   netstat - an 
+  
+  
+  history:
+       hostnamectl set-hostname b18linux
+
+    1  df -h
+    2  df
+    3  df -m
+    4  df -h
+    5  df -h /
+    6  df -h /opt
+    7  ll
+    8  cd /opt/
+    9  ll
+   10  vim linuxfile
+   11  ll
+   12  du -sh linuxfile
+   13  ll
+   14  du -sh aws/
+   15  yum install tree -y
+   16  ll
+   17  tree
+   18  du -sh aws/
+   19  du -h aws/
+   20  du -sh *
+   21  ll
+   22  cd ../
+   23  ll
+   24  pwd
+   25  du -sh *
+   26  ll
+   27  cd /opt/
+   28  ll
+   29  chmod 740 linuxfile
+   30  ll
+   31  chmod 777 linuxfile
+   32  ll
+   33  chmod 724 linuxfile
+   34  ll
+   35  chmod 731 linuxfile
+   36  ll
+   37  cat /etc/group
+   38  groupadd devops
+   39  cat /etc/group
+   40  usermod -aG devops ec2-user
+   41  cat /etc/group
+   42  ll
+   43  useradd madhu
+   44  passwd madhu
+   45  cat /etc/passwd
+   46  ll
+   47  chmod madhu:root linuxfile
+   48  chown madhu:root linuxfile
+   49  ll
+   50  vim jenkins
+   51  cat jenkins
+   52  ll
+   53  chmod 700 jenkins
+   54  ll
+   55  su - madhu
+   56  ll
+   57  ping google.com
+   58  ping -c 4google.com
+   59  ping -c 4 google.com
+   60  traceroute www.google.com
+   61  telnet www.google.com 443
+   62  yum install telnet -y
+   63  telnet www.google.com 443
+   64  telnet www.google.com 8080
+   65  wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
+   66  ll
+   67  tar -xvf apache-tomcat-9.0.121.tar.gz
+   68  ll
+   69  cd apache-tomcat-9.0.121/bin/
+   70  ll
+   71  ./startup.sh
+   72  yum install java -y
+   73  ps -ef | grep tomcat
+   74  ./startup.sh
+   75  telnet ec2-3-219-219-158.compute-1.amazonaws.com 8080
+   76  telnet ec2-3-219-219-158.compute-1.amazonaws.com 443
+   77  netstat -an
+   78  netstat -an | grep 8080
+   79  ./shutdown.sh
+   80  netstat -an | grep 8080
+   81  ./startup.sh
+   82  netstat -an | grep 8080
+   83  netstat -an
