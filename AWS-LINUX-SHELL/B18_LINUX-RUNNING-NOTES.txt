@@ -891,3 +891,126 @@ sed 's/userstanga/madhustanga/' jenkins  > jenkins2file
 
 sed -i 's/yum/apt/g' jenkins 
 
+===================================================================
+
+DATE: 24 AUG 26 
+
+=========================================================
+
+df ( disk filesystem)  -
+          It is used to report file system disk space usage, showing how much space is used and available on mounted file systems.
+
+
+df -h 
+df -m 
+
+In Windows, drives such as C:, D:, and E: are logical designations assigned to storage devices or partitions. Each drive letter represents a separate filesystem namespace, allowing users and applications to access files and directories on that specific storage unit. 
+
+
+In Linux, the concept of drive letters like C:, D:, and E: does not exist. Instead, Linux uses a single hierarchical directory structure that begins at the root directory (/). All storage devices, partitions, and network filesystems are integrated into this hierarchy by mounting them at specific directories
+
+
+df 
+df -h
+df -m 
+
+============
+du -h <foldername/filename>
+
+du -sh 
+ 
+
+===================================================
+
+FILE PERMISSIONS & OWNERSHIP 
+
+
+chmod (FILE PERMISSIONS) 
+
+The chmod command in Linux is used to change the file permissions. Permissions dictate who can read, write, or execute a file. Here's a comprehensive guide on using the chmod command:
+
+
+There are three types of users:
+
+u – the file owner (user)
+g – the group to which the file belongs
+o – others - everyone else 
+a – all (user, group, and others)
+
+------------------
+change the permissions of a file or directory --  madhu 
+
+owner/user    |  group  | others 
+
+rwx               rwx     rwx 
+
+r - read - 4
+w - write - 2
+x - execute - 1 
+
+
+Modes
+Modes can be specified using symbolic or numeric (octal) notation.
+
+Symbolic Notation
+r – read permission
+w – write permission
+x – execute permission
+
+
+
+Numeric (Octal) Notation
+4 – read permission
+2 – write permission
+1 – execute permission
+
+The numeric mode is a combination of these values. For example:
+
+7 – read, write, and execute (4 + 2 + 1)
+6 – read and write (4 + 2)
+5 – read and execute (4 + 1)
+4 – read only
+
+
+
+
+chmod -R 
+
+
+Make a script executable:
+Secure private SSH keys:
+Set directory to allow access only to owner:
+================================================
+
+
+
+
+
+
+
+networking commands :
+
+PING Connectivity testing
+
+ping google.com 
+ping -c 4 example.com
+
+------
+
+traceroute google.com
+---------------------------------
+TELNET 
+
+Telnet is a network protocol and command-line tool used to connect to remote systems or devices over TCP. It lets you manually open a TCP connection to a specific port on a remote host.
+
+   telnet www.google.com 443
+    telnet www.mindcircuit.in 443
+    telnet 100.26.144.255 8080
+   telnet 100.26.144.255 443
+
+
+
+NETSTAT 
+
+The netstat command is a networking tool used to display network connections, routing tables, interface statistics, and more.
+  netstat - an 
