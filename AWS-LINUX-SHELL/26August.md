@@ -252,19 +252,3 @@ $ curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.
 | `nslookup <domain>` | DNS lookup | Verifying DNS actually points to the new server after a change |
 | `curl -I <url>` | Test an endpoint, headers only | Confirming Tomcat is responding right after startup |
 | `curl -O <url>` | Download a file, keeping its original name | Grabbing an archive without switching to `wget` |
-
----
-
-## Interview Questions
-
-1. What is an inode, and what does it store?
-2. What's the difference between a hard link and a soft link?
-3. What happens to a hard link if the original file is deleted? What about a soft link?
-4. What's the difference between `cut` and `awk`?
-5. How would you extract just the username and shell from `/etc/passwd`?
-6. What's the difference between `scp` and WinSCP?
-7. What's the modern replacement for `ifconfig`?
-8. How do you check whether a domain's DNS has been updated to point at a new server?
-9. What's the difference between `curl` and `wget`?
-10. Why would you use `curl -I` instead of just `curl`?
-11. Can `curl` download files like `wget`? What's the flag, and what's the difference between `-O` and `-o`?
