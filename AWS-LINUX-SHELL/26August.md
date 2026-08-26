@@ -197,7 +197,7 @@ Address: 172.67.128.45
 Hits a web/API endpoint directly, without a browser.
 
 ```
-curl http://localhost:8080
+curl http://<server-IP>:8080
 curl -I https://www.google.com
 ```
 `-I` fetches only the HTTP headers/status code, not the full page — a fast "is this URL up, what status code?" check.
@@ -210,16 +210,31 @@ server: gws
 content-type: text/html; charset=ISO-8859-1
 ```
 
+**`curl` can download too:**
+```
+curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
+curl -o tomcat.tar.gz https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
+```
+`-O` (capital O) saves the file under its original name from the URL. `-o` (lowercase o) saves it under a filename you choose.
+
+**Sample output:**
+```
+$ curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+100 11.8M  100 11.8M    0     0  9821k      0  0:00:01  0:00:01 --:--:-- 9834k
+```
+
 ### `curl` vs `wget`
 
 | | `curl` | `wget` |
 |---|---|---|
-| Main use | testing/inspecting an endpoint (headers, API responses) | downloading a file to disk |
-| Typical flag | `-I` (headers only) | just the URL, saves the file directly |
+| Main use | testing/inspecting an endpoint (headers, API responses) — downloading is a secondary use | dedicated downloader — that's its one job |
+| Download flag | `-O` (keep original filename) / `-o` (custom filename) | just the URL, saves the file directly |
+| Extra strengths | talks to APIs — custom headers, POST data, auth | can resume interrupted downloads, recursively download whole sites |
 
-**Real-time example:** Right after `./startup.sh`, `curl -I localhost:8080` confirms Tomcat is actually responding **on the server itself**, before you even worry about Security Groups or browser access.
+**Real-time example:** Right after `./startup.sh`, `curl -I <server-IP>:8080` (run on the server itself, over SSH) confirms Tomcat is actually responding, before you even worry about Security Groups or browser access. For grabbing a file — like the Tomcat archive itself — `wget <url>` is still the more common habit on servers since it's simpler for a plain download, but `curl -O <url>` does the exact same job.
 
-**Easy memory trick:** `curl` → talk to a URL and see the response. `wget` → download the URL to a file.
+**Easy memory trick:** `curl` → talk to a URL and see the response (and can download too, with `-O`). `wget` → built specifically to download.
 
 ---
 
@@ -236,6 +251,7 @@ content-type: text/html; charset=ISO-8859-1
 | `ip addr` | Show network interfaces & IPs | Confirming a server's private IP |
 | `nslookup <domain>` | DNS lookup | Verifying DNS actually points to the new server after a change |
 | `curl -I <url>` | Test an endpoint, headers only | Confirming Tomcat is responding right after startup |
+| `curl -O <url>` | Download a file, keeping its original name | Grabbing an archive without switching to `wget` |
 
 ---
 
@@ -251,3 +267,4 @@ content-type: text/html; charset=ISO-8859-1
 8. How do you check whether a domain's DNS has been updated to point at a new server?
 9. What's the difference between `curl` and `wget`?
 10. Why would you use `curl -I` instead of just `curl`?
+11. Can `curl` download files like `wget`? What's the flag, and what's the difference between `-O` and `-o`?

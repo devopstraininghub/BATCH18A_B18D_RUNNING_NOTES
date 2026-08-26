@@ -47,7 +47,7 @@ $
 **Real-time example:** This exact sequence — extract, `cd bin`, `./startup.sh` — is literally how a Java web application gets hosted on a server in a real project. On day 1 you'll do this manually to understand it; later, this same sequence gets wrapped inside a Jenkins deployment job or a shell script, so a new build gets deployed automatically without anyone SSH-ing in by hand. Also — accessing `IP:8080` from your browser only works if the EC2 **Security Group** allows inbound traffic on port 8080; "Tomcat started fine but I can't open it in the browser" is almost always a Security Group issue, not a Tomcat issue.
 
 **More examples:**
-- `curl -I localhost:8080` — run **on the server itself**, right after `./startup.sh`, to confirm Tomcat is actually responding, before even worrying about browser/network access.
+- `curl -I <server-IP>:8080` — run **on the server itself** (over SSH), right after `./startup.sh`, to confirm Tomcat is actually responding, before even worrying about browser/network access.
 - Checking Tomcat's own logs at `/opt/apache-tomcat-9.0.121/logs/catalina.out` if `startup.sh` says "started" but the browser still doesn't load — the real error, if any, shows up there.
 - Wrapping `startup.sh` inside a `systemd` service so Tomcat restarts automatically if the server reboots, instead of depending on someone remembering to start it manually.
 
