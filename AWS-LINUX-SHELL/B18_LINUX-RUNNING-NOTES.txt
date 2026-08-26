@@ -1143,3 +1143,90 @@ The netstat command is a networking tool used to display network connections, ro
    81  ./startup.sh
    82  netstat -an | grep 8080
    83  netstat -an
+
+=================
+
+DATE: 26 AUG 26
+
+inode :
+
+an inode (index node) is a data structure that stores metadata about a file or directory. Every file and directory on the filesystem is associated with an inode, which contains important information about the file's attributes and location on disk.
+
+
+File Metadata:
+
+File type: --  regular file, directory, symbolic link, , etc.
+Permissions:   (read, write, execute) for the owner, group, and others.
+Owner and Group:    User ID (UID) and group ID (GID)  
+Timestamps:  
+   Last access time (atime):           Last time the file was accessed.
+   Last modification time (mtime):     Last time the file's content was modified.
+   Last status change time (ctime):  Last time the file's metadata (permissions, owner, etc.) was changed.
+   File Size:                      Size of the file in bytes.
+   
+   
+ls -i   
+ll -i 
+   
+---------------------------------------------------
+
+softlink vs hardlink 
+
+ln srcpath destlink 
+
+ln -s srcpath destlink 
+
+
+In Linux, both soft links (symbolic links) and hard links are ways to reference files. They serve different purposes and have distinct characteristics. Let's explore each with examples:
+
+ln -s /path/to/target/file   /path/to/link
+
+ln  /path/to/target/file   /path/to/hardlink
+
+
+---------------------------------
+File manipulations 
+
+awk -F":" '{print $1}' /etc/passwd
+
+
+cut -d ":" -f 1 /etc/passwd
+cut -d ":" -f 1,6 /etc/passwd
+cut -d ":" -f 1,2,3,4 /etc/passwd
+cut -d ":" -f 1-4 /etc/passwd
+
+cat /etc/passwd | cut -d ":" -f 1,6
+
+=========================================
+
+awk command 
+
+
+awk  -F":" '{print $1 }' /etc/passwd
+
+ awk -F":" '{print $1 "=" $6}'  /etc/passwd
+
+
+cat /etc/passwd | awk -F":" '{print $1 "=" $6}'
+
+
+cat /etc/passwd | awk -F":" '{print $1}'
+=========================================================================
+diff bw cut and awk and their usage in realtime 
+
+winscp
+
+------------------------------
+scp src dest 
+
+scp -i madhu.pem Prabhas ec2-user@ec2-54-92-176-107.compute-1.amazonaws.com:/tmp/Prabhas
+
+=========================================================================
+
+ip addr / ifconfig
+nslookup / dig
+
+=================
+
+curl command usage 
+curl vs wget 
