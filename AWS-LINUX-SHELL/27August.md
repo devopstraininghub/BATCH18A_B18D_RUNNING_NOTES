@@ -1,8 +1,8 @@
 # Batch 18 — Linux Running Notes: 27 August 2026
 
-**Topic: Shell Scripting Basics — Shebang, Variables, Your First Script (`read`), Real Jenkins/Tomcat Setup Scripts, Command-Line Arguments, Debugging (`set -x`/`set -e`)**
+**Topic: Shell Scripting Basics — Shebang, Variables (Scope, Special Variables, Env Vars), Your First Script (`read`), Real Jenkins/Tomcat Setup Scripts, Command-Line Arguments, Debugging (`set -x`/`set -e`)**
 
-Friends, until now we've been running Linux commands one at a time by hand. Today we start **shell scripting** — putting a whole sequence of commands into one file, so it runs automatically instead of you typing it every single time. This is the real starting point of automation, and everything you'll later do in Jenkins/Ansible builds on this same idea.
+Friends, until now we've been running Linux commands one at a time by hand. Today we start **shell scripting** — putting a whole sequence of commands into one file, so it runs automatically instead of you typing it every single time. This is the real starting point of automation, and everything you'll later do in Jenkins/Ansible builds on this same idea. It's a longer session, so we're covering variables in full depth (scope, special variables, environment variables) along with the scripting basics — conditionals, loops, and functions continue in tomorrow's notes.
 
 ---
 
@@ -244,6 +244,105 @@ touch ec2 efs eks route53 s3
 
 ---
 
+## 9. Types of variables — Local, Shell, Environment
+
+A variable's **scope** decides *where* its value is visible.
+
+| Type | In simple words | Created with |
+|---|---|---|
+| Local | Only exists inside one function; gone once that function finishes | `local var1="value"` (inside a function) |
+| Shell | Exists only for your current terminal session — scripts run from it can't see it | `var3="value"` |
+| Environment | **Exported** — visible to your session AND any child process/script it launches | `export VAR2="value"` |
+
+**Sample output:**
+```
+$ export VAR2="visible everywhere"
+$ var3="only here"
+$ bash                      # start a new child shell
+$ echo $VAR2
+visible everywhere          # still visible — it was exported
+$ echo $var3
+                             # empty — var3 was never exported
+```
+
+**Real-time example:** `PATH`, `JAVA_HOME`, `AWS_ACCESS_KEY_ID` are environment variables for exactly this reason — many different tools/scripts need to read them, and a plain shell variable simply wouldn't be visible to those other programs.
+
+**Easy memory trick:** the whole difference between a shell variable and an environment variable is one word — `export`.
+
+---
+
+## 10. Special variables — `$0`, `$#`, `$*`, `$@`, `$?`
+
+**File: `cla.sh`**
+```bash
+#!/bin/bash
+echo "Script name: $0"
+echo "First argument: $1"
+echo "Number of arguments: $#"
+echo "All arguments as ONE string: $*"
+echo "All arguments as SEPARATE words: $@"
+echo "Exit status of last command: $?"
+```
+
+| Variable | Meaning |
+|---|---|
+| `$0` | the script's own name |
+| `$1`, `$2`, ... | 1st, 2nd, ... argument |
+| `$#` | count of arguments passed |
+| `$*` | all arguments combined into one string |
+| `$@` | all arguments kept as separate items |
+| `$?` | exit status of the last command — `0` = success, non-zero = failed |
+
+**`$*` vs `$@` — the real difference shows up in a loop:**
+```bash
+for i in "$*"; do echo $i; done    # 1 loop  -> "aws devops linux"
+for i in "$@"; do echo $i; done    # 3 loops -> aws / devops / linux
+```
+`"$*"` treats everything as one long sentence; `"$@"` treats each argument as its own word. When processing arguments one at a time in a loop, `"$@"` is almost always the right choice.
+
+**Easy memory trick:** `$?` → "did the last thing work?" `$@` → "give me each argument separately."
+
+---
+
+## 11. Reading and unsetting a variable
+
+- **`read name`** — pause, wait for keyboard input, store it in `name` (already used in section 4).
+- **`unset name`** — deletes a variable completely, as if it never existed.
+
+```bash
+name="Madhu kiran"
+echo $name
+unset name
+echo $name    # prints nothing
+```
+
+**Sample output:**
+```
+$ ./unsetex.sh
+Madhu kiran
+
+```
+
+---
+
+## 12. Environment variables — checking and configuring
+
+| Command | What it does |
+|---|---|
+| `env` | list every environment variable currently set |
+| `echo HOSTNAME` | prints the literal word `HOSTNAME` — no `$`, so no lookup happens |
+| `echo $HOSTNAME` | prints the **value** of `HOSTNAME` |
+| `env \| grep USER` | filter the full env list down to lines mentioning "USER" |
+| `export TESTNAME=value` | create + export a new environment variable in one step |
+| `printenv USER` | alternative to `echo $USER` |
+| `unset COLOR` | remove an environment variable |
+
+⚠️ **Common beginner trap:** `echo VARNAME` (no `$`) prints the word itself; `echo $VARNAME` (with `$`) prints the value. Mixing these up is one of the most common shell-scripting mistakes.
+
+**Real-time example:** `env | grep USER` or `printenv` is the first thing to check when a script behaves differently on your machine vs. a teammate's — often it's one missing/different environment variable.
+
+---
+
 ## Quick Recap Table
 
 | Command / Concept | One-line meaning | Real-time (DevOps) example |
@@ -257,3 +356,7 @@ touch ec2 efs eks route53 s3
 | `set -x` / `set +x` | Turn script debug tracing on/off | Watching exactly what a broken script is doing |
 | `set -e` | Stop the script on first failure | Avoiding a deploy script that limps on after a real error |
 | `$0`, `$1`, `$2` | Script name / positional arguments | Running `./setup.sh kiran` unattended from a CI pipeline |
+| `export VAR=value` | Create an environment variable | `PATH`, `JAVA_HOME` — visible to child scripts too |
+| `$*` vs `$@` | All args as one string / as separate items | Looping over arguments one at a time — use `"$@"` |
+| `$#` / `$?` | Argument count / last command's exit status | Checking a deploy script actually succeeded |
+| `unset name` | Delete a variable completely | Clearing a sensitive value once a script no longer needs it |
