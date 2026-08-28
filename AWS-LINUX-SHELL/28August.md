@@ -33,15 +33,17 @@ fi
 age=$1
 
 if [ "$age" -gt 18 ]; then
+# or: if (( $age > 18 )); then
     echo "The person is a Major"
 elif [ "$age" -lt 18 ]; then
+# or: elif (( $age < 18 )); then
     echo "The person is Minor"
 else
     echo "The person's age is exactly 18, person is a Major"
 fi
 ```
 - `age=$1` — instead of asking interactively with `read`, the age is taken directly as the first command-line argument.
-- `-gt` means "greater than," `-lt` means "less than" — this is how Bash compares **numbers** inside `[ ]`. You cannot use plain `>`/`<` for numbers here the way you would in normal maths — a common beginner mistake.
+- `-gt` means "greater than," `-lt` means "less than" — this is how Bash compares **numbers** inside `[ ]`. You cannot use plain `>`/`<` for numbers here the way you would in normal maths — a common beginner mistake. The commented-out `(( ))` line shows the alternative, modern syntax (covered fully in section 6) — where plain `>`/`<` work fine.
 - If age is above 18 → "Major". If below 18 → "Minor". If neither (meaning exactly 18) → falls through to the `else` block.
 
 **Sample output:**
@@ -57,8 +59,10 @@ echo "enter number"
 read num1
 
 if [ "$num1" -gt 10 ]; then
+# or: if (( $num1 > 10 )); then
     echo "$num1 is greater than 10"
 elif [ "$num1" -lt 10 ]; then
+# or: elif (( $num1 < 10 )); then
     echo "$num1 is less than 10"
 else
     echo "$num1 is 10"
@@ -71,8 +75,10 @@ fi
 number=7
 
 if [ "$number" -gt 10 ]; then
+# or: if (( $number > 10 )); then
     echo "The number is greater than 10."
 elif [ "$number" -eq 10 ]; then
+# or: elif (( $number == 10 )); then
     echo "The number is exactly 10."
 else
     echo "The number is less than 10."
@@ -116,6 +122,7 @@ The number is 1
 ```bash
 i=1
 while [ "$i" -le 100 ]; do
+# or: while (( $i <= 100 )); do
     echo "the number is: $i"
     i=$((i + 1))
 done
@@ -128,6 +135,7 @@ done
 ```bash
 i=100
 while [ "$i" -ge 1 ]; do
+# or: while (( $i >= 1 )); do
     echo "the number is: $i"
     i=$((i - 1))
 done
@@ -138,6 +146,7 @@ Same idea, just flipped: start at 100, keep going **while `i` is greater than or
 ```bash
 i=1
 until [ "$i" -gt 100 ]; do
+# or: until (( $i > 100 )); do
         echo "the number is : $i"
         i=$((i + 1))
 done
@@ -148,6 +157,7 @@ done
 ```bash
 i=10
 until [ "$i" -lt 1 ]; do
+# or: until (( $i < 1 )); do
         echo "the number is : $i"
         i=$((i - 1))
 done
@@ -163,6 +173,7 @@ Counts down from 10, and stops once `i` drops below 1.
 ```bash
 i=1
 while [ "$i" -gt 0 ]; do
+# or: while (( $i > 0 )); do
    echo "the number is : $i"
    i=$((i + 1))
 done
@@ -180,11 +191,13 @@ done
 
 ```bash
 if [ "$i" -eq 6 ]; then
+# or: if (( $i == 6 )); then
     break        # stops the loop entirely at 6
 fi
 ```
 ```bash
 if [ "$i" -eq 6 ]; then
+# or: if (( $i == 6 )); then
     i=$((i + 1))
     continue     # skips only 6, keeps counting after
 fi
@@ -244,10 +257,11 @@ Used inside `[ ]`, for comparing two numbers:
 ```
 ```bash
 if [ "$a" -gt "$b" ]; then
+# or: if (( $a > $b )); then
     echo "a is greater than b"
 fi
 ```
-Remember — for numbers, use these word-style operators (`-gt`, `-lt`, etc.) inside `[ ]`, not the maths symbols `>`/`<`, which mean something totally different in Bash (file redirection).
+Remember — for numbers, use these word-style operators (`-gt`, `-lt`, etc.) inside `[ ]`, not the maths symbols `>`/`<`, which mean something totally different in Bash (file redirection). Inside `(( ))` though, the plain maths symbols work fine — that's exactly why section 6 recommends `(( ))` for arithmetic comparisons in real scripts.
 
 ### String operators
 
@@ -280,10 +294,12 @@ fi
 ```
 ```bash
 if [ "$a" -gt 5 ] && [ "$b" -lt 10 ]; then
+# or: if (( $a > 5 && $b < 10 )); then
     echo "Both conditions are true"
 fi
 
 if [ "$a" -lt 5 ] || [ "$b" -lt 5 ]; then
+# or: if (( $a < 5 || $b < 5 )); then
     echo "At least one condition is true"
 fi
 ```
