@@ -52,7 +52,7 @@ The person is a Major
 |---|---|
 | `for` | once per item in a known list |
 | `while` | as long as a condition stays true |
-| `until` | until a condition finally turns true (opposite of `while`) |
+| `until` | until a condition finally turns true (opposite of `while`) or as long as condition is false |
 
 **`for` loop:**
 ```bash
