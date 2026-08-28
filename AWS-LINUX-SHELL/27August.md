@@ -276,29 +276,78 @@ $ echo $var3
 **File: `cla.sh`**
 ```bash
 #!/bin/bash
-echo "Script name: $0"
-echo "First argument: $1"
-echo "Number of arguments: $#"
-echo "All arguments as ONE string: $*"
-echo "All arguments as SEPARATE words: $@"
-echo "Exit status of last command: $?"
+
+echo "The name of this script is: $0"
+echo "The first argument is: $1"
+echo "The second argument is: $2"
+echo "Number of arguments passed: $#"
+echo "All the arguments passed - as SINGLE word: $*"
+echo "All the arguments passed - as individual words: $@"
+echo "Exit status is: $?"
 ```
 
 | Variable | Meaning |
 |---|---|
-| `$0` | the script's own name |
-| `$1`, `$2`, ... | 1st, 2nd, ... argument |
-| `$#` | count of arguments passed |
-| `$*` | all arguments combined into one string |
-| `$@` | all arguments kept as separate items |
-| `$?` | exit status of the last command — `0` = success, non-zero = failed |
+| `$0` | the name of the script itself |
+| `$1`, `$2`, ... | the 1st, 2nd, ... argument passed to the script |
+| `$#` | the **count** — how many arguments were passed in total |
+| `$*` | all arguments combined together as **one single string** |
+| `$@` | all arguments kept as **separate, individual items** |
+| `$?` | the **exit status** of the last command that ran — `0` means success, any non-zero number means it failed |
 
-**`$*` vs `$@` — the real difference shows up in a loop:**
-```bash
-for i in "$*"; do echo $i; done    # 1 loop  -> "aws devops linux"
-for i in "$@"; do echo $i; done    # 3 loops -> aws / devops / linux
+**Running it:**
 ```
-`"$*"` treats everything as one long sentence; `"$@"` treats each argument as its own word. When processing arguments one at a time in a loop, `"$@"` is almost always the right choice.
+$ ./cla.sh aws devops linux
+The name of this script is: ./cla.sh
+The first argument is: aws
+The second argument is: devops
+Number of arguments passed: 3
+All the arguments passed - as SINGLE word: aws devops linux
+All the arguments passed - as individual words: aws devops linux
+```
+At first glance, `$*` and `$@` look completely identical when just printed with `echo` — the real difference only shows up the moment you **loop over them**, as we'll see next. Don't get confused yet, keep reading.
+
+### `$*` vs `$@` — the real difference
+
+**File: `diff.sh`**
+```bash
+#!/bin/bash
+
+for i in "$*";
+#for i in "$@";
+do
+    echo $i
+done
+```
+This is a `for` loop: "for each item `i` in the given list, print it." The key thing being tested here is **what counts as "one item"**, when the arguments are quoted.
+
+**Running it with `"$*"` (as written above):**
+```
+$ ./diff.sh aws devops linux
+aws devops linux
+```
+The loop runs **only once**, because `"$*"` glues all the arguments into **one single combined string** — so the loop sees just one big item: `"aws devops linux"`.
+
+**Now switch the comment, so `"$@"` is used instead:**
+```bash
+#for i in "$*";
+for i in "$@";
+do
+    echo $i
+done
+```
+```
+$ ./diff.sh aws devops linux
+aws
+devops
+linux
+```
+Now the loop runs **three times**, once for each argument, because `"$@"` keeps every single argument as its **own separate item**.
+
+**The takeaway, in plain words:**
+- `"$*"` = "treat all the arguments as **one long sentence**."
+- `"$@"` = "treat each argument as **its own separate word**."
+- In real scripts, where you need to process arguments **one at a time** inside a loop (which is the case most of the time), `"$@"` is almost always the correct choice. Remember this for interviews too — commonly asked question.
 
 **Easy memory trick:** `$?` → "did the last thing work?" `$@` → "give me each argument separately."
 
@@ -309,18 +358,46 @@ for i in "$@"; do echo $i; done    # 3 loops -> aws / devops / linux
 - **`read name`** — pause, wait for keyboard input, store it in `name` (already used in section 4).
 - **`unset name`** — deletes a variable completely, as if it never existed.
 
+**File: `unsetex.sh`**
 ```bash
-name="Madhu kiran"
-echo $name
-unset name
-echo $name    # prints nothing
-```
+#!/bin/bash
 
-**Sample output:**
+name="Madhu kiran"
+
+echo $name
+
+unset name
+
+echo $name  # Output: (nothing, the variable is unset)
+```
+**What happens when you run it:**
 ```
 $ ./unsetex.sh
 Madhu kiran
 
+```
+- The first `echo $name` prints `Madhu kiran`, because the variable is still holding its value at that point.
+- `unset name` wipes it out completely.
+- The second `echo $name` prints **nothing at all** (just a blank line), because as far as Bash is concerned now, `name` doesn't exist anymore.
+
+A second version of the same idea, with clearer labels attached:
+
+**File: `unset.sh`**
+```bash
+#!/bin/bash
+
+name="Madhu kiran"
+
+echo "printing variable: $name"
+
+unset name
+
+echo "printing variable: $name"  # Output: (nothing, the variable is unset)
+```
+```
+$ ./unset.sh
+printing variable: Madhu kiran
+printing variable:
 ```
 
 ---
