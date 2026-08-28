@@ -172,12 +172,12 @@ ps -ef | grep tomcat | awk -F" " '{print $2}' | head -1
 
 ## 7. Debugging a script
 
-| Command | Does |
-|---|---|
-| `set -x` | turn ON debug mode — Bash prints every command (prefixed `+`) right before running it |
-| `set +x` | turn debug mode back OFF (note: `+` disables here, `-` enables — the one confusing exception) |
-| `bash -x scriptname.sh` | run a script in debug mode without editing the file at all |
-| `set -e` | exit the script immediately the moment any command fails, instead of ploughing on |
+When a script isn't behaving the way you expect, you need some way to see *what exactly it's doing*, step by step — that's exactly what these are for.
+
+- **`set -x`** — turn ON debug mode. Once this line runs, Bash prints out **every single command** right before it executes it (prefixed with a `+`), so you can watch exactly what the script is doing internally, including what values the variables actually expanded to.
+- **`set +x`** — turn debug mode back **OFF** (note it's `+` here, not `-` — this is the one exception in shell scripting where `+` disables something and `-` enables it, a bit confusing at first, but you get used to it).
+- **`bash -x scriptname.sh`** — an alternate way to debug **without touching the script file at all**: just run the whole script in debug mode straight from the command line.
+- **`set -e`** — "exit on error." Normally, if one command inside a script fails, Bash simply moves on to the next line anyway — which can be dangerous (imagine continuing to install software into a folder that actually failed to get created). `set -e` changes this: the moment **any** command in the script fails (returns a non-zero exit status — Linux's way of signalling "something went wrong"), the entire script stops immediately, instead of blindly continuing on broken assumptions.
 
 **Sample output:**
 ```bash
@@ -189,7 +189,7 @@ mkdir testdir
 + mkdir testdir
 ```
 
-**Real-time example:** `set -x` lets you *see* exactly what a misbehaving script is doing internally, including what values variables actually expanded to; `set -e` stops it *safely* the instant something breaks, instead of continuing on broken assumptions (e.g. installing into a folder that failed to get created).
+**Real-time example:** `jenkinssetup.sh` (section 5) failing halfway through on a new server — running `bash -x jenkinssetup.sh` shows you exactly which line failed and why, instead of guessing; adding `set -e` at the top would also have stopped it immediately at that failing line, instead of continuing to run the remaining `yum`/`systemctl` commands on a half-broken setup.
 
 ---
 
@@ -327,17 +327,35 @@ Madhu kiran
 
 ## 12. Environment variables — checking and configuring
 
-| Command | What it does |
-|---|---|
-| `env` | list every environment variable currently set |
-| `echo HOSTNAME` | prints the literal word `HOSTNAME` — no `$`, so no lookup happens |
-| `echo $HOSTNAME` | prints the **value** of `HOSTNAME` |
-| `env \| grep USER` | filter the full env list down to lines mentioning "USER" |
-| `export TESTNAME=value` | create + export a new environment variable in one step |
-| `printenv USER` | alternative to `echo $USER` |
-| `unset COLOR` | remove an environment variable |
+Environment variables are *dynamic* and *system-wide* — they let you customise how software and the OS itself behaves. Many are **user-specific** (different users on the same machine can have different values for the same variable name). Here's the everyday walkthrough, one command at a time:
 
-⚠️ **Common beginner trap:** `echo VARNAME` (no `$`) prints the word itself; `echo $VARNAME` (with `$`) prints the value. Mixing these up is one of the most common shell-scripting mistakes.
+- **`env`** — lists **every** environment variable currently set, along with its value.
+- **`echo HOSTNAME`** — prints the literal text `HOSTNAME` — **not** its value. No `$` sign means "just print this word as-is," not "look up this variable."
+- **`echo $HOSTNAME`** — prints the **actual value** of the `HOSTNAME` variable (the machine's name). The `$` is what tells Bash "please look this variable up."
+- **`env | grep USER`** — lists all environment variables, then filters that list down to only the lines containing "USER".
+- **`export TESTNAME=testmadhu`** — creates a **new** environment variable called `TESTNAME`, and exports it (makes it visible to child processes) in one single step.
+- **`printenv USER`** — an alternative to `echo $USER` — prints the value of one specific environment variable, by name.
+- **`unset COLOR`** — removes an environment variable completely.
+
+**Sample output — walking through create, check, and remove:**
+```
+$ export TESTNAME=testmadhu
+$ echo $TESTNAME
+testmadhu
+
+$ printenv USER
+madhu
+
+$ export COLOR=blue
+$ printenv COLOR
+blue
+
+$ unset COLOR
+$ printenv COLOR
+                    (nothing prints — COLOR no longer exists)
+```
+
+⚠️ **Common beginner trap:** `echo VARNAME` (no `$`) just prints the word itself as plain text; `echo $VARNAME` (with `$`) looks up and prints the value stored inside it. This is one of the most common beginner mix-ups in shell scripting, so be careful with this.
 
 **Real-time example:** `env | grep USER` or `printenv` is the first thing to check when a script behaves differently on your machine vs. a teammate's — often it's one missing/different environment variable.
 
