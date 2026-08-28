@@ -90,7 +90,7 @@ A loop repeats a block of commands automatically, so you don't have to write (or
 
 - **`for` loop** — repeat once for each item in a known list (say, "for every number from 1 to 100").
 - **`while` loop** — keep repeating **as long as** a condition stays true.
-- **`until` loop** — keep repeating **until** a condition finally turns true (exact opposite of `while`).
+- **`until` loop** — keep repeating **until** a condition finally turns true — the exact opposite of `while`; another way to say it: it keeps going for as long as the condition is still false.
 
 **`for` loop:**
 ```bash
