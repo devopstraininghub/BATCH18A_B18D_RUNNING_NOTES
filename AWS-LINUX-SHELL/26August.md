@@ -81,7 +81,8 @@ cut -d ":" -f 1,6 /etc/passwd
 cut -d ":" -f 1,2,3,4 /etc/passwd
 cut -d ":" -f 1-4 /etc/passwd
 ```
-`-d` sets the delimiter, `-f` picks the field number(s) — a single number, a comma list, or a `start-end` range.
+- `-d` — sets the delimiter (the character that separates columns).
+- `-f` — picks the field number(s) to print — a single number, a comma list, or a `start-end` range.
 
 **Sample output:**
 ```
@@ -215,7 +216,8 @@ content-type: text/html; charset=ISO-8859-1
 curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
 curl -o tomcat.tar.gz https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
 ```
-`-O` (capital O) saves the file under its original name from the URL. `-o` (lowercase o) saves it under a filename you choose.
+- `-O` (capital O) — saves the file under its original name from the URL.
+- `-o` (lowercase o) — saves it under a filename you choose.
 
 **Sample output:**
 ```

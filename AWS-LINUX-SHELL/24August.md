@@ -179,7 +179,8 @@ A group is a collection of users. Groups let multiple users receive the same acc
 - `usermod -aG devops madhu` / `usermod -aG devops kiran` — add user to group
 - `groups madhu` — check user's groups
 
-`-a` = append, `-G` = add user to supplementary group.
+- `-a` — append (add to the user's existing groups, instead of replacing them).
+- `-G` — the group name to add the user into.
 
 ⚠️ **Important:** Do NOT forget `-a`. Without it, existing supplementary group memberships can be replaced.
 
@@ -277,7 +278,8 @@ Displays network connections, listening ports, network information.
 ```
 netstat -an
 ```
-`-a` = show all connections/listening sockets. `-n` = show numeric IPs/ports.
+- `-a` — show all connections/listening sockets.
+- `-n` — show numeric IPs/ports instead of resolving hostnames.
 
 **Check specific port:**
 ```
@@ -290,7 +292,11 @@ tcp  0  0 0.0.0.0:8080  0.0.0.0:*  LISTEN
 ```
 netstat -tulnp
 ```
-`-t` TCP, `-u` UDP, `-l` listening, `-n` numeric, `-p` process.
+- `-t` — TCP.
+- `-u` — UDP.
+- `-l` — listening sockets only.
+- `-n` — numeric (skip slow name lookups).
+- `-p` — show the process using each port.
 
 **Modern alternative:** `ss -tulnp` — preferred on modern Linux systems, but `netstat` is still common in interviews and on older servers.
 
@@ -374,3 +380,7 @@ netstat -tulnp
 | `traceroute` | What path does traffic take? |
 | `telnet` / `nc` | Can I reach this TCP port? |
 | `netstat` / `ss` | What is listening on the server? |
+
+
+=================================
+

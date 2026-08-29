@@ -43,7 +43,8 @@ else
 fi
 ```
 - `age=$1` — instead of asking interactively with `read`, the age is taken directly as the first command-line argument.
-- `-gt` means "greater than," `-lt` means "less than" — this is how Bash compares **numbers** inside `[ ]`. You cannot use plain `>`/`<` for numbers here the way you would in normal maths — a common beginner mistake. The commented-out `(( ))` line shows the alternative, modern syntax (covered fully in section 6) — where plain `>`/`<` work fine.
+- `-gt` — means "greater than"; this is how Bash compares **numbers** inside `[ ]`.
+- `-lt` — means "less than"; same idea, the other direction. You cannot use plain `>`/`<` for numbers here the way you would in normal maths — a common beginner mistake. The commented-out `(( ))` line shows the alternative, modern syntax (covered fully in section 6) — where plain `>`/`<` work fine.
 - If age is above 18 → "Major". If below 18 → "Minor". If neither (meaning exactly 18) → falls through to the `else` block.
 
 **Sample output:**
@@ -561,7 +562,8 @@ df -h / | tail -1 | awk -F" " '{print $5}' | sed 's/%//'
 ```bash
 find /var/log/app/ -name "*.log" -mtime +7 -exec gzip {} \;
 ```
-`-mtime +7` = modified more than 7 days ago. `-exec gzip {} \;` runs `gzip` on every match (`{}` = the filename).
+- `-mtime +7` — only match files whose content was last modified more than 7 days ago.
+- `-exec gzip {} \;` — for every matching file found, run `gzip` on it (`{}` gets replaced by the actual filename), compressing it.
 
 **Real-time example:** This exact command is how real log-rotation scripts compress old logs automatically, so disk doesn't fill up with logs nobody's reading, while still keeping history around (compressed).
 
