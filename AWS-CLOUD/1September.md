@@ -85,7 +85,8 @@ Going over the limit means you start getting billed for the excess.
 
 ### Important points to remember
 
-- A credit card is required to create an AWS account, even for free-tier usage (identity/fraud verification).
+- A valid payment method is required to create an AWS account, even for free-tier usage — this is for identity/fraud verification, not to charge you upfront.
+- **For India specifically:** you're not limited to a credit card. AWS India accepts **UPI** and **debit cards** (Visa/Mastercard, and RuPay) as valid payment methods too — a real help for students who don't have a credit card yet. AWS makes a small temporary authorization charge (around ₹2) during verification, which gets refunded once the account is confirmed.
 - AWS follows a pay-as-you-use model — billed for exactly what you consume beyond free limits.
 - Exceeding free limits means automatic charges, with no warning by default.
 - Always monitor the billing dashboard so usage doesn't silently creep past the free tier.
