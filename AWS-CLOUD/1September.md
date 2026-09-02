@@ -186,7 +186,23 @@ $ echo "Welcome 2 aws devops world" > fname
 $ cat fname
 Welcome 2 aws devops world
 ```
-These are your very first Linux commands, run for real on a cloud server rather than a local practice machine — `pwd` (show current folder), `touch`/`mkdir` (create files/folders), `ll`/`ls` (list contents), `rm -rf` (delete), `cd` (change folder), `echo`/`cat` (write and read a file's content). We'll go much deeper into each of these as the course continues — for today, just get comfortable typing them on a real EC2 instance.
+These are your very first Linux commands, run for real on a cloud server rather than a local practice machine. A quick, simple explanation of each — we'll go much deeper into all of these as the course continues:
+
+- **`pwd`** — **P**rint **W**orking **D**irectory. Shows the full path of the folder you're currently standing in. Example: `pwd` → `/root`.
+- **`touch`** — creates one or more new, empty files. Example: `touch file1 file2 file3` creates three empty files at once.
+- **`mkdir`** — **M**a**k**e **Dir**ectory. Creates one or more new folders. Example: `mkdir dir1 dir2 dir3` creates three folders at once.
+- **`ll`** — lists the contents of the current folder in **long format** — shows permissions, owner, size, and last-modified date for each file/folder, one per line.
+- **`ls -lrth`** — another way to list contents: `-l` long format, `-r` reverse the order, `-t` sort by modification time, `-h` human-readable sizes. Net effect: the most recently changed file shows up at the bottom.
+- **`ls -la`** — long format, plus `-a` (all) to also show **hidden** files/folders (the ones starting with a dot, like `.bashrc`, which are skipped by default).
+- **`rm -rf`** — **r**e**m**ove a file or folder permanently. `-r` = recursive (needed to delete a folder and everything inside it), `-f` = force (skip confirmation prompts). Example: `rm -rf file1` deletes `file1` immediately, no undo.
+- **`clear`** — wipes the terminal screen so you have a clean, empty view to work in. Doesn't affect anything you've already typed or run.
+- **`cd`** — **C**hange **D**irectory. Moves you into a different folder. Example: `cd dir1` moves into `dir1`.
+- **`cd ..`** — a special case of `cd`: `..` always means "the parent of my current folder," so this moves you **up** one level.
+- **`echo`** — prints text to the screen. Example: `echo "madhukiran"` just displays the word `madhukiran`.
+- **`echo "text" > file`** — instead of printing to the screen, the `>` redirects that text **into a file**, creating it if it doesn't exist (or overwriting it if it does). Example: `echo "Welcome 2 aws devops world" > fname` writes that sentence into a file called `fname`.
+- **`cat`** — displays a file's contents on the screen. Example: `cat fname` prints out whatever was written into `fname`.
+
+For today, just get comfortable typing these on a real EC2 instance — the "why" behind each one will get much clearer as we build on them.
 
 **Real-time example:** This exact sequence — log in, launch, connect via SSH, run a few sanity-check commands — is literally Day 1 for a new DevOps hire at any company using AWS. Getting comfortable with it now means it's second nature by the time it matters on a real project.
 
