@@ -1,0 +1,351 @@
+*DATE: 1 SEP 2026*
+============================
+ON-PREMISES : What is On-Premises?
+============================
+
+On-premises means:
+You own and manage everything yourself (your own datacenter) 
+
+This includes:
+- Servers (big computers)
+- Storage
+- Networking equipment
+- Power
+- Cooling
+- Security
+- IT staff to maintain it
+
+
+============================
+CLOUD : What is Cloud?
+============================
+
+Cloud means:
+Using someone else’s computers (servers) over the internet
+instead of owning and managing your own.
+
+
+============================
+EXAMPLE: Running a Website
+============================
+
+ON-PREMISES:
+
+- Buy a server
+- Install OS and software
+- Set up networking
+- Handle power & cooling
+- Fix hardware issues
+- Upgrade when traffic grows
+- Limited storage - External hard drive or  server
+- Limited space
+- If it breaks → data loss risk
+
+Result:
+- Takes time
+- High cost
+- Requires expertise
+
+
+CLOUD:
+
+- Create an account
+- Click "Create Server"
+- Choose server size
+- Pay per hour or usage
+- Scale up or down anytime AS PER REQUIREMENT 
+
+Result:
+- Fast
+- Flexible
+- Beginner-friendly
+
+
+============================
+KEY BENEFITS OF CLOUD
+(Why Cloud is Popular)
+============================
+
+- No hardware to buy
+- Pay only for what you use (Ondemand )
+- Easy to scale resources
+- High availability
+- High Scalability
+- Faster to start
+- Global access from anywhere
+
+
+============================
+WHEN ON-PREMISES IS STILL USED
+============================
+
+Some companies prefer on-premises when:
+
+- Strict data security laws exist
+- Internet is not reliable
+- Legacy systems are in use
+- Full control over systems is required
+
+
+==================================================
+AWS FREE TIER 
+
+
+AWS Free Tier allows new users to try AWS services
+without paying immediately.
+
+It is mainly used for:
+- Learning AWS
+- Practice
+- Small experiments
+- Beginners in Cloud
+
+
+========================================
+AWS FREE TIER – CURRENT USAGE MODEL
+(NEW ACCOUNTS)
+========================================
+
+For new AWS accounts:
+
+- AWS offers a Free Plan with credits
+- You can get up to $200 AWS credits
+  - $100 at signup
+  - Up to $100 by completing learning activities
+
+- Valid for:
+  - 6 months
+  - OR until credits are used (whichever comes first)
+
+- No charges unless you upgrade to Paid Plan
+
+
+========================================
+IS IT FREE FOR 1 YEAR OR 6 MONTHS?
+========================================
+
+- Older AWS accounts (created earlier):
+  - Had 12 months Free Tier for many services
+
+- New AWS accounts:
+  - Mostly follow 6-month Free Plan with credits
+
+Note:
+- AWS model may change over time
+- Always check usage limits in AWS console
+
+
+========================================
+ALWAYS FREE SERVICES
+(NO EXPIRY – WITH LIMITS)
+========================================
+
+Some services are free every month
+within certain limits, even after credits end.
+
+Examples:
+- AWS Lambda
+  - 1 million free requests per month
+- Amazon S3
+  - Limited free storage
+- Amazon DynamoDB
+  - Free storage and read/write capacity
+
+(Usage limits apply)
+
+
+========================================
+IMPORTANT POINTS TO REMEMBER
+========================================
+
+- Credit card is required to create AWS account ( Call your customer care) 
+- AWS follows pay-as-you-use model
+- If you exceed free limits → you will be charged
+- Always monitor billing dashboard
+
+
+7396627149
+
+========================================
+
+AWS Free Tier is a starter pack for beginners.
+
+- New users get free credits (valid ~6 months)
+- Some services are always free within limits
+- Best way to learn AWS hands-on
+- Be careful with usage to avoid charges
+
+
+==============
+======================================================
+
+    DIFFERENCE BETWEEN AWS REGION AND AVAILABILITY ZONE
+
+    --------------------------------------------------
+    AWS REGION
+    --------------------------------------------------
+
+        • A geographic location in the world.
+        • Each region contains multiple data centers.
+        • Regions are completely isolated from each other.
+        • Used for:
+              - Disaster recovery
+              - Data residency requirements
+              - Latency-based deployments
+
+        Examples:
+            us-east-1  (N. Virginia)
+            ap-south-1 (Mumbai)
+            eu-west-1  (Ireland)
+
+
+    --------------------------------------------------
+    AVAILABILITY ZONE (AZ)
+    --------------------------------------------------
+
+        • A physically separate data center inside a region.
+        • Each region has 2–6+ AZs.
+        • AZs are isolated but connected with low-latency networks.
+        • Used for:
+              - High availability
+              - Fault tolerance
+              - Redundant architecture
+
+        Example inside ap-south-1 (Mumbai):
+            ap-south-1a
+            ap-south-1b
+            ap-south-1c
+
+
+    --------------------------------------------------
+    SIMPLE DIFFERENCE
+    --------------------------------------------------
+
+        Region:
+            A geographical area (big)
+
+        Availability Zone:
+            Data centers inside a region (smaller)
+
+
+    --------------------------------------------------
+
+        A region is a geographic location, while availability
+        zones are isolated data centers within that region,
+        designed for high availability and fault tolerance.
+
+
+-------------------------------------------------
+    WHY MULTI-AZ DEPLOYMENTS GIVE HIGH AVAILABILITY
+    --------------------------------------------------
+
+        Because when you deploy across multiple AZs:
+
+            If AZ-A goes down,
+            AZ-B automatically serves traffic.
+
+        Example:
+            • 2 EC2 instances in different AZs
+            • ALB balances traffic
+            • RDS Multi-AZ keeps standby replica
+            • Auto Scaling replaces failed instances
+
+
+    By default Availability Zones are not replicas of each other.
+        They are independent data centers within a region.
+        High availability is achieved when YOU deploy your
+        application and data across multiple AZs.
+		
+		
+		
+		
+==============
+
+
+
+LOG IN 
+
+EC2 SERVICE 
+
+EC2 INSTANCE CREATION 
+
+CONNECT ( GIT BASH DOWNLOAD ) 
+
+
+ssh -i "b18awskey.pem" ec2-user@ec2-100-61-148-210.compute-1.amazonaws.com
+
+
+ec2-user 
+
+sudo su -   ( switched to root user) 
+
+
+pwd  --> /root 
+
+touch file1 file2 file3 
+
+mkdir dir1 dir2 dir3 
+
+ls 
+
+ll 
+
+ls -lrth 
+
+ls -la 
+
+rm -rf fname/dirname 
+
+clear
+
+cd dirname
+
+cd ..
+
+echo "madhukiran" 
+
+
+echo "Welcome 2 aws devops world" > fname
+
+cat fname 
+
+history
+    1  whoami
+    2  pwd
+    3  touch f1 f2 f3
+    4  ls
+    5  ll
+    6  clear
+    7  mkdir dir1 dir2 dir3
+    8  ll
+    9  rm -rf f1
+   10  ll
+   11  rm -rf dir2
+   12  clear
+   13  ll
+   14  mkdir chiru
+   15  ll
+   16  cd chiru/
+   17  ll
+   18  pwd
+   19  ll
+   20  touch pvan ramcharan
+   21  mkdir nagababu
+   22  ll
+   23  cd nagababu/
+   24  pwd
+   25  cd ..
+   26  pwd
+   27  ll
+   28  echo "madhukiran"
+   29  echo devops
+   30  echo "Welcome to AWS devops adventure"
+   31  echo "Welcome to AWS devops adventure" > file1
+   32  ll
+   33  cat file1
+
+
+DONE 
+1. aws free tier account Creation
+2. created a ec2 instance 
+3. commands practice
