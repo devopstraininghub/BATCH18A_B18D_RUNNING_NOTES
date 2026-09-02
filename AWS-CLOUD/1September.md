@@ -2,7 +2,7 @@
 
 **Topic: On-Premises vs Cloud, AWS Free Tier, AWS Region vs Availability Zone, Multi-AZ High Availability, Your First EC2 Instance**
 
-Friends, from today we move from pure Linux into **AWS Cloud** — this is the whole reason we've been learning Linux in the first place, since almost every AWS server you'll touch runs Linux underneath. Today: what "cloud" actually means compared to running your own datacenter, the AWS Free Tier you'll be practicing on, Regions vs Availability Zones, and finally — launching and connecting to your very first EC2 instance.
+Friends, welcome to **AWS Cloud** — this is where your DevOps journey begins. Today: what "cloud" actually means compared to running your own datacenter, the AWS Free Tier you'll be practicing on, Regions vs Availability Zones, and finally — launching and connecting to your very first EC2 instance. Along the way, you'll also start picking up the basic Linux commands needed to work on that instance — we'll build on these gradually as we go.
 
 ---
 
@@ -186,7 +186,7 @@ $ echo "Welcome 2 aws devops world" > fname
 $ cat fname
 Welcome 2 aws devops world
 ```
-Every one of these is a command we've already covered in the Linux sessions — the only thing new today is that you're now running them on a **real cloud server**, not just a local practice machine.
+These are your very first Linux commands, run for real on a cloud server rather than a local practice machine — `pwd` (show current folder), `touch`/`mkdir` (create files/folders), `ll`/`ls` (list contents), `rm -rf` (delete), `cd` (change folder), `echo`/`cat` (write and read a file's content). We'll go much deeper into each of these as the course continues — for today, just get comfortable typing them on a real EC2 instance.
 
 **Real-time example:** This exact sequence — log in, launch, connect via SSH, run a few sanity-check commands — is literally Day 1 for a new DevOps hire at any company using AWS. Getting comfortable with it now means it's second nature by the time it matters on a real project.
 
