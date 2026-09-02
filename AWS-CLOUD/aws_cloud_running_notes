@@ -349,3 +349,146 @@ DONE
 1. aws free tier account Creation
 2. created a ec2 instance 
 3. commands practice
+
+================================
+
+======================
+
+DATE: 2 SEP 2026 
+
+
+class commands :
+
+sudo su -
+hostnamectl set-hostname serv.name
+
+sudo su -
+lsblk 
+
+df -Th
+
+touch file1 file2
+
+mkdir dir1 dir2 
+
+
+cd dirname
+----------------------------------------------------
+
+regions 
+availability zones 
+
+
+How to create your ec2 instance ?
+How to connect to ec2 instance ?
+
+
+(ELASTIC BLOCK STORE): 
+
+SERVER 1:
+
+     mkfs -t ext4 /dev/nvme1n1
+     mkdir /madhu
+     mount /dev/nvme1n1 /madhu
+	 
+    
+SERVER 2: 
+
+     mkdir /madhu
+     mount /dev/nvme1n1 /madhu
+	 
+	 
+BACKUP :
+
+SNAPSHOT 
+
+COPYING SNAPSHOT 
+
+==================================================================
+Notes:
+    WHAT IS EBS (ELASTIC BLOCK STORE)?
+
+    --------------------------------------------------
+    OVERVIEW
+    --------------------------------------------------
+
+        • EBS stands for Elastic Block Store.
+        • It is a block-level storage volume used with EC2.
+        • Works like a virtual hard disk attached to an EC2 instance.
+        • Persistent storage → data remains even if EC2 is stopped.
+
+        Think of EBS as:
+            A portable, durable SSD/HDD that you attach to your EC2.
+
+
+    --------------------------------------------------
+    KEY FEATURES
+    --------------------------------------------------
+
+        • Persistent storage (data survives stop/start)
+        • High availability (replicated across AZ)
+        • Can detach and attach to another EC2
+        • Multiple volume types (SSD, HDD)
+        • Supports snapshots (backups)
+        • Encrypted storage available
+        • Resize anytime (increase size, change type)
+
+
+    --------------------------------------------------
+    TYPES OF EBS VOLUMES
+    --------------------------------------------------
+
+        General Purpose SSD (gp3 / gp2)
+            - Best for most workloads
+
+        Provisioned IOPS SSD (io1 / io2)
+            - High-performance databases
+
+        Throughput Optimized HDD (st1)
+            - Big data, log processing
+
+        Cold HDD (sc1)
+            - Rarely accessed data
+
+    --------------------------------------------------
+    SNAPSHOTS (VERY IMPORTANT)
+    --------------------------------------------------
+
+        • A snapshot is a backup of an EBS volume.
+        • Stored in S3 (internally managed by AWS).
+        • Can restore a new EBS volume from a snapshot.
+        • Used for:
+              - Backups
+              - Disaster recovery
+              - Creating AMIs
+
+
+    --------------------------------------------------
+    HOW EBS WORKS (SIMPLE VIEW)
+    --------------------------------------------------
+
+        1. Launch EC2
+        2. Attach EBS volume
+        3. Format and mount it like a normal hard disk
+        4. Store files, databases, logs, etc.
+        5. Create snapshots for backup
+
+
+    --------------------------------------------------
+    REAL-WORLD USE CASES
+    --------------------------------------------------
+
+        • Data storage for EC2 servers
+        • Databases (MySQL, MongoDB, PostgreSQL)
+        • Application logs
+        • File systems
+        • Docker storage
+        • Backup and restore with snapshots
+
+
+
+
+        EBS is a durable, high-availability block storage
+        for EC2 instances. It works like a virtual hard disk,
+        supports snapshots, and keeps your data safe even
+        when the instance is stopped.
