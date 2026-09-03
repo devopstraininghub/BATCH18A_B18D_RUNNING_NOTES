@@ -107,11 +107,13 @@ Friends, yesterday we worked with EBS — storage attached to **one** server at 
 
 EFS can automatically move files between storage classes to save cost, based on how often each file is actually accessed.
 
-| Storage class | Used for | Cost | Notes |
+| Storage class | Used for | Approx. cost (US East, per GB-month) | Notes |
 |---|---|---|---|
-| **Standard** | Frequently accessed files | Higher | High performance |
-| **Infrequent Access (IA)** | Not accessed for 30+ days (configurable) | Lower | Small charge each time it's accessed |
-| **Archive** | Rarely accessed data | Very low | Higher access latency |
+| **Standard** | Frequently accessed files | ~$0.30 | High performance, no retrieval charge |
+| **Infrequent Access (IA)** | Not accessed for 30+ days (configurable) | ~$0.016 | Plus a small per-GB charge (~$0.01/GB) each time a file is actually read back |
+| **Archive** | Rarely accessed data | ~$0.008 | Cheapest tier, but higher access latency + its own retrieval charge |
+
+⚠️ These are approximate US East (N. Virginia) prices at the time of writing — AWS pricing changes over time and varies by Region, so always check the [official EFS pricing page](https://aws.amazon.com/efs/pricing/) or the AWS Pricing Calculator before quoting a number in a real cost estimate.
 
 **How it works — example:**
 - File not accessed for 30 days → automatically moves to **IA**.
