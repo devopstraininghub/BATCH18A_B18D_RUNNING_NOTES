@@ -492,3 +492,459 @@ Notes:
         for EC2 instances. It works like a virtual hard disk,
         supports snapshots, and keeps your data safe even
         when the instance is stopped.
+
+==========================================================================
+
+DATE: 3 SEP 2026
+
+
+2 SEP 2026
+
+    AMAZON EFS (ELASTIC FILE SYSTEM) – SHORT NOTES
+
+    1) WHAT IS NFS?
+    --------------------------------------------------
+
+        NFS = Network File System
+
+        • A protocol used to share files over a network.
+        • Allows multiple machines to access the same storage.
+        • Works like a shared folder across servers.
+        • Uses port 2049.
+
+        Simple meaning:
+            NFS is the technology that lets servers
+            share files over the network.
+
+
+    --------------------------------------------------
+    WHAT IS EFS?
+    --------------------------------------------------
+
+        Amazon Elastic File System (EFS) is a
+        fully managed, scalable file storage service in AWS.
+
+        • It is shared file storage.
+        • Multiple EC2 instances can access it at the same time.
+        • Works using NFS protocol.
+        • Automatically scales storage size.
+
+        Simple meaning:
+            EFS = Shared network drive for many servers.
+		    EFS = AWS-managed NFS storage.
+			
+			        
+		NFS → Protocol (technology) - 2049
+        EFS → AWS service that uses NFS
+
+
+    --------------------------------------------------
+    WHERE IS EFS USED?
+    --------------------------------------------------
+
+        • Shared application data
+        • Web servers needing same files
+        • Container workloads (ECS, EKS)
+        • Content management systems
+        • Analytics workloads
+
+
+    --------------------------------------------------
+    HOW TO CONFIGURE EFS (SIMPLE STEPS)
+    --------------------------------------------------
+
+        1) Create EFS
+              - Choose VPC
+              - Select Availability Zones
+
+        2) Create Mount Targets
+              - One mount target per AZ
+              - Attach security groups
+
+        3) Configure Security Group
+              - Allow NFS port 2049
+              - Allow traffic from EC2 instances
+
+        4) Launch EC2 in same VPC
+
+        5) Mount EFS on EC2
+              Example (Linux):
+                  sudo mount -t nfs4 <efs-dns-name>:/ /mnt/efs
+
+        6) Use it like a normal directory
+              Files are shared across all mounted EC2s.
+
+
+    --------------------------------------------------
+    KEY FEATURES OF EFS
+    --------------------------------------------------
+
+        • Fully managed (no capacity planning)
+        • Auto-scaling storage
+        • Multi-AZ availability
+        • Highly durable
+        • Shared file access
+        • Pay only for storage used
+
+
+    --------------------------------------------------
+    EFS VS EBS (IMPORTANT DIFFERENCE)
+    --------------------------------------------------
+
+        EBS (Elastic Block Store):
+
+            • Block-level storage
+            • Attached to ONE EC2 at a time
+            • Like a hard disk
+            • Must choose size manually
+            • Typically used for OS / database storage
+
+        EFS (Elastic File System):
+
+            • File-level storage
+            • Shared by multiple EC2s
+            • Like a shared network folder
+            • Auto-scales storage
+            • Used for shared applications
+
+
+    --------------------------------------------------
+    SIMPLE COMPARISON
+    --------------------------------------------------
+
+        EBS  → Single server disk
+        EFS  → Shared storage for many servers
+
+        EBS  → Fixed size
+        EFS  → Automatically grows
+
+        EBS  → One instance at a time
+        EFS  → Many instances simultaneously
+
+
+    --------------------------------------------------
+    WHEN TO USE WHICH?
+    --------------------------------------------------
+
+        Use EBS when:
+            • You need storage for one EC2
+            • You need high IOPS for database
+            • You need boot volume
+
+        Use EFS when:
+            • Multiple EC2s need shared files
+            • Applications need common storage
+            • Containers need persistent shared storage
+
+
+----------------------------------
+
+        EFS = Managed, shared file storage in AWS.
+        EBS = Block storage attached to a single EC2.
+
+        EFS is for shared workloads.
+        EBS is for individual server storage.
+		
+	
+
+
+    --------------------------------------------------
+    WHAT ARE EFS LIFECYCLE POLICIES?
+    --------------------------------------------------
+
+        EFS can automatically move files between
+        storage classes to reduce cost.
+
+        Based on how frequently files are accessed.
+
+
+    --------------------------------------------------
+    EFS STORAGE CLASSES
+    --------------------------------------------------
+
+        1) Standard
+             • Frequently accessed files
+             • Higher cost
+             • High performance
+
+        2) Infrequent Access (IA)
+             • Files not accessed for 30+ days (configurable)
+             • Lower storage cost
+             • Small access charge
+
+        3) Archive
+             • Rarely accessed data
+             • Very low cost
+             • Higher access latency
+
+
+    --------------------------------------------------
+    HOW EFS LIFECYCLE POLICY WORKS
+    --------------------------------------------------
+
+        Example:
+
+            File not accessed for 30 days
+                → Automatically moves to IA
+
+            File not accessed for 90 days
+                → Moves to Archive
+
+        If accessed again:
+            It automatically moves back to Standard.
+
+
+		
+*************************************************************************************************************
+
+    MOUNT TARGETS IN EFS – SHORT NOTES
+
+    --------------------------------------------------
+    WHAT IS A MOUNT TARGET?
+    --------------------------------------------------
+
+        A Mount Target is a network endpoint
+        inside a subnet that allows EC2 instances
+        to connect to EFS.
+
+        It provides an IP address in your subnet
+        for accessing EFS.
+
+
+    --------------------------------------------------
+    WHY DO WE NEED MOUNT TARGETS?
+    --------------------------------------------------
+
+        • EFS is a regional service (multi-AZ).
+        • EC2 instances connect to EFS through
+          mount targets.
+        • Each Availability Zone needs its own
+          mount target for high availability.
+
+
+    --------------------------------------------------
+    IMPORTANT RULE
+    --------------------------------------------------
+
+        One Mount Target per Availability Zone (AZ).
+
+        Example:
+            If your VPC has:
+                AZ-a
+                AZ-b
+                AZ-c
+
+            You should create:
+                3 Mount Targets
+                (one in each AZ)
+
+
+    --------------------------------------------------
+    HOW IT WORKS
+    --------------------------------------------------
+
+        EC2 Instance
+             ↓
+        Mount Target (in same AZ)
+             ↓
+        EFS File System
+
+
+    --------------------------------------------------
+    CONFIGURATION STEPS (SIMPLE)
+    --------------------------------------------------
+
+        1) Create EFS
+        2) Select VPC
+        3) Choose subnets (one per AZ)
+        4) Attach security group
+              - Allow NFS port 2049
+        5) EC2 mounts EFS using DNS name
+
+
+    --------------------------------------------------
+    SECURITY REQUIREMENT
+    --------------------------------------------------
+
+        Security Group must allow:
+
+            Port 2049 (NFS)
+            Source = EC2 Security Group
+
+
+    --------------------------------------------------
+    SIMPLE SUMMARY
+    --------------------------------------------------
+
+        Mount Target = Access point to EFS
+        Lives inside a subnet
+        One per AZ
+        Required for EC2 to connect to EFS
+        Uses NFS protocol (port 2049)
+
+
+
+--------------------------------------------------------------------
+
+ WHAT IS A MOUNT TARGET?
+    --------------------------------------------------
+
+        A Mount Target is a network endpoint
+        inside a subnet that allows EC2 instances
+        to connect to EFS.
+
+   
+
+===
+
+MORE FEW BASIC LINUX COMMANDS :
+
+
+touch fname1 fname2
+
+mkdir dir1 dir2 dir3
+
+ll 
+
+ls 
+
+
+cd dir1 
+
+cd ..
+
+------------
+
+yum install pkg-name
+
+
+-------------
+
+systemctl start/stop/status/restart  service.name
+
+
+yum install httpd 
+
+systemctl start httpd
+
+systemctl enable httpd 
+
+---------------------------------
+
+vim/vim editor 
+
+vim fname 
+
+esc -- i ----> insert mode 
+
+      -----
+       ----
+       data---
+
+----
+---
+
+esc:wq!
+
+------------------------------------------
+
+cat fname 
+
+--------------------------------------------
+
+CUSTOM AMI :
+
+  DATA
+  PACKAGE 
+  SERVICES /APPLICATION 
+
+
+    WHAT IS AN AMI IN AWS?
+
+    --------------------------------------------------
+    OVERVIEW
+    --------------------------------------------------
+
+        AMI stands for Amazon Machine Image.
+        It is a pre-configured template used to launch
+  
+
+        An AMI contains:
+            • Operating system (Linux/Windows)
+            • Pre-installed software
+            • Settings and configurations
+            • EBS snapshot of the root volume
+
+        Launching an EC2 = Using an AMI as the blueprint.
+
+
+    --------------------------------------------------
+    TYPES OF AMIs
+    --------------------------------------------------
+
+        1) AWS-provided AMIs
+            - Amazon Linux, Ubuntu, Windows, RedHat
+
+        2) Marketplace AMIs
+            - Vendor provided (Nginx, Jenkins, Fortinet)
+
+        3) Custom AMIs (created by you)
+            - Your own configuration and setup
+
+
+    --------------------------------------------------
+    WHY DO WE NEED CUSTOM AMIs?
+    --------------------------------------------------
+
+        Custom AMIs are required when you want *your own*
+        pre-configured server template.
+
+        Reasons to create a custom AMI:
+
+        1) Faster Launch Times
+            - Example:
+                You install Java, Tomcat, Python, app code.
+                Taking a snapshot → creates an AMI.
+                Now launching new EC2 takes seconds.
+
+        2) Standardization
+            - Every server launched from this AMI
+              has the same OS, packages, versions.
+
+        3) Disaster Recovery
+            - If an instance crashes,
+              launch a new instance from the AMI.
+
+        4) Auto Scaling Groups
+            - ASGs require custom AMIs for apps.
+            - They rapidly create new instances during traffic spikes.
+
+        5) Pre-configured Security Hardening
+            - OS patches, firewall rules, packages already applied.
+
+        6) Golden Image Pattern (Industry Standard)
+            - Companies maintain a “Golden AMI”
+            - This is the official, secure, prebuilt server image.
+
+
+    --------------------------------------------------
+    REAL DEVOPS USE CASES
+    --------------------------------------------------
+
+        • Auto Scaling launch templates
+        • Preinstalled Jenkins/Java/Nginx/httpd on EC2
+        • Baking application code into the AMI (Packer)
+        • Creating golden images for production
+        • Backup of critical servers
+
+
+    --------------------------------------------------
+    INTERVIEW ONE-LINER
+    --------------------------------------------------
+
+        AMI is a machine template used to launch EC2 instances.
+        Custom AMIs allow us to pre-install software, apply
+        configurations, and create standardized, fast, and
+        production-ready server deployments.
+
+
