@@ -120,6 +120,10 @@ EFS can automatically move files between storage classes to save cost, based on 
 
 **Real-time example:** Old uploaded documents on a content platform that nobody's opened in months automatically slide into cheaper storage classes, without anyone having to manually go find and move them — and if someone does open one again, it just moves back, no manual intervention either way.
 
+⚠️ **Common mix-up:** these storage classes are **not** S3 storage classes, and files aren't secretly sitting inside an S3 bucket. "Standard," "Infrequent Access," and "Archive" are **EFS's own internal tiers** — files stay inside the same EFS file system the whole time, EFS just quietly moves them between its own tiers based on access. S3 has its own, separate set of storage classes (S3 Standard, S3 Glacier, etc.) that work the same *idea* but on entirely different storage. The similar naming is just AWS being consistent about the concept — it's not shared underlying storage.
+
+**Easy memory trick:** Same idea, different service — EFS's tiers stay inside EFS; they don't hand your files off to S3.
+
 ---
 
 ## 9. Mount targets in EFS
