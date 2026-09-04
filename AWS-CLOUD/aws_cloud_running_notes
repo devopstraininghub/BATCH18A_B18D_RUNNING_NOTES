@@ -795,9 +795,13 @@ DATE: 3 SEP 2026
 
    
 
-===
+=============================================
+DATE: 4 SEP 2026
 
-MORE FEW BASIC LINUX COMMANDS :
+
+
+
+MORE FEW BASIC LINUX COMMANDS & setting up a web server
 
 
 touch fname1 fname2
@@ -815,19 +819,6 @@ cd ..
 
 ------------
 
-yum install pkg-name
-
-
--------------
-
-systemctl start/stop/status/restart  service.name
-
-
-yum install httpd 
-
-systemctl start httpd
-
-systemctl enable httpd 
 
 ---------------------------------
 
@@ -849,102 +840,320 @@ esc:wq!
 ------------------------------------------
 
 cat fname 
+------------------
 
---------------------------------------------
-
-CUSTOM AMI :
-
-  DATA
-  PACKAGE 
-  SERVICES /APPLICATION 
+yum install pkg-name
 
 
-    WHAT IS AN AMI IN AWS?
+-------------
+
+systemctl start/stop/status/restart  service.name
+
+
+yum install httpd 
+
+systemctl start httpd
+
+systemctl enable httpd 
+
+vim /var/www/html/index.html
+
+
+
+
+================================================
+
+
+
+WHAT IS A LOAD BALANCER?
+    --------------------------------------------------
+
+        A Load Balancer distributes incoming traffic across
+        multiple servers (EC2 instances) to ensure:
+
+            • High availability
+            • Fault tolerance
+            • Better performance
+            • Zero downtime during failures
+
+        Simple meaning:
+            Instead of sending all traffic to one server,
+            the load balancer spreads it across many.
+
 
     --------------------------------------------------
-    OVERVIEW
+    TYPES OF LOAD BALANCERS IN AWS
     --------------------------------------------------
 
-        AMI stands for Amazon Machine Image.
-        It is a pre-configured template used to launch
+        there are 3 main load balancers:
+
+        1) ALB – Application Load Balancer
+        2) NLB – Network Load Balancer
+        3) GWLB – Gateway Load Balancer
+		4) Classic Load Balancer
+
+
+    ==================================================
+    1) APPLICATION LOAD BALANCER (ALB)
+    ==================================================
+
+        • Operates at Layer 7 (HTTP/HTTPS)
+        • Understands content of HTTP requests
+        • Used for web applications and microservices
+
+        Supports:
+            - Path-based routing      (/login → server1)
+            - Host-based routing      (api.example.com)
+            - Query/Headers routing
+            - URL-based routing
+            - WebSockets
+            - TLS termination (HTTPS)
+            - Redirects / fixed responses
+
+        Best use cases:
+            • Web apps
+            • APIs / Microservices
+            • Routing based on URL or domain
+
+
+    ==================================================
+    2) NETWORK LOAD BALANCER (NLB)
+    ==================================================
+
+        • Operates at Layer 4 (TCP/UDP)
+        • Fastest and highest performance
+        • Handles millions of requests/second
+        • Used for low-latency, real-time traffic
+
+        Supports:
+            - TCP / UDP / TLS
+            - Static IP
+            - Cross-zone balancing
+            - High network throughput
+
+        Best use cases:
+            • Gaming
+            • Real-time apps
+            • High-performance workloads
+            • Load balancing non-HTTP traffic
+
+
+    ==================================================
+    3) GATEWAY LOAD BALANCER (GWLB)
+    ==================================================
+
+        • Operates at Layer 3 (Network Layer)
+        • Used for security appliances
+
+        Example appliances:
+            - Firewalls
+            - IDS / IPS systems
+            - Packet inspection tools
+
+        Best use cases:
+            • Insert firewalls between VPCs
+            • Centralizing traffic inspection
+
+
+    --------------------------------------------------
+    WHEN TO USE WHICH?
+    --------------------------------------------------
+
+        ALB → Websites, APIs, HTTP/HTTPS  
+        NLB → High performance TCP/UDP  
+        GWLB → Firewalls, deep packet inspection  
+
+
+    ==================================================
+    ALB – CONFIGURATION OPTIONS (IMPORTANT)
+    ==================================================
+
+    --------------------------------------------------
+    1) Basic Configuration
+    --------------------------------------------------
+
+        • Name
+        • Scheme:
+              - Internet-facing
+              - Internal
+        • IP Address Type:
+              - IPv4
+              - Dualstack (IPv4 + IPv6)
+        • VPC selection
+
+    --------------------------------------------------
+    2) Network Mapping
+    --------------------------------------------------
+
+        • Select subnets in multiple AZs
+        • Enable/disable cross-zone load balancing
+
+    --------------------------------------------------
+    3) Listeners
+    --------------------------------------------------
+
+        Example listeners:
+            • HTTP (80)
+            • HTTPS (443)
+
+        Each listener requires:
+            - Rule(s)
+            - Default target group
+
+    --------------------------------------------------
+    4) SSL Certificates (for HTTPS)
+    --------------------------------------------------
+
+        • ACM certificate
+        • TLS version
+        • Security policies
+
+    --------------------------------------------------
+    5) Routing Rules
+    --------------------------------------------------
+
+        You can create:
+
+            • Path-based rules
+                 /app1  → TG-App1
+                 /app2  → TG-App2
+
+            • Host-based rules
+                 api.example.com → API-Target-Group
+
+            • Header-based routing
+            • Query-string routing
+            • HTTP method filters
+            • Redirect actions
+            • Fixed responses
+
+    --------------------------------------------------
+    6) Security Settings
+    --------------------------------------------------
+
+        • Security groups (allow port 80/443)
+        • Idle timeout
+        • Access logs (store in S3)
+
+
+    ==================================================
+    TARGET GROUP – CONFIGURATION OPTIONS
+    ==================================================
+
+    --------------------------------------------------
+    1) Target Type
+    --------------------------------------------------
+
+        • Instances (EC2 directly)
+        • IP addresses (Microservices on ECS/EKS)
+        • Lambda functions
+
+    --------------------------------------------------
+    2) Protocol & Port
+    --------------------------------------------------
+
+        • HTTP / HTTPS       (for ALB)
+        • TCP / UDP / TLS    (for NLB)
+        • Health check port
+        • Traffic port
+
+    --------------------------------------------------
+    3) Health Checks
+    --------------------------------------------------
+
+        • Protocol (HTTP, HTTPS, TCP)
+        • Health check path (for ALB)
+              Example:  /health, /status
+        • Success codes (200, 302, etc.)
+        • Interval (default 30 seconds)
+        • Healthy threshold
+        • Unhealthy threshold
+        • Timeout seconds
+
+    --------------------------------------------------
+    4) Advanced Health Check Features
+    --------------------------------------------------
+
+        • Deregistration delay
+        • Slow start
+        • Stickiness (session persistence)
+        • Matcher codes
+        • Health check override per target
+
+    --------------------------------------------------
+    5) Registered Targets
+    --------------------------------------------------
+
+        • Select EC2 Instances
+        • Select IPs
+        • Register Lambda functions
+
+
+    --------------------------------------------------
+    SUMMARY LINES
+    --------------------------------------------------
+
+        A load balancer distributes traffic across multiple servers
+        to ensure availability, performance, and reliability.
+
+        ALB works at Layer 7 for HTTP/HTTPS,
+        NLB works at Layer 4 for fast TCP/UDP traffic,
+        GWLB works at Layer 3 for firewall and security appliances.
+
+        A target group is where the load balancer sends traffic.
+        It defines health checks, ports, targets, and routing rules.
   
 
-        An AMI contains:
-            • Operating system (Linux/Windows)
-            • Pre-installed software
-            • Settings and configurations
-            • EBS snapshot of the root volume
 
-        Launching an EC2 = Using an AMI as the blueprint.
+====================================================================
+    WHAT IS USER DATA IN AWS?
 
 
-    --------------------------------------------------
-    TYPES OF AMIs
-    --------------------------------------------------
+        User Data is a script that runs automatically
+        when an EC2 instance launches in
 
-        1) AWS-provided AMIs
-            - Amazon Linux, Ubuntu, Windows, RedHat
-
-        2) Marketplace AMIs
-            - Vendor provided (Nginx, Jenkins, Fortinet)
-
-        3) Custom AMIs (created by you)
-            - Your own configuration and setup
-
+        It is used to automate initial server setup.
 
     --------------------------------------------------
-    WHY DO WE NEED CUSTOM AMIs?
+    WHAT USER DATA CAN DO?
     --------------------------------------------------
 
-        Custom AMIs are required when you want *your own*
-        pre-configured server template.
-
-        Reasons to create a custom AMI:
-
-        1) Faster Launch Times
-            - Example:
-                You install Java, Tomcat, Python, app code.
-                Taking a snapshot → creates an AMI.
-                Now launching new EC2 takes seconds.
-
-        2) Standardization
-            - Every server launched from this AMI
-              has the same OS, packages, versions.
-
-        3) Disaster Recovery
-            - If an instance crashes,
-              launch a new instance from the AMI.
-
-        4) Auto Scaling Groups
-            - ASGs require custom AMIs for apps.
-            - They rapidly create new instances during traffic spikes.
-
-        5) Pre-configured Security Hardening
-            - OS patches, firewall rules, packages already applied.
-
-        6) Golden Image Pattern (Industry Standard)
-            - Companies maintain a “Golden AMI”
-            - This is the official, secure, prebuilt server image.
-
+        • Install software (Apache, Nginx, Java, Python)
+        • Update packages
+        • Create files or directories
+        • Configure applications
+        • Start services
+        • Download code from GitHub/S3
+        • Set environment variables
 
     --------------------------------------------------
-    REAL DEVOPS USE CASES
+    COMMON USER DATA SCRIPT (LINUX)
+    --------------------------------------------------
+#!/bin/bash
+
+yum update -y
+yum install -y httpd
+systemctl enable httpd
+systemctl start httpd
+echo "THIS IS SAMPLE FACEBOOK PAGE" > /var/www/html/index.html
+
+    --------------------------------------------------
+    IMPORTANT POINTS
     --------------------------------------------------
 
-        • Auto Scaling launch templates
-        • Preinstalled Jenkins/Java/Nginx/httpd on EC2
-        • Baking application code into the AMI (Packer)
-        • Creating golden images for production
-        • Backup of critical servers
+        • Runs only on FIRST boot (unless configured otherwise)
+        • Runs as root user
+        • Stored in the EC2 instance metadata
+        • Helps automate server provisioning
 
 
-    --------------------------------------------------
-    INTERVIEW ONE-LINER
-    --------------------------------------------------
+        User Data = "Auto-setup script" for your EC2.
 
-        AMI is a machine template used to launch EC2 instances.
-        Custom AMIs allow us to pre-install software, apply
-        configurations, and create standardized, fast, and
-        production-ready server deployments.
+        When the instance starts,
+        AWS runs your script automatically,
+        so you don't need to configure the server manually.
 
 
+
+
+===================================================================================================
