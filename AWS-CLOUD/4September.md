@@ -1,14 +1,33 @@
 # Batch 18 — AWS Cloud Running Notes: 4 September 2026
 
-**Topic: Load Balancers (ALB / NLB / GWLB), Target Groups, User Data Scripts**
+**Topic: Installing Packages & Managing Services (`yum`, `systemctl`), The `vim` Editor, Setting Up a Web Server by Hand, Load Balancers (ALB / NLB / GWLB), Target Groups, User Data Scripts**
 
-Friends, yesterday we covered EFS and Custom AMIs, and practiced standing up a web server by hand (`yum`, `systemctl`, `vim`). Today's two big topics build directly on that: **Load Balancers** — how AWS spreads traffic across many servers instead of just one — and **User Data** — the auto-setup script that configures a brand-new EC2 instance the moment it launches, with zero manual work.
+Friends, yesterday we covered EFS and a few basic file/folder commands. Today we go further on the Linux side — installing packages, controlling services, and editing files with `vim` — by using all of it together to stand up a real web server by hand. Then the two big AWS topics: **Load Balancers** — how AWS spreads traffic across many servers instead of just one — and **User Data** — the auto-setup script that configures a brand-new EC2 instance the moment it launches, with zero manual work.
 
 ---
 
-## 1. Quick recap — setting up a web server (practiced again today)
+## 1. Setting up a web server by hand — `yum`, `systemctl`, `vim`, `cat`
 
-Same commands from yesterday, practiced once more: `touch`/`mkdir`/`ll`/`ls`/`cd` for files and folders, `vim fname` to edit (`i` for Insert mode, `Esc` then `:wq!` to save and quit), `cat fname` to read a file, `yum install pkg-name` to install software, and `systemctl start/stop/status/restart/enable service.name` to control a service — with `httpd` (Apache) and `vim /var/www/html/index.html` as the running example.
+- **`yum install pkg-name`** — installs a package using the `yum` package manager (RHEL/Amazon Linux). Example: `sudo yum install httpd -y` installs Apache.
+- **`systemctl start service.name`** — starts a service right now. Example: `sudo systemctl start httpd`.
+- **`systemctl stop service.name`** — stops a running service.
+- **`systemctl status service.name`** — checks whether a service is currently running, and shows its recent activity.
+- **`systemctl restart service.name`** — stops and starts a service again, typically after a config change.
+- **`systemctl enable service.name`** — makes the service start automatically on every future reboot. This is separate from `start`, which only starts it *right now*.
+- **`vim fname`** — opens (or creates) a file in the `vim` editor. Press `i` to enter **Insert mode** and start typing; press `Esc` then type `:wq!` to save and force-quit.
+- **`cat fname`** — prints a file's contents to the screen, to quickly confirm what you just saved.
+
+**Real-time example — installing and running a web server, end to end:**
+```
+sudo yum install httpd -y
+sudo systemctl start httpd
+sudo systemctl status httpd
+sudo systemctl enable httpd
+vim /var/www/html/index.html
+```
+`yum install` gets Apache (`httpd`) onto the server, `systemctl start` runs it right now, `status` confirms it's actually up, and `enable` makes sure it comes back automatically if the server ever reboots. `vim /var/www/html/index.html` is where you'd write the actual page Apache serves — this exact sequence is the standard, by-hand way any Linux web server gets installed, configured, and kept running.
+
+**Easy memory trick:** `systemctl start` → "run it now." `systemctl enable` → "and keep running it, forever, even after a reboot."
 
 ---
 
@@ -200,7 +219,7 @@ Notice there's no `sudo` in front of any command here — User Data itself alrea
 
 **Simple meaning:** User Data = an "auto-setup script" for your EC2. The moment the instance starts, AWS runs your script automatically, so you don't configure the server by hand.
 
-**Real-time example — tying today and yesterday together:** A Launch Template (from yesterday) can include this exact User Data script. An Auto Scaling Group referencing that template, sitting behind an ALB, means every time traffic spikes and a new instance gets created, it launches, installs and starts `httpd`, and is registered as healthy in the target group — completely hands-off, from "traffic went up" to "new server serving requests," with nobody touching a keyboard.
+**Real-time example — tying today's two topics together:** When you launch an EC2 instance, you can paste this exact script into the **User Data** field during setup. Combined with an ALB and Target Group in front of it, every new instance launches, installs and starts `httpd` on its own, and gets registered as healthy — completely hands-off, from "instance launched" to "serving requests," with nobody logging in to configure it by hand.
 
 **Easy memory trick:** User Data → what the server does to itself, automatically, the very first time it wakes up.
 
@@ -210,6 +229,9 @@ Notice there's no `sudo` in front of any command here — User Data itself alrea
 
 | Command / Concept | One-line meaning | Real-time (DevOps) example |
 |---|---|---|
+| `yum install pkg -y` | Install a package | Installing `httpd`, `java`, `git`, etc. |
+| `systemctl start/status/enable service` | Run a service now / check it / keep it running after reboot | Standing up and persisting a web server like `httpd` |
+| `vim fname` | Edit a file interactively | Writing `index.html` on a web server |
 | Load Balancer | Spreads traffic across multiple EC2 instances | Removing a single point of failure from a web app |
 | ALB (Layer 7) | HTTP/HTTPS-aware load balancing | Path/host-based routing for web apps and APIs |
 | NLB (Layer 4) | Fast TCP/UDP load balancing | Gaming, real-time, high-throughput workloads |
@@ -217,4 +239,3 @@ Notice there's no `sudo` in front of any command here — User Data itself alrea
 | Target Group | Where the load balancer actually sends traffic | Health checks automatically pull an unhealthy server out of rotation |
 | Health check (`/health`, interval, threshold) | Confirms a target is actually working | Detecting and removing a crashed instance from traffic |
 | User Data | Auto-setup script run on an EC2's first boot | Installing and starting `httpd` with zero manual login |
-| Launch Template + User Data + ASG | Fully automated, self-healing server fleet | New instances during a traffic spike come up pre-configured and ready |

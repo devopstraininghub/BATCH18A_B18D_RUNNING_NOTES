@@ -1,8 +1,8 @@
 # Batch 18 — AWS Cloud Running Notes: 3 September 2026
 
-**Topic: NFS & Amazon EFS (Elastic File System), EFS Lifecycle Policies, Mount Targets, A Few More Linux Commands (`yum`, `systemctl`, `vim`), Custom AMIs**
+**Topic: NFS & Amazon EFS (Elastic File System), EFS Lifecycle Policies, Mount Targets, A Few More Linux Commands**
 
-Friends, yesterday we worked with EBS — storage attached to **one** server at a time. Today we look at **EFS**, storage that many servers can share **at the same time**, how it's different from EBS, a few more everyday Linux commands (installing packages, managing services, using `vim`), and finally **Custom AMIs** — the "save a server as a template" trick that makes launching new, pre-configured servers fast and consistent.
+Friends, yesterday we worked with EBS — storage attached to **one** server at a time. Today we look at **EFS**, storage that many servers can share **at the same time**, how it's different from EBS, and a few more everyday Linux file/folder commands.
 
 ---
 
@@ -165,112 +165,6 @@ EC2 Instance → Mount Target (same AZ) → EFS File System
 - **`ll`** / **`ls`** — list the contents of the current folder (`ll` = long format, with permissions/owner/size).
 - **`cd dir1`** — moves into `dir1`.
 - **`cd ..`** — moves up one level, to the parent folder.
-- **`yum install pkg-name`** — installs a package using the `yum` package manager (RHEL/Amazon Linux).
-- **`systemctl start/stop/status/restart service.name`** — controls a background service: `start` it, `stop` it, check its `status`, or `restart` it after a config change.
-- **`systemctl enable service.name`** — makes the service start automatically on every future reboot (separate from `start`, which only starts it *right now*).
-- **`vim fname`** — opens (or creates) a file in the `vim` editor. Press `i` to enter **Insert mode** and start typing; press `Esc` then type `:wq!` to save and force-quit.
-- **`cat fname`** — prints a file's contents to the screen.
-
-**Real-time example — installing and running a web server:**
-```
-sudo yum install httpd -y
-sudo systemctl start httpd
-sudo systemctl enable httpd
-```
-`yum install` gets Apache (`httpd`) onto the server, `systemctl start` runs it right now, and `systemctl enable` makes sure it comes back up automatically if the server ever reboots — this exact three-line sequence is the standard way any Linux service gets installed and kept running in production.
-
-**Easy memory trick:** `systemctl start` → "run it now." `systemctl enable` → "and keep running it, forever, even after a reboot."
-
----
-
-## 11. Custom AMI (Amazon Machine Image)
-
-- **AMI** = **A**mazon **M**achine **I**mage — a pre-configured template used to launch an EC2 instance.
-- An AMI contains: the operating system, pre-installed software, settings/configurations, and an EBS snapshot of the root volume.
-- Launching an EC2 instance = using an AMI as the blueprint.
-
-**What an AMI is made of:**
-- **Root volume** — contains the operating system, application server, and application software.
-- **Block device mapping** — defines which EBS volumes get attached to the instance when it launches from this AMI.
-
-**Types of AMIs — two ways they're commonly grouped:**
-
-By **source**:
-- **AWS-provided AMIs** — Amazon Linux, Ubuntu, Windows, RedHat.
-- **Marketplace AMIs** — provided by third-party vendors (Nginx, Jenkins, Fortinet, etc.).
-- **Custom AMIs** — your own configuration and setup, saved by you.
-
-By **visibility**:
-- **Public AMIs** — created by AWS or the AWS community, available for anyone to use. Common for standard operating systems/applications.
-- **Private AMIs** — created and managed by an individual AWS account, restricted to that account (unless deliberately shared).
-
-⚠️ **Security consideration:** be cautious using public AMIs from unknown sources — they may not follow good security practices. Whichever AMI you use, keep it regularly updated and patched.
-
-**Why create a Custom AMI?**
-- **Faster launch times** — install Java, Tomcat, Python, and your app code once, take a snapshot to create an AMI, and every future EC2 launched from it is ready in seconds.
-- **Standardization** — every server launched from the same AMI has identical OS, packages, and versions.
-- **Disaster recovery** — if an instance crashes, launch a fresh replacement straight from the AMI.
-- **Auto Scaling Groups** — ASGs need a custom AMI to rapidly create new, identical instances during a traffic spike.
-- **Pre-configured security hardening** — OS patches, firewall rules, and required packages are already baked in.
-- **Golden Image pattern** — companies maintain one official, secure, prebuilt "Golden AMI" that every new server gets launched from — an industry-standard practice.
-
-**Real DevOps use cases:**
-- Auto Scaling launch templates.
-- Preinstalled Jenkins/Java/Nginx/httpd on EC2.
-- Baking application code into the AMI (using a tool like Packer).
-- Creating golden images for production.
-- Backup of critical servers.
-
-**AMI lifecycle — what you can do with one:**
-- **Copy across Regions** — launch identical instances in a different geographic location.
-- **Version it** — track changes and updates over time.
-- **Share it** — with other AWS accounts, either publicly or privately.
-
-**Interview one-liner:** An AMI is a machine template used to launch EC2 instances. Custom AMIs let you pre-install software, apply configurations, and create standardized, fast, production-ready server deployments.
-
-**Easy memory trick:** AMI → a frozen, ready-to-launch copy of a fully set-up server.
-
-### Hands-on walkthrough — build a Custom AMI end to end
-
-This is the exact flow practiced in class, tying everything together:
-
-1. **Launch an EC2 instance** (Console: EC2 dashboard → "Launch Instance" → pick an Amazon Linux/Ubuntu AMI → `t2.micro` → select a key pair → in the Security Group, allow **HTTP, port 80** since a web server is coming → Launch).
-2. **Install and configure a web server on it:**
-   ```
-   sudo yum update -y
-   sudo yum install httpd -y
-   sudo systemctl start httpd
-   sudo systemctl status httpd
-   sudo systemctl enable httpd
-   cd /var/www/html
-   sudo vim index.html
-   ```
-   Write a small sample page inside `index.html`, save with `:wq`, then open the instance's **public IP** in a browser (`http://<public-ip>`) to confirm the page loads — port 80 is the default for plain HTTP, so no `:port` needed in the URL.
-3. **Create an AMI from this now-configured instance:** EC2 dashboard → "Instances" → select it → "Actions" → "Image and templates" → "Create Image" → give it a clear name/description → "Create Image." AMIs can be created from an instance whether it's **running or stopped**.
-4. **Launch a brand-new instance from that AMI:** "Launch Instance" → "My AMIs" tab → pick the one just created → choose instance type, security group, key pair as usual → Launch.
-5. **Verify:** connect to this new instance and confirm `httpd` and your `index.html` are already there, untouched — everything from the original server came along automatically, because it was baked into the AMI.
-
-**Real-time example:** This is precisely how a company builds its "Golden AMI" for a web tier — configure one server exactly right, freeze it as an AMI, and every future server (manually launched, or by an Auto Scaling Group during a traffic spike) starts up already fully configured, in seconds, with zero manual setup repeated.
-
----
-
-## 12. AWS Launch Template
-
-- A **Launch Template** is a saved set of instance-launch parameters — AMI, instance type, key pair, security groups, and more — bundled together under one name.
-- Instead of re-entering all these settings by hand every time, you create the template once and just **reference it** whenever you need to launch a matching instance.
-
-**Key features:**
-- **Versioning** — create and manage multiple versions of the same template as your standard configuration evolves.
-- Specifies full instance details: AMI, instance type, key pair, block device mappings, network interfaces, and more.
-
-**Use cases:**
-- **Standardization** — every instance launched from the template has the same configuration.
-- **Easy maintenance** — update settings in one place (the template) instead of every individual launch.
-- **Scalability** — Launch Templates are what **EC2 Auto Scaling** and **EC2 Fleet** use to rapidly create new instances on demand.
-
-**Real-time example:** A team defines a Launch Template pointing at their Golden AMI, `t2.micro`, and the correct security group — their Auto Scaling Group references that template, so whenever traffic spikes and new instances are needed, they come up with the exact right configuration automatically, no one manually re-picking settings under pressure.
-
-**Easy memory trick:** AMI → what to launch (the server image). Launch Template → how to launch it (all the settings bundled together).
 
 ---
 
@@ -283,9 +177,5 @@ This is the exact flow practiced in class, tying everything together:
 | `mount -t nfs4 <dns>:/ /mnt/efs` | Mount an EFS file system on an EC2 instance | Making shared storage usable on a server |
 | EFS lifecycle policy | Auto-moves files between Standard/IA/Archive | Cutting storage cost on old, rarely-accessed files |
 | Mount Target | EFS's access point inside one subnet/AZ | One per AZ, required for EC2 in that AZ to reach EFS |
-| `yum install pkg -y` | Install a package | Installing `httpd`, `java`, `git`, etc. |
-| `systemctl start/enable service` | Run a service now / keep it running after reboot | Standing up and persisting a web server like `httpd` |
-| `vim fname` | Edit a file interactively | Hand-editing a config file on a server |
-| AMI (Amazon Machine Image) | A reusable template for launching EC2s | Auto Scaling Groups launching identical new servers instantly |
-| Custom / Golden AMI | Your own pre-configured, saved server image | Standardized, fast, production-ready deployments company-wide |
-| Launch Template | A saved bundle of launch settings (AMI, type, keys, SG) | What an Auto Scaling Group references to launch new instances |
+| `touch` / `mkdir` | Create empty files / new folders | Basic setup before writing or organizing anything on a server |
+| `ll` / `ls` / `cd` / `cd ..` | List contents / move between folders | Everyday navigation on any Linux server |
