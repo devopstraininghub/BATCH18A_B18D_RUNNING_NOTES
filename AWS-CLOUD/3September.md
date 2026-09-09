@@ -41,21 +41,36 @@ Friends, yesterday we worked with EBS — storage attached to **one** server at 
 
 ---
 
-## 4. How to configure EFS — simple steps
+## 4. How to configure EFS
 
-1. **Create EFS** — choose a VPC, select Availability Zones.
-2. **Create Mount Targets** — one mount target per AZ, attach security groups.
-3. **Configure Security Group** — allow NFS port `2049`, allow traffic from your EC2 instances.
-4. **Launch EC2** in the same VPC.
-5. **Mount EFS on EC2:**
-   ```
-   sudo mount -t nfs4 <efs-dns-name>:/ /mnt/efs
-   ```
-6. **Use it like a normal directory** — files written here are shared across every EC2 instance that has it mounted.
+**In the AWS Console:**
+1. EFS dashboard → **"Create file system."**
+2. Configure file system settings:
+   - **Name** — a descriptive name.
+   - **VPC** — which VPC this file system belongs to.
+   - **Lifecycle management** — pick the storage classes/policy (section 8 below).
+3. Optional settings — encryption, tags, performance mode.
+4. **Network settings** — security groups and subnets (this is where mount targets get created — see section 9).
+5. Review → **"Create file system."** Takes a few minutes to become available.
+
+**On each EC2 instance — mounting EFS the recommended way:**
+```
+sudo yum install -y amazon-efs-utils
+sudo mkdir efs
+sudo mount -t efs -o tls fs-097d6a8288a8afd46:/ efs
+```
+- **`amazon-efs-utils`** — AWS's own EFS helper package; installing it first gives you the `efs` mount type and extra options (like `tls`) that a plain `mount` command doesn't have on its own.
+- **`-t efs -o tls`** — mounts using the `efs` type with **TLS encryption in transit** enabled — the recommended, more secure way to mount, versus a bare NFS mount.
+- `fs-097d6a8288a8afd46` is the EFS file system's ID.
+
+A plain NFS mount also works, without the `efs-utils` package, if you have the file system's DNS name instead of its ID:
+```
+sudo mount -t nfs4 <efs-dns-name>:/ /mnt/efs
+```
 
 **Real-time example:** A team running the same web application on 3 EC2 instances behind a load balancer mounts the same EFS at `/mnt/uploads` on all three — a file uploaded by a user, no matter which server handled that request, is instantly visible to the other two as well.
 
-**Easy memory trick:** EFS mount looks just like an EBS mount, except the "disk" (`<efs-dns-name>:/`) is shared across many servers, not owned by just one.
+**Easy memory trick:** EFS mount looks just like an EBS mount, except the "disk" (the EFS ID or DNS name) is shared across many servers, not owned by just one.
 
 ---
 
@@ -67,6 +82,14 @@ Friends, yesterday we worked with EBS — storage attached to **one** server at 
 - Highly durable.
 - Shared file access across many EC2 instances at once.
 - Pay only for the storage actually used.
+- Uses the **NFS protocol**, so it's compatible with a wide range of applications/tools that already support NFS.
+- Integrates with EC2, AWS Lambda, Amazon ECS, and more.
+
+**Performance modes — two options when creating a file system:**
+- **General Purpose** — suitable for a wide variety of workloads. The default, and what most use cases need.
+- **Max I/O** — optimized for high-performance, latency-sensitive workloads, at the cost of slightly higher per-operation latency for typical use.
+
+**Easy memory trick:** General Purpose → the right choice almost always. Max I/O → only for genuinely I/O-heavy workloads.
 
 ---
 
@@ -174,7 +197,8 @@ EC2 Instance → Mount Target (same AZ) → EFS File System
 |---|---|---|
 | NFS (port 2049) | Protocol for sharing files over a network | The technology underneath EFS |
 | EFS | Managed, shared file storage — many EC2s at once | Shared uploads folder across web servers behind a load balancer |
-| `mount -t nfs4 <dns>:/ /mnt/efs` | Mount an EFS file system on an EC2 instance | Making shared storage usable on a server |
+| `mount -t efs -o tls fs-id:/ efs` | Mount an EFS file system, with TLS in transit | Making shared storage usable on a server, the recommended way |
+| Performance mode (General Purpose / Max I/O) | Chosen when creating the file system | General Purpose for almost everything; Max I/O only for heavy, latency-sensitive I/O |
 | EFS lifecycle policy | Auto-moves files between Standard/IA/Archive | Cutting storage cost on old, rarely-accessed files |
 | Mount Target | EFS's access point inside one subnet/AZ | One per AZ, required for EC2 in that AZ to reach EFS |
 | `touch` / `mkdir` | Create empty files / new folders | Basic setup before writing or organizing anything on a server |
