@@ -1546,3 +1546,215 @@ SNS:
 
     
 =========================================================
+
+DATE: 9 SEP 2026
+
+AWS NETWORKING - VPC 
+
+
+9 SEP 26 :
+
+    PHYSICAL SERVER
+    --------------------------------------------------
+        • A real hardware machine.
+        • CPU, RAM, Storage installed directly.
+        • Runs one operating system.
+        • Limited scalability and very expensive to maintain.
+		- May lead to less resource utilization
+
+
+    VMWARE (VIRTUALIZATION)
+    --------------------------------------------------
+          Provides virtualization software.
+        • Multiple virtual machines run on one physical server.
+        • Each VM has its own OS and apps.
+        • Better resource usage than physical servers.
+        • Still managed by you (on-premise).
+
+
+    CLOUD
+    --------------------------------------------------
+        • Computers (servers) available over the internet.
+        • You don’t manage hardware; cloud provider manages it.
+        • Pay only for what you use.
+        • Scalable, reliable, global.
+
+
+==============================================================================
+    PUBLIC CLOUD
+    --------------------------------------------------
+        • Cloud owned by a provider (AWS, Azure, GCP).
+        • You rent servers from them.
+        • Shared infrastructure with isolation.
+        • Most common and cost-effective.
+
+
+    PRIVATE CLOUD
+    --------------------------------------------------
+        • Cloud infrastructure dedicated to ONE organization.
+        • Hosted in your data center or fully isolated environment.
+        • More control, more security, more cost.
+
+
+    VIRTUAL PRIVATE CLOUD (VPC)
+    --------------------------------------------------
+        • A private network inside the public cloud.
+        • Your own isolated section of AWS/Azure/GCP.
+        • You control:
+              - IP ranges
+              - Subnets
+              - Routing
+              - Security groups
+              - Firewalls
+        • Like having your own private data center inside the cloud.
+
+
+    SIMPLE SUMMARY
+    --------------------------------------------------
+        Physical Server     → One big hardware machine  
+        VMware Virtualization → Many VMs on one physical server  
+        Cloud               → Servers delivered over the internet  
+        Public Cloud        → Shared platform for everyone  
+        Private Cloud       → Cloud dedicated to one company  
+        VPC                 → Your private network inside public cloud  
+		
+		
+------------------------------------
+    WHAT IS A VPC?
+
+    --------------------------------------------------
+    VPC = Virtual Private Cloud
+    --------------------------------------------------
+
+        • A VPC is your own private network inside 
+          Amazon Web Services (AWS).
+        • You fully control:
+              - IP ranges
+              - Subnets
+              - Routing
+              - Firewalls (SG + NACL)
+        • Think of it as your own data center inside AWS.
+
+
+    WHAT ARE SUBNETS?
+
+    --------------------------------------------------
+        • Subnets are smaller network segments inside a VPC.
+        • Two main types:
+              - Public Subnet  → Has internet access
+              - Private Subnet → No direct internet access
+        • You usually create:
+              - Public subnet (for ALB, Bastion/jump server )
+              - Private subnet (for EC2, DB)
+
+
+    WHAT IS AN INTERNET GATEWAY (IGW)?
+
+    --------------------------------------------------
+        • IGW allows your VPC to connect to the internet.
+        • Without an IGW, nothing inside the VPC
+          can access the internet.
+        • Only public subnets can use IGW.
+
+
+    WHAT IS A ROUTE TABLE?
+
+    --------------------------------------------------
+        • A route table decides where network traffic should go.
+        • Each subnet must be associated with a route table.
+
+        Example routes:
+            10.0.0.0/16 → local    (VPC internal traffic)
+            0.0.0.0/0   → igw-id   (internet traffic via IGW)
+
+        Public Subnet Route Table:
+            Has 0.0.0.0/0 → IGW
+
+        Private Subnet Route Table:
+            No IGW route  
+            May have route to NAT Gateway for outgoing traffic
+
+
+    HOW WE CONFIGURE A VPC (SIMPLE STEPS)
+
+    --------------------------------------------------
+        1. Create VPC
+              Example: CIDR = 10.81.0.0/16
+
+        2. Create Subnets
+              - 10.81.1.0/24 (public)
+              - 10.81.2.0/24 (private)
+              - Spread across multiple AZs
+
+        3. Create Internet Gateway (IGW)
+              - Attach it to the VPC
+
+        4. Create Route Tables
+              - Public RT: Add 0.0.0.0/0 → IGW
+              - Private RT: No internet route
+
+        5. Associate Subnets with Route Tables
+              - Public subnets → Public RT
+              - Private subnets → Private RT
+
+        Optional:
+        6. Add NAT Gateway (for private subnet outbound internet)
+        7. Add Security Groups & NACLs
+        8. Launch EC2 instances in correct subnets
+
+
+    SIMPLE SUMMARY
+
+    --------------------------------------------------
+        VPC        → Your private network in AWS  
+        Subnet     → Smaller network inside VPC  
+        IGW        → Allows internet access  
+        Route Table→ Controls where traffic goes  
+        Setup      → Create VPC → Subnets → IGW → Routes → Associate  
+		
+
+==================================================
+
+What is CIDR ? 
+
+  CIDR --> 10.81.0.0/16
+  
+  10.81.0.0
+  
+  1 BYTE - 8 BITS 
+  
+  4 BYTES --- 32 bits 
+  
+  10.81.0.0 /16
+  
+  
+  10.81.0.0
+  10.81.0.1
+  10.81.0.2
+  10.81.0.3  .......... 10.81.0.255
+  
+ only 251 available out of 256
+  
+  
+10.81.1.0/24  --> 256
+
+  10.81.1.0
+  10.81.1.1
+  10.81.1.2
+  10.81.1.3  ..........   10.81.1.255
+	
+  10.81.2.0
+  10.81.2.1 .........     10.81.2.255 
+  
+  -----
+  -----
+  -----
+  
+  10.81.255.0
+  10.81.255.1
+  10.81.255.2  ........   10.81.255.255
+  
+  
+  256 * 256 -- > 65536 --> 65k + Ips 
+
+--------------------------------------------
