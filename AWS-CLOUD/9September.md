@@ -6,7 +6,34 @@ Friends, today is AWS networking day. We build a **VPC** — your own private, i
 
 ---
 
-## 1. What is a VPC?
+## 1. From physical servers to VPC — the big picture
+
+Before jumping into VPC itself, it helps to see where it fits in the bigger evolution of "where does my server actually live":
+
+- **Physical server** — a real hardware machine. CPU, RAM, storage installed directly. Runs one operating system. Limited scalability, expensive to maintain, and often leads to poor resource utilization (a lot of unused capacity sitting idle).
+- **VMware (virtualization)** — virtualization software lets **multiple virtual machines** run on **one** physical server, each with its own OS and apps. Much better resource usage than a physical server — but you (or your company) still manage all of it yourself, on-premises.
+- **Cloud** — servers made available over the internet. You don't manage the hardware at all; the cloud provider does. You pay only for what you use, and it scales, is reliable, and is available globally.
+
+**Public Cloud vs Private Cloud vs VPC:**
+- **Public Cloud** — owned by a provider (AWS, Azure, GCP). You rent servers from them, on shared infrastructure with isolation between customers. The most common, cost-effective option.
+- **Private Cloud** — cloud infrastructure dedicated to **one** organization only, usually hosted in their own data center. More control and security, but more cost.
+- **VPC (Virtual Private Cloud)** — your **own private network carved out inside** a public cloud. You get the cost-effectiveness of public cloud, but with your own isolated section of it — like having your own private data center inside AWS.
+
+**Simple summary:**
+```
+Physical Server         → One big hardware machine
+VMware Virtualization   → Many VMs on one physical server
+Cloud                   → Servers delivered over the internet
+Public Cloud            → Shared platform for everyone
+Private Cloud           → Cloud dedicated to one company
+VPC                     → Your private network inside a public cloud
+```
+
+**Easy memory trick:** each step trades away a little control for a lot less hassle — until VPC hands some of that control back, without giving up the cloud's convenience.
+
+---
+
+## 2. What is a VPC?
 
 - **VPC** = **V**irtual **P**rivate **C**loud.
 - Your own private, isolated network inside AWS.
@@ -20,7 +47,7 @@ Friends, today is AWS networking day. We build a **VPC** — your own private, i
 
 ---
 
-## 2. VPC components — quick overview
+## 3. VPC components — quick overview
 
 | Component | What it does |
 |---|---|
@@ -38,7 +65,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 3. Subnets — public vs private
+## 4. Subnets — public vs private
 
 - A **subnet** is a smaller network segment inside a VPC.
 - **Public subnet** — has a route to the internet (via the IGW). Used for things like an ALB, or a "jump server" (bastion host).
@@ -48,7 +75,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 4. Internet Gateway (IGW)
+## 5. Internet Gateway (IGW)
 
 - An **IGW** lets instances in your VPC reach the internet — and be reached from it.
 - Without an IGW, **nothing** inside the VPC can access the internet.
@@ -56,7 +83,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 5. Route Tables
+## 6. Route Tables
 
 - A **Route Table** decides where a subnet's network traffic is allowed to go.
 - Every subnet must be associated with one route table.
@@ -74,7 +101,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 6. CIDR — how IP ranges are sized
+## 7. CIDR — how IP ranges are sized
 
 - An IPv4 address like `10.81.0.0` is 4 numbers ("octets"), each 1 byte (8 bits) — 32 bits total.
 - **CIDR notation** (e.g. `/16`, `/24`) tells you how many of those 32 bits are "fixed," and how many are free to vary — which decides how many addresses you get.
@@ -90,7 +117,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 7. How to set up a VPC
+## 8. How to set up a VPC
 
 1. **Create the VPC** — e.g. CIDR `10.81.0.0/16`.
 2. **Create subnets** — one public + one private per Availability Zone, e.g. `10.81.1.0/24` (public), `10.81.2.0/24` (private).
@@ -102,7 +129,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 8. Launching instances in public vs private subnets, and reaching a private one
+## 9. Launching instances in public vs private subnets, and reaching a private one
 
 - **Public instance:** launch normally, choose the VPC and the **public** subnet, and allow SSH (port 22) plus whatever app port you need in the Security Group. It's directly reachable from the internet.
 - **Private instance:** same, but choose the **private** subnet. It has no route to the internet, so you can't SSH into it directly from your laptop.
@@ -118,7 +145,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 9. VPC Peering
+## 10. VPC Peering
 
 - **VPC Peering** connects two VPCs (same or different Regions, same or different AWS accounts) over a direct, private network route.
 - Lets instances in both VPCs talk to each other using **private IP addresses**.
@@ -141,7 +168,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 10. Elastic IP (EIP)
+## 11. Elastic IP (EIP)
 
 - An **Elastic IP** is a static (fixed) public IPv4 address, tied to your **AWS account**, not to any one instance.
 - Once allocated, it stays yours until you explicitly release it.
@@ -158,7 +185,7 @@ We'll go deep on Subnets, Route Tables, IGW, CIDR, VPC Peering, Elastic IP, and 
 
 ---
 
-## 11. Network ACLs (NACLs)
+## 12. Network ACLs (NACLs)
 
 - A **NACL** is a firewall at the **subnet** level (Security Groups are at the **instance** level).
 - **Stateless** — unlike a Security Group, a NACL doesn't automatically allow the return traffic of something it let in; you need a matching rule on the outbound side too.
