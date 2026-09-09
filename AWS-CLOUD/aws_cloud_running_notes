@@ -1105,55 +1105,444 @@ WHAT IS A LOAD BALANCER?
   
 
 
-====================================================================
-    WHAT IS USER DATA IN AWS?
+
+====================================================
+DATE: 7 SEP 2026
+
+CUSTOM AMI:
+
+CUSTOM AMI :
+
+  DATA
+  PACKAGE 
+  SERVICES /APPLICATION 
 
 
-        User Data is a script that runs automatically
-        when an EC2 instance launches in
-
-        It is used to automate initial server setup.
-
-    --------------------------------------------------
-    WHAT USER DATA CAN DO?
-    --------------------------------------------------
-
-        • Install software (Apache, Nginx, Java, Python)
-        • Update packages
-        • Create files or directories
-        • Configure applications
-        • Start services
-        • Download code from GitHub/S3
-        • Set environment variables
+    WHAT IS AN AMI IN AWS?
 
     --------------------------------------------------
-    COMMON USER DATA SCRIPT (LINUX)
-    --------------------------------------------------
-#!/bin/bash
-
-yum update -y
-yum install -y httpd
-systemctl enable httpd
-systemctl start httpd
-echo "THIS IS SAMPLE FACEBOOK PAGE" > /var/www/html/index.html
-
-    --------------------------------------------------
-    IMPORTANT POINTS
+    OVERVIEW
     --------------------------------------------------
 
-        • Runs only on FIRST boot (unless configured otherwise)
-        • Runs as root user
-        • Stored in the EC2 instance metadata
-        • Helps automate server provisioning
+        AMI stands for Amazon Machine Image.
+        It is a pre-configured template used to launch
+  
+
+        An AMI contains:
+            • Operating system (Linux/Windows)
+            • Pre-installed software
+            • Settings and configurations
+            • EBS snapshot of the root volume
+
+        Launching an EC2 = Using an AMI as the blueprint.
 
 
-        User Data = "Auto-setup script" for your EC2.
+    --------------------------------------------------
+    TYPES OF AMIs
+    --------------------------------------------------
 
-        When the instance starts,
-        AWS runs your script automatically,
-        so you don't need to configure the server manually.
+        1) AWS-provided AMIs
+            - Amazon Linux, Ubuntu, Windows, RedHat
+
+        2) Marketplace AMIs
+            - Vendor provided (Nginx, Jenkins, Fortinet)
+
+        3) Custom AMIs (created by you)
+            - Your own configuration and setup
+
+
+    --------------------------------------------------
+    WHY DO WE NEED CUSTOM AMIs?
+    --------------------------------------------------
+
+        Custom AMIs are required when you want *your own*
+        pre-configured server template.
+
+        Reasons to create a custom AMI:
+
+        1) Faster Launch Times
+            - Example:
+                You install Java, Tomcat, Python, app code.
+                Taking a snapshot → creates an AMI.
+                Now launching new EC2 takes seconds.
+
+        2) Standardization
+            - Every server launched from this AMI
+              has the same OS, packages, versions.
+
+        3) Disaster Recovery
+            - If an instance crashes,
+              launch a new instance from the AMI.
+
+        4) Auto Scaling Groups
+            - ASGs require custom AMIs for apps.
+            - They rapidly create new instances during traffic spikes.
+
+        5) Pre-configured Security Hardening
+            - OS patches, firewall rules, packages already applied.
+
+        6) Golden Image Pattern (Industry Standard)
+            - Companies maintain a “Golden AMI”
+            - This is the official, secure, prebuilt server image.
+
+
+    --------------------------------------------------
+    REAL DEVOPS USE CASES
+    --------------------------------------------------
+
+        • Auto Scaling launch templates
+        • Preinstalled Jenkins/Java/Nginx/httpd on EC2
+        • Baking application code into the AMI (Packer)
+        • Creating golden images for production
+        • Backup of critical servers
+
+
+    --------------------------------------------------
+    INTERVIEW ONE-LINER
+    --------------------------------------------------
+
+        AMI is a machine template used to launch EC2 instances.
+        Custom AMIs allow us to pre-install software, apply
+        configurations, and create standardized, fast, and
+        production-ready server deployments.
+
+
+=======================================================================
+
+LAUNCH TEMPLATE 
+
+    WHAT ARE LAUNCH TEMPLATES IN AWS?
+
+    --------------------------------------------------
+    OVERVIEW
+    --------------------------------------------------
+
+        A Launch Template is a reusable configuration
+        that defines how an EC2 instance should be launched
+
+        Instead of manually selecting:
+            • AMI
+            • Instance type
+            • Security groups
+            • Key pair
+            • Storage (EBS)
+            • User data script
+            • Networking settings
+
+        You store everything in a template and reuse it.
+
+
+    --------------------------------------------------
+    WHY LAUNCH TEMPLATES ARE NEEDED
+    --------------------------------------------------
+
+        They solve a big problem:
+        launching large numbers of EC2 instances consistently.
+
+        Benefits:
+
+        1) Standardization
+            - Every instance launched uses identical settings.
+
+        2) Reusability
+            - Same template can be used for:
+                • EC2
+                • Auto Scaling Groups
+
+
+        3) Versioning
+            - You can store multiple versions.
+            - Example:
+                  v1 → Java 8
+                  v2 → Java 11
+                  v3 → Java 17
+
+        4) Automation Ready
+            - Used in CI/CD pipelines
+            - Required by Auto Scaling Groups (ASG)
+
+        5) Faster Launching
+            - Everything preconfigured
+            - Reduces human error
+
+
+    --------------------------------------------------
+    WHAT CAN YOU STORE IN A LAUNCH TEMPLATE?
+    --------------------------------------------------
+
+        • AMI ID
+        • Instance type
+        • Key pair
+        • Security groups
+        • EBS volumes
+        • IAM roles
+        • User data script
+        • Networking (subnets, interfaces)
+        • Tags
+        • Shutdown behavior
+        • Monitoring settings
+
+
+    --------------------------------------------------
+    HOW THEY ARE USED IN REAL DEVOPS PROJECTS
+    --------------------------------------------------
+
+        • Auto Scaling Groups (mandatory)
+        • Rolling deployments
+        • Blue/Green deployments
+        • Launching identical EC2 instances
+        • Spot fleets using the same configuration
+        • Jenkins pipelines launching EC2 dynamically
+        • Terraform provisioning EC2 using templates
+
+
+    --------------------------------------------------
+    INTERVIEW ONE-LINER
+    --------------------------------------------------
+
+        A Launch Template is a reusable configuration
+        for launching EC2 instances. It stores AMI,
+        instance type, networking, storage, and user data,
+        and is mainly used for Auto Scaling, Spot fleets,
+        and consistent server deployments.
+
+
+=================================================================================================
 
 
 
 
-===================================================================================================
+DATE: 8 SEP 2026
+
+AWS AUTO SCACLING GROUPS (ASG) –
+
+  
+ASG & SNS 
+
+
+SNS:
+    WHAT IS SNS IN AWS?
+
+    --------------------------------------------------
+    SIMPLE DEFINITION
+    --------------------------------------------------
+
+        Amazon SNS (Simple Notification Service) is a
+        message delivery and notification service in
+
+
+        It sends messages to people or systems instantly.
+
+    --------------------------------------------------
+    WHAT CAN SNS DO?
+    --------------------------------------------------
+
+        • Send alerts or notifications  
+        • Send messages to email or SMS  
+        • Trigger Lambda functions  
+        • Notify other AWS services  
+        • Push messages to mobile apps  
+
+   
+        It is something like  A broadcast system that delivers the same message
+            to many subscribers at the same time.
+
+    --------------------------------------------------
+    WHAT IS AN SNS TOPIC?
+    --------------------------------------------------
+
+        A Topic is a channel where messages are published.
+
+        Example:
+            Topic Name → "HighCPUAlerts"
+
+        You publish one message → all subscribers receive it.
+
+        A topic is like a WhatsApp group:
+            You send one message,
+            everyone in the group gets it.
+
+    --------------------------------------------------
+    WHAT IS A SUBSCRIPTION?
+    --------------------------------------------------
+
+        A subscription is where the topic sends messages.
+
+        You can subscribe:
+            • Email
+            • SMS
+            • Lambda
+            • SQS
+            • HTTP endpoint
+            • Mobile push
+
+        Example:
+            Topic: "Server-Alerts"
+            Subscriptions:
+                - devops-team@gmail.com
+                - +91-9000000000 (SMS)
+                - A Lambda function
+
+        When the topic receives a message,
+        all subscribers get the notification.
+
+
+----------------------------------------
+
+        SNS = Messaging or notification system  
+        Topic = Message channel  
+        Subscription = Delivery target (email/SMS/Lambda/etc.)  
+
+        Publish once → Delivered to many.
+
+
+========================================
+
+    WHAT IS AN AUTO SCALING GROUP (ASG)?
+
+    --------------------------------------------------
+    SIMPLE DEFINITION
+    --------------------------------------------------
+
+        An Auto Scaling Group (ASG) is something  which  automatically adds or removes EC2 instances
+        based on load, traffic, or health.
+
+        Meaning:
+            - When load increases → ASG adds servers --- Scale out 
+            - When load decreases → ASG removes servers  --- Scale In 
+            - If a server fails → ASG replaces it automatically
+
+
+    --------------------------------------------------
+    WHY ASG IS USED?
+    --------------------------------------------------
+
+        • Handles traffic spikes automatically  
+        • Maintains high availability  
+        • Keeps a minimum number of servers running  
+        • Saves cost by scaling down during low traffic  
+        • Replaces unhealthy instances automatically  
+
+
+    --------------------------------------------------
+    HOW ASG WORKS (SIMPLE FLOW)
+    --------------------------------------------------
+
+        1. You create a Launch Template (EC2 blueprint)
+        2. Create an Auto Scaling Group using that template
+        3. Set:
+               - Minimum capacity
+               - Desired capacity
+               - Maximum capacity
+        4. ASG launches EC2 instances
+        5. ASG performs health checks
+        6. ASG scales out or scales in based on traffic
+
+
+    --------------------------------------------------
+    IMPORTANT TERMS
+    --------------------------------------------------
+
+        Min capacity:
+            Lowest number of EC2s the ASG will maintain.
+
+        Desired capacity:
+            The number of EC2s ASG tries to keep running normally.
+
+        Max capacity:
+            The highest number of EC2s ASG is allowed to launch.
+
+        Scaling out:
+            Adding more EC2s when load increases.
+
+        Scaling in:
+            Removing EC2s when load decreases.
+
+
+    --------------------------------------------------
+    WHAT YOU NEED TO CREATE AN ASG
+    --------------------------------------------------
+
+        • Launch Template  
+        • VPC + Subnets  
+        • Target Group (optional but recommended)  
+        • Load Balancer (optional, usually ALB)  
+        • Scaling Policies (optional)  
+
+
+    --------------------------------------------------
+    ASG CONFIGURATION OPTIONS (EXPLAINED SIMPLY)
+    --------------------------------------------------
+
+        1. Launch Template
+            Includes AMI, instance type, key pair, user data, security groups.
+
+        2. Network (VPC + Subnets)
+            Select 2 or more AZs for high availability.
+
+        3. Load Balancer Attachment (optional)
+            Connect your ASG to:
+                - Application Load Balancer (ALB)
+                - Network Load Balancer (NLB)
+
+        4. Health Check Types
+            • EC2 status checks  
+            • ELB health checks (recommended for ALB/NLB)  
+
+        5. Scaling Policies
+            a) Target Tracking:
+                   Example: keep CPU at 50%  
+            b) Step Scaling:
+                   Add/remove EC2s as thresholds are crossed  
+            c) Scheduled Scaling:
+                   Scale based on time (office hours, weekends)
+
+        6. Instance Protection
+            Blocks ASG from terminating selected EC2 instances.
+
+        7. Notifications (optional)
+            Sends SNS alerts when scaling events happen.
+
+
+    --------------------------------------------------
+    EXAMPLE SCENARIO
+    --------------------------------------------------
+
+        Min capacity      = 2  
+        Desired capacity  = 4  
+        Max capacity      = 10  
+
+        Traffic increases → ASG scales to 7  
+        Traffic drops     → ASG scales back to 4  
+        An instance fails → ASG launches a new one automatically  
+
+
+    --------------------------------------------------
+    HEALTH CHECK BEHAVIOR
+    --------------------------------------------------
+
+        Instance is considered unhealthy if:
+            • Fails EC2 status checks  
+            • Fails ALB/NLB health checks  
+            • Stops, crashes, or becomes unreachable  
+
+        ASG will terminate the failed instance
+        and create a new one automatically.
+
+
+    --------------------------------------------------
+    SUMMARY
+
+
+        Auto Scaling Group:
+            - Launches EC2 instances automatically
+            - Replaces unhealthy instances
+            - Scales up during high traffic
+            - Scales down to save cost
+            - Ensures high availability
+
+
+
+
+    
+=========================================================
