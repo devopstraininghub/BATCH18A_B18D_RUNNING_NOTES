@@ -102,20 +102,7 @@ When the topic receives a message, **all** of these subscribers get notified.
 
 ---
 
-## 7. Launch Configuration vs Launch Template
-
-An ASG needs a blueprint to know **what** to launch — historically that was a **Launch Configuration**; today it should be a **Launch Template**.
-
-- **Launch Configuration** — the older way. A template specifying the AMI, instance type, key pair, security groups, and block device mappings for the ASG to use.
-- **Launch Template** — the modern, more flexible option (what we built yesterday) — supports versioning, more settings, and can also be used for a plain one-off EC2 launch, not just ASGs.
-
-⚠️ **Important:** Launch Configurations are officially deprecated. AWS accounts created on or after 1 October 2024 cannot create a new Launch Configuration at all (console, CLI, API, or CloudFormation) — existing ones on older accounts still run, but AWS recommends migrating off them. **Always use a Launch Template for any new ASG.**
-
-**Easy memory trick:** Launch Configuration → the retired option. Launch Template → the one you should actually use.
-
----
-
-## 8. What you need to create an ASG
+## 7. What you need to create an ASG
 
 - A **Launch Template**.
 - A **VPC** + **Subnets**.
@@ -125,7 +112,7 @@ An ASG needs a blueprint to know **what** to launch — historically that was a 
 
 ---
 
-## 9. ASG configuration options
+## 8. ASG configuration options
 
 1. **Launch Template** — includes the AMI, instance type, key pair, User Data, and security groups.
 2. **Network (VPC + Subnets)** — select 2 or more Availability Zones for high availability.
@@ -149,7 +136,7 @@ An ASG needs a blueprint to know **what** to launch — historically that was a 
 
 ---
 
-## 10. Other ASG capabilities
+## 9. Other ASG capabilities
 
 - **Dynamic Scaling** — the umbrella term for scaling automatically based on real-time metrics like CPU utilization, network traffic, or a custom CloudWatch alarm — this is what powers Target Tracking and Step Scaling under the hood.
 - **Integration with other AWS services** — ASG works together with Elastic Load Balancing and CloudWatch to form a complete solution for managing an application's performance and availability.
@@ -157,12 +144,12 @@ An ASG needs a blueprint to know **what** to launch — historically that was a 
 
 ---
 
-## 11. Creating an ASG — Console steps
+## 10. Creating an ASG — Console steps
 
 1. Sign in to the AWS Management Console.
 2. Navigate to the **EC2 Auto Scaling** console.
 3. **"Auto Scaling Groups"** (left navigation) → **"Create Auto Scaling Group."**
-4. Choose a **Launch Template** (or an old Launch Configuration, if you still have one) → select it from the list.
+4. Choose your **Launch Template** → select it from the list.
 5. Configure ASG details — group name, network settings (VPC/subnets), initial capacity.
 6. Configure scaling policies — based on CloudWatch alarms.
 7. Configure Instance Protection (optional).
@@ -174,7 +161,7 @@ The ASG will now launch and manage instances automatically, based on everything 
 
 ---
 
-## 12. Testing scale-out live — spiking CPU on purpose
+## 11. Testing scale-out live — spiking CPU on purpose
 
 A practical way to actually *see* a Target Tracking policy react, instead of just reading about it:
 
@@ -192,7 +179,7 @@ Stops that process once you're done testing — find its `process-id` with `ps -
 
 ---
 
-## 13. Example scenario
+## 12. Example scenario
 
 ```
 Min capacity      = 2
@@ -206,7 +193,7 @@ An instance fails → ASG launches a new one automatically
 
 ---
 
-## 14. Health check behavior
+## 13. Health check behavior
 
 An instance is considered **unhealthy** if it:
 - Fails EC2 status checks.
@@ -232,7 +219,6 @@ The ASG will **terminate** the failed instance and **create a new one** automati
 | Min / Desired / Max capacity | The floor, target, and ceiling for instance count | `2 / 4 / 10` — never fewer than 2, never more than 10 |
 | Scaling out / Scaling in | Adding servers / removing servers | Traffic spike → scale out; traffic drops → scale in |
 | Target Tracking / Simple / Step / Scheduled scaling | Four ways to trigger scaling | Keep CPU at 50%; scale at fixed thresholds; scale by time of day |
-| Launch Configuration vs Launch Template | Old vs recommended ASG blueprint | New accounts can't create Launch Configurations anymore — use Templates |
 | Scaling adjustment | How many instances to add/remove per trigger | "Add 2 instances" when CPU crosses 70% |
 | Cool down period | Wait time after scaling before reacting again | Preventing an ASG from over-launching during one CPU spike |
 | Auto Scaling Plans | Predictive scaling from historical data | Pre-scaling up before a known daily traffic pattern hits |
