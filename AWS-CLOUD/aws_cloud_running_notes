@@ -1758,3 +1758,1899 @@ What is CIDR ?
   256 * 256 -- > 65536 --> 65k + Ips 
 
 --------------------------------------------
+
+
+10 SEP 2026
+
+Sure 👍 Here is **AWS VPC Peering** in a clean **Notepad++ running-notes style** — simple, practical, and interview-focused.
+
+```text
+====================================================================
+                    AWS VPC PEERING
+====================================================================
+
+1. WHAT IS VPC PEERING?
+====================================================================
+
+VPC Peering is a networking connection between two VPCs.
+
+It allows resources in one VPC to communicate with resources
+in another VPC using PRIVATE IP addresses.
+
+Simple:
+
+VPC-A  ------------------  VPC-B
+         VPC Peering
+
+Example:
+
+VPC-A                         VPC-B
+10.0.0.0/16                  20.0.0.0/16
+
+EC2-A                         EC2-B
+10.0.1.10  ----------------> 20.0.1.10
+              Private IP
+
+
+====================================================================
+2. WHY DO WE USE VPC PEERING?
+====================================================================
+
+We use VPC Peering when two VPCs need to communicate privately.
+
+Example:
+
+Company has:
+
+VPC-A = Application VPC
+VPC-B = Database VPC
+
+Application server is in VPC-A.
+
+Database server is in VPC-B.
+
+We need:
+
+Application VPC
+      |
+      | VPC Peering
+      |
+Database VPC
+
+So the application can communicate with the database
+using private IP addresses.
+
+
+====================================================================
+3. REAL-TIME DEVOPS EXAMPLE
+====================================================================
+
+Suppose:
+
+VPC-A
+CIDR = 10.0.0.0/16
+
+Application EC2:
+10.0.1.10
+
+
+VPC-B
+CIDR = 20.0.0.0/16
+
+Database EC2:
+20.0.1.20
+
+Application wants to connect to MySQL:
+
+10.0.1.10  ------------>  20.0.1.20:3306
+              Peering
+
+This communication can happen through VPC Peering.
+
+
+====================================================================
+4. IMPORTANT REQUIREMENT - CIDR MUST NOT OVERLAP
+====================================================================
+
+This is VERY IMPORTANT.
+
+Correct:
+
+VPC-A = 10.0.0.0/16
+VPC-B = 20.0.0.0/16
+
+Different CIDRs = GOOD
+
+
+Incorrect:
+
+VPC-A = 10.0.0.0/16
+VPC-B = 10.0.0.0/16
+
+Overlapping CIDRs = NOT allowed for peering.
+
+
+Easy memory:
+
+Different VPCs
+      +
+Different CIDRs
+      =
+Peering possible
+
+
+====================================================================
+5. HOW VPC PEERING WORKS
+====================================================================
+
+There are 3 main steps:
+
+STEP 1:
+Create VPC Peering Connection
+
+STEP 2:
+Accept the Peering Connection
+
+STEP 3:
+Update Route Tables
+
+
+Flow:
+
+VPC-A
+  |
+  | Create Peering
+  |
+  +----------------+
+                   |
+              VPC Peering
+                   |
+  +----------------+
+  |
+VPC-B
+
+
+====================================================================
+6. ROUTE TABLE - VERY IMPORTANT
+====================================================================
+
+Creating VPC Peering does NOT automatically configure routing.
+
+We need to add routes.
+
+Example:
+
+VPC-A:
+
+CIDR:
+10.0.0.0/16
+
+VPC-B:
+
+CIDR:
+20.0.0.0/16
+
+
+VPC-A Route Table:
+
+Destination        Target
+20.0.0.0/16        pcx-12345
+
+
+VPC-B Route Table:
+
+Destination        Target
+10.0.0.0/16        pcx-12345
+
+
+pcx-12345 = VPC Peering Connection ID
+
+
+Easy memory:
+
+PEERING = Connection
+
+ROUTE TABLE = Direction
+
+
+====================================================================
+7. SECURITY GROUP
+====================================================================
+
+Route table allows the network path.
+
+But Security Group must also allow the traffic.
+
+Example:
+
+Application:
+
+10.0.1.10
+
+Database:
+
+20.0.1.20
+
+
+Database Security Group:
+
+Type       : MySQL
+Port       : 3306
+Source     : 10.0.0.0/16
+
+
+Then:
+
+10.0.1.10
+     |
+     | TCP 3306
+     |
+     v
+20.0.1.20
+
+
+Remember:
+
+VPC Peering
+     +
+Route Table
+     +
+Security Group
+     =
+Communication
+
+
+====================================================================
+8. NETWORK ACL
+====================================================================
+
+Network ACL can also affect communication.
+
+If communication is not working, check:
+
+1. Security Group
+2. Network ACL
+3. Route Table
+
+
+Troubleshooting:
+
+EC2-A  --------X-------->  EC2-B
+
+Check:
+
+Peering status
+     |
+Route table
+     |
+Security Group
+     |
+Network ACL
+     |
+Application port
+
+
+====================================================================
+9. VPC PEERING IS PRIVATE
+====================================================================
+
+VPC Peering allows private communication between VPCs.
+
+Example:
+
+VPC-A                         VPC-B
+
+10.0.1.10  ----------------> 20.0.1.20
+             Private
+
+
+We don't need to expose the instances through public IPs
+just for VPC-to-VPC communication.
+
+
+====================================================================
+10. SAME REGION
+====================================================================
+
+VPC Peering can connect VPCs in the same AWS Region.
+
+Example:
+
+AWS Region: ap-south-1
+
+VPC-A  ----------------  VPC-B
+         Peering
+
+
+====================================================================
+11. DIFFERENT REGIONS
+====================================================================
+
+VPC Peering can also connect VPCs in different AWS Regions.
+
+This is called:
+
+INTER-REGION VPC PEERING
+
+
+Example:
+
+ap-south-1                  us-east-1
+
+VPC-A  --------------------  VPC-B
+         Peering
+
+
+====================================================================
+12. DIFFERENT AWS ACCOUNTS
+====================================================================
+
+VPC Peering can also be used between VPCs
+belonging to different AWS accounts.
+
+Example:
+
+AWS Account-A              AWS Account-B
+
+VPC-A  ------------------  VPC-B
+          Peering
+
+
+The peering request needs to be accepted by
+the other side as applicable.
+
+
+====================================================================
+13. VPC PEERING IS NOT TRANSITIVE
+====================================================================
+
+VERY IMPORTANT INTERVIEW QUESTION.
+
+
+Suppose:
+
+VPC-A  <------>  VPC-B
+                    ^
+                    |
+                    |
+                 VPC-C
+
+
+OR:
+
+VPC-A <----> VPC-B <----> VPC-C
+
+
+Can VPC-A automatically communicate with VPC-C?
+
+ANSWER:
+
+NO ❌
+
+VPC Peering is NOT TRANSITIVE.
+
+
+Example:
+
+A ---- B ---- C
+
+A cannot automatically use B as a router
+to reach C.
+
+
+Easy memory:
+
+VPC PEERING = DIRECT CONNECTION
+
+NOT TRANSITIVE
+
+
+====================================================================
+14. VPC PEERING VS INTERNET GATEWAY
+====================================================================
+
+INTERNET GATEWAY:
+
+Used for:
+
+VPC <----> Internet
+
+
+Example:
+
+EC2
+ |
+Internet Gateway
+ |
+Internet
+
+
+VPC PEERING:
+
+Used for:
+
+VPC <----> VPC
+
+
+Easy memory:
+
+Internet Gateway = Internet
+
+VPC Peering = Another VPC
+
+
+====================================================================
+15. VPC PEERING VS NAT GATEWAY
+====================================================================
+
+NAT Gateway:
+
+Private Subnet
+      |
+      v
+NAT Gateway
+      |
+      v
+Internet
+
+
+VPC Peering:
+
+VPC-A
+  |
+  v
+VPC Peering
+  |
+  v
+VPC-B
+
+
+Easy memory:
+
+NAT Gateway = Private subnet to Internet
+
+VPC Peering = VPC to VPC
+
+
+====================================================================
+16. VPC PEERING VS TRANSIT GATEWAY
+====================================================================
+
+If we have only a few VPCs:
+
+VPC-A -------- VPC-B
+
+VPC Peering can be simple.
+
+
+If we have many VPCs:
+
+VPC-A
+   |
+VPC-B
+   |
+VPC-C
+   |
+VPC-D
+   |
+VPC-E
+
+
+Managing many peering connections can become complicated.
+
+
+Transit Gateway provides a centralized design:
+
+             Transit Gateway
+            /      |      \
+           /       |       \
+        VPC-A    VPC-B    VPC-C
+
+
+Easy memory:
+
+Few VPCs  --> VPC Peering
+
+Many VPCs --> Consider Transit Gateway
+
+
+====================================================================
+17. BASIC AWS CLI
+====================================================================
+
+Create VPC Peering:
+
+aws ec2 create-vpc-peering-connection \
+  --vpc-id vpc-AAAA \
+  --peer-vpc-id vpc-BBBB
+
+
+Accept Peering:
+
+aws ec2 accept-vpc-peering-connection \
+  --vpc-peering-connection-id pcx-123456
+
+
+Create Route:
+
+aws ec2 create-route \
+  --route-table-id rtb-AAAA \
+  --destination-cidr-block 20.0.0.0/16 \
+  --vpc-peering-connection-id pcx-123456
+
+
+Remember:
+
+Create
+  |
+Accept
+  |
+Route
+  |
+Security Group
+
+
+====================================================================
+18. TERRAFORM EXAMPLE
+====================================================================
+
+Create VPC Peering:
+
+resource "aws_vpc_peering_connection" "peer" {
+
+  vpc_id      = aws_vpc.vpc_a.id
+  peer_vpc_id = aws_vpc.vpc_b.id
+  auto_accept = true
+
+  tags = {
+    Name = "vpc-a-to-vpc-b"
+  }
+}
+
+
+Route:
+
+resource "aws_route" "vpc_a_to_b" {
+
+  route_table_id            = aws_route_table.vpc_a.id
+  destination_cidr_block    = "20.0.0.0/16"
+  vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
+}
+
+
+====================================================================
+19. REAL-TIME ARCHITECTURE
+====================================================================
+
+                AWS
+                 |
+        +--------+--------+
+        |                 |
+      VPC-A              VPC-B
+  10.0.0.0/16        20.0.0.0/16
+        |                 |
+     APP EC2           DB EC2
+    10.0.1.10         20.0.1.20
+        |                 |
+        +---- PEERING ----+
+
+
+Application:
+
+10.0.1.10
+
+Database:
+
+20.0.1.20
+
+Application connects:
+
+10.0.1.10  --->  20.0.1.20:3306
+
+
+Required:
+
+VPC Peering
++
+Route Tables
++
+Security Groups
+
+
+====================================================================
+20. TROUBLESHOOTING
+====================================================================
+
+If VPC-A cannot communicate with VPC-B:
+
+STEP 1:
+Check Peering status
+
+STEP 2:
+Check CIDR ranges
+
+STEP 3:
+Check VPC-A route table
+
+STEP 4:
+Check VPC-B route table
+
+STEP 5:
+Check Security Group
+
+STEP 6:
+Check Network ACL
+
+STEP 7:
+Check application/service port
+
+
+Example:
+
+nc -vz 20.0.1.20 3306
+
+
+This checks whether TCP port 3306 is reachable.
+
+
+====================================================================
+21. IMPORTANT POINTS TO REMEMBER
+====================================================================
+
+1. VPC Peering connects TWO VPCs.
+
+2. Communication can use PRIVATE IP addresses.
+
+3. CIDR ranges must NOT overlap.
+
+4. Route tables must be configured.
+
+5. Security Groups must allow traffic.
+
+6. Network ACLs can also affect traffic.
+
+7. VPC Peering is NOT TRANSITIVE.
+
+8. Peering can be between VPCs in different AWS accounts.
+
+9. Peering can also work across AWS Regions.
+
+10. For many VPCs, Transit Gateway may be a better design.
+
+
+====================================================================
+22. EASY MEMORY TRICK
+====================================================================
+
+Remember:
+
+VPC PEERING
+
+P = Private communication
+E = Existing VPC connection
+E = Endpoint-to-endpoint connectivity
+R = Routes required
+I = IP ranges must not overlap
+N = Not transitive
+G = Guard with Security Groups
+
+
+Most important:
+
+PEERING
+   |
+   +-- VPC to VPC
+   |
+   +-- Private IP
+   |
+   +-- Non-overlapping CIDR
+   |
+   +-- Route required
+   |
+   +-- Security Group required
+   |
+   +-- NOT transitive
+
+
+====================================================================
+23. INTERVIEW QUESTIONS
+====================================================================
+
+Q1. What is VPC Peering?
+
+Answer:
+
+VPC Peering is a private network connection between two VPCs
+that allows resources in those VPCs to communicate using
+private IP addresses.
+
+
+Q2. Can VPCs with overlapping CIDRs be peered?
+
+Answer:
+
+No.
+
+The CIDR ranges must not overlap.
+
+
+Q3. Is VPC Peering transitive?
+
+Answer:
+
+No.
+
+VPC-A <--> VPC-B <--> VPC-C
+
+does NOT automatically allow:
+
+VPC-A <--> VPC-C
+
+
+Q4. Is route table configuration required?
+
+Answer:
+
+Yes.
+
+Routes must be added to direct traffic through the
+VPC Peering connection.
+
+
+Q5. Is Security Group configuration required?
+
+Answer:
+
+Yes.
+
+The Security Group must allow the required traffic and port.
+
+
+Q6. Can VPC Peering work between different AWS accounts?
+
+Answer:
+
+Yes.
+
+
+Q7. Can VPC Peering work between different AWS Regions?
+
+Answer:
+
+Yes.
+
+
+Q8. VPC Peering vs Transit Gateway?
+
+Answer:
+
+VPC Peering provides direct VPC-to-VPC connectivity.
+
+Transit Gateway provides centralized connectivity for
+multiple VPCs and networks.
+
+
+====================================================================
+24. ONE-LINE INTERVIEW ANSWER
+====================================================================
+
+"VPC Peering is a private network connection between two
+non-overlapping VPCs that allows resources to communicate
+using private IP addresses. We need proper route tables
+and security rules, and VPC Peering is not transitive."
+
+
+====================================================================
+                    END OF VPC PEERING
+====================================================================
+```
+
+
+
+Absolutely 👍 Here are the notes in the same **simple Notepad++ style**.
+
+```text
+====================================================================
+              AWS PUBLIC IP vs PRIVATE IP vs EIP
+====================================================================
+
+
+1. WHAT IS AN IP ADDRESS?
+====================================================================
+
+IP = Internet Protocol
+
+An IP address identifies a device/resource on a network.
+
+In AWS, EC2 instances can have:
+
+1. Private IP
+2. Public IP
+3. Elastic IP (EIP)
+
+
+Simple:
+
+Private IP  = Internal communication
+Public IP   = Internet communication
+EIP         = Fixed public IP
+
+
+====================================================================
+2. PRIVATE IP
+====================================================================
+
+Private IP is used for communication INSIDE a private network/VPC.
+
+Example:
+
+VPC
+10.0.0.0/16
+   |
+   +---- EC2
+         Private IP = 10.0.1.10
+
+
+EC2-A:
+
+10.0.1.10
+
+EC2-B:
+
+10.0.1.20
+
+
+They can communicate:
+
+10.0.1.10  -------->  10.0.1.20
+             Private
+
+
+Private IP is normally used for:
+
+- EC2 to EC2 communication
+- Application to Database
+- Communication between AWS resources
+- Communication between subnets
+- VPC Peering communication
+
+
+Example:
+
+App Server
+10.0.1.10
+     |
+     | Private IP
+     v
+DB Server
+10.0.2.10
+
+
+====================================================================
+3. PUBLIC IP
+====================================================================
+
+Public IP is an IP address that can be used for
+communication between an AWS resource and the Internet.
+
+Example:
+
+EC2
+Private IP = 10.0.1.10
+Public IP  = 3.x.x.x
+
+
+Internet
+    |
+    |
+Public IP
+    |
+    v
+EC2
+
+
+Example:
+
+EC2 Public IP:
+
+3.100.50.20
+
+
+You can use the public IP to access services such as:
+
+SSH:
+ssh -i key.pem ec2-user@3.100.50.20
+
+HTTP:
+http://3.100.50.20
+
+
+====================================================================
+4. IMPORTANT POINT ABOUT PUBLIC IP
+====================================================================
+
+A normal EC2 public IPv4 address is NOT permanent.
+
+If the instance is stopped and started, the public IPv4 address
+can change.
+
+Example:
+
+Before stop:
+
+EC2
+Public IP = 3.100.50.20
+
+
+After stop/start:
+
+EC2
+Public IP = 3.200.60.30
+
+
+So:
+
+Normal Public IP = Can change
+
+
+If we need a FIXED public IP, use EIP.
+
+
+====================================================================
+5. WHAT IS EIP?
+====================================================================
+
+EIP = Elastic IP
+
+An Elastic IP is a STATIC PUBLIC IPv4 ADDRESS
+that you allocate to your AWS account.
+
+Example:
+
+EIP = 54.200.10.50
+
+
+You can associate the EIP with an EC2 instance.
+
+Example:
+
+EIP
+54.200.10.50
+      |
+      v
+    EC2
+Private IP
+10.0.1.10
+
+
+The important point:
+
+EIP = Fixed public IPv4 address
+
+
+====================================================================
+6. WHY DO WE USE EIP?
+====================================================================
+
+Suppose we have a production server.
+
+Server:
+
+EC2
+Public IP = 3.100.20.30
+
+
+Customers are accessing:
+
+3.100.20.30
+
+
+If the normal public IP changes after stop/start,
+customers may no longer reach the server using the old IP.
+
+
+Instead:
+
+Allocate EIP:
+
+54.200.10.50
+
+
+Associate it with EC2.
+
+Customers use:
+
+54.200.10.50
+
+
+The EIP remains associated with your AWS account
+until you release it.
+
+
+====================================================================
+7. PUBLIC IP vs EIP
+====================================================================
+
+PUBLIC IP:
+
+- Publicly reachable IP address
+- Automatically assigned when configured
+- Can change after stop/start
+- Not designed to be a permanent address
+
+
+EIP:
+
+- Elastic IP
+- Static public IPv4 address
+- Allocated to your AWS account
+- Can be associated with an EC2 instance
+- Useful when a fixed public IP is required
+
+
+Easy memory:
+
+Public IP = Temporary
+
+EIP = Elastic / Fixed
+
+
+====================================================================
+8. PRIVATE IP vs PUBLIC IP vs EIP
+====================================================================
+
++-------------+--------------------------+
+| IP TYPE     | MAIN USE                |
++-------------+--------------------------+
+| Private IP  | Internal communication  |
+| Public IP   | Internet communication  |
+| EIP         | Fixed public IP         |
++-------------+--------------------------+
+
+
+Example:
+
+EC2
+
+Private IP:
+10.0.1.10
+
+Public IP:
+3.100.50.20
+
+EIP:
+54.200.10.50
+
+
+Think:
+
+Private IP
+    |
+    +--> Inside VPC
+
+
+Public IP
+    |
+    +--> Internet
+
+
+EIP
+    |
+    +--> Fixed public IPv4
+
+
+====================================================================
+9. REAL-TIME DEVOPS EXAMPLE
+====================================================================
+
+Suppose:
+
+Production EC2
+Private IP = 10.0.1.10
+Public IP  = 3.100.50.20
+
+
+Developers/admins access:
+
+Internet
+    |
+    v
+Public IP
+    |
+    v
+Production EC2
+
+
+If the server needs a fixed public IP:
+
+Allocate EIP:
+
+54.200.10.50
+
+Associate:
+
+54.200.10.50
+      |
+      v
+Production EC2
+
+
+Now users can consistently use the EIP.
+
+
+====================================================================
+10. IMPORTANT - PRIVATE IP NEVER MEANS "NO INTERNET"
+====================================================================
+
+A private IP itself is not directly reachable from the
+public Internet.
+
+But an EC2 instance with only a private IP can still access
+the Internet if the network is designed appropriately.
+
+Example:
+
+Private EC2
+    |
+    v
+NAT Gateway
+    |
+    v
+Internet
+
+
+This is common for private subnets.
+
+
+====================================================================
+11. EASY MEMORY TRICK
+====================================================================
+
+PRIVATE IP:
+
+Inside AWS/VPC
+
+
+PUBLIC IP:
+
+Internet
+
+
+EIP:
+
+Fixed public IPv4
+
+
+Remember:
+
+PRIVATE = INSIDE
+
+PUBLIC = INTERNET
+
+EIP = FIXED PUBLIC
+
+
+====================================================================
+                    AWS SECURITY GROUP
+====================================================================
+
+
+12. WHAT IS A SECURITY GROUP?
+====================================================================
+
+Security Group (SG) is a VIRTUAL FIREWALL for AWS resources
+such as EC2 instances.
+
+It controls network traffic:
+
+INBOUND  = Traffic coming INTO the resource
+
+OUTBOUND = Traffic going OUT of the resource
+
+
+Simple:
+
+                Security Group
+                     |
+        +------------+------------+
+        |                         |
+     Inbound                  Outbound
+     Traffic                   Traffic
+
+
+====================================================================
+13. WHY DO WE USE SECURITY GROUP?
+====================================================================
+
+Security Group is used to control WHO can connect
+to our AWS resource and WHICH PORT they can access.
+
+
+Example:
+
+EC2 Web Server
+
+Allow:
+
+HTTP
+Port = 80
+
+HTTPS
+Port = 443
+
+SSH
+Port = 22
+
+
+Block unwanted traffic.
+
+
+====================================================================
+14. INBOUND RULES
+====================================================================
+
+Inbound = Traffic coming TO the EC2 instance.
+
+
+Example:
+
+Security Group:
+
+Type        Port       Source
+
+SSH         22         My IP
+HTTP        80         0.0.0.0/0
+HTTPS       443        0.0.0.0/0
+
+
+Meaning:
+
+Port 22:
+Only allowed source can SSH.
+
+
+Port 80:
+Anyone on the Internet can access HTTP.
+
+
+Port 443:
+Anyone on the Internet can access HTTPS.
+
+
+====================================================================
+15. OUTBOUND RULES
+====================================================================
+
+Outbound = Traffic going FROM the EC2 instance.
+
+
+Example:
+
+EC2
+ |
+ | Outbound
+ v
+Internet
+
+
+Security Group controls whether this traffic is allowed.
+
+
+By default, a newly created security group generally allows
+outbound traffic, unless its rules are changed.
+
+
+====================================================================
+16. SECURITY GROUP IS STATEFUL
+====================================================================
+
+VERY IMPORTANT INTERVIEW QUESTION.
+
+
+Security Group is STATEFUL.
+
+
+Example:
+
+Client
+   |
+   | Request
+   v
+EC2
+   |
+   | Response
+   v
+Client
+
+
+If the inbound request is allowed,
+the response traffic is automatically allowed
+without creating a separate outbound rule for that response.
+
+
+Easy memory:
+
+Security Group = STATEFUL
+
+
+====================================================================
+17. SECURITY GROUP IS ATTACHED TO ENI
+====================================================================
+
+Security Groups are associated with network interfaces (ENIs).
+
+For EC2, the Security Group controls traffic
+to and from the instance's network interface.
+
+
+Simple:
+
+EC2
+ |
+ v
+ENI
+ |
+ v
+Security Group rules
+
+
+You can associate one or more Security Groups with
+a network interface.
+
+
+====================================================================
+18. SECURITY GROUP DOES NOT USE DENY RULES
+====================================================================
+
+Security Groups have:
+
+ALLOW rules
+
+
+They do NOT have explicit DENY rules.
+
+
+Example:
+
+Allow:
+
+TCP 22
+Source = 10.0.0.0/16
+
+
+Everything else is not allowed unless another
+appropriate rule allows it.
+
+
+Easy memory:
+
+SG = ALLOW only
+
+
+====================================================================
+19. SECURITY GROUP EXAMPLE - WEB SERVER
+====================================================================
+
+Web Server EC2:
+
+Private IP = 10.0.1.10
+Public IP  = 3.100.50.20
+
+
+Security Group:
+
+Inbound:
+
+HTTP
+Port 80
+Source 0.0.0.0/0
+
+
+HTTPS
+Port 443
+Source 0.0.0.0/0
+
+
+SSH
+Port 22
+Source = My IP
+
+
+Result:
+
+Internet
+    |
+    +---- Port 80 ----> EC2
+    |
+    +---- Port 443 ---> EC2
+
+My IP
+    |
+    +---- Port 22 ----> EC2
+
+
+====================================================================
+20. SECURITY GROUP - APP SERVER
+====================================================================
+
+Suppose:
+
+Web Server
+10.0.1.10
+
+App Server
+10.0.2.10
+
+Database
+10.0.3.10
+
+
+We don't want the database to accept connections
+from the entire Internet.
+
+
+Database Security Group:
+
+MySQL
+Port 3306
+Source = App Server Security Group
+
+
+Architecture:
+
+Internet
+   |
+   v
+Web Server
+   |
+   v
+App Server
+   |
+   v
+Database
+
+
+This is a common and secure architecture.
+
+
+====================================================================
+21. SECURITY GROUP REFERENCE
+====================================================================
+
+One Security Group can be used as the source of another
+Security Group rule when the AWS networking design supports it.
+
+
+Example:
+
+APP-SG
+  |
+  | allowed source
+  v
+DB-SG
+
+
+DB-SG:
+
+Port 3306
+Source = APP-SG
+
+
+This is better than allowing:
+
+0.0.0.0/0
+
+
+for a database.
+
+
+====================================================================
+22. COMMON PORTS
+====================================================================
+
+SSH:
+
+Port 22
+
+
+HTTP:
+
+Port 80
+
+
+HTTPS:
+
+Port 443
+
+
+MySQL:
+
+Port 3306
+
+
+PostgreSQL:
+
+Port 5432
+
+
+Jenkins:
+
+Port 8080
+
+
+Tomcat:
+
+Port 8080
+
+
+RDP:
+
+Port 3389
+
+
+Example:
+
+SSH:
+
+TCP 22
+
+
+Web:
+
+TCP 80
+
+
+HTTPS:
+
+TCP 443
+
+
+====================================================================
+23. 0.0.0.0/0
+====================================================================
+
+0.0.0.0/0 means:
+
+ANY IPv4 address.
+
+
+Example:
+
+HTTP
+Port 80
+Source = 0.0.0.0/0
+
+
+Means:
+
+Anyone can attempt to reach port 80,
+subject to other network/application controls.
+
+
+For SSH:
+
+Avoid:
+
+SSH
+22
+0.0.0.0/0
+
+
+when possible.
+
+
+Better:
+
+SSH
+22
+My-IP/32
+
+
+====================================================================
+24. SECURITY GROUP VS NETWORK ACL
+====================================================================
+
+Security Group:
+
+- Works at resource/network-interface level
+- Stateful
+- Allow rules only
+- Commonly used for EC2 traffic control
+
+
+Network ACL:
+
+- Works at subnet level
+- Stateless
+- Supports ALLOW and DENY rules
+- Inbound and outbound rules are evaluated separately
+
+
+Easy memory:
+
+SG = Stateful + Resource level
+
+NACL = Stateless + Subnet level
+
+
+====================================================================
+25. REAL-TIME DEVOPS TROUBLESHOOTING
+====================================================================
+
+Problem:
+
+Cannot SSH into EC2.
+
+
+Check:
+
+1. Does EC2 have a reachable public path?
+2. Is the route correct?
+3. Is Security Group allowing TCP 22?
+4. Is the source IP correct?
+5. Is NACL blocking traffic?
+6. Is the SSH service running?
+7. Is the correct key being used?
+
+
+Example SG:
+
+SSH
+TCP
+22
+Source = YOUR-IP/32
+
+
+====================================================================
+26. SECURITY GROUP + PUBLIC IP
+====================================================================
+
+Having a Public IP does NOT automatically mean
+everyone can access the EC2 instance.
+
+Example:
+
+EC2
+Public IP = 3.x.x.x
+
+Security Group:
+
+SSH 22 → My IP only
+
+
+Then:
+
+My IP --------> EC2
+                 ALLOW
+
+
+Other IP ------> EC2
+                 BLOCK
+
+
+So:
+
+PUBLIC IP = Address/reachability
+
+SECURITY GROUP = Traffic permission
+
+
+====================================================================
+27. SECURITY GROUP + PRIVATE IP
+====================================================================
+
+Private communication:
+
+App EC2
+10.0.1.10
+     |
+     | TCP 3306
+     v
+DB EC2
+10.0.2.10
+
+
+DB Security Group:
+
+MySQL
+3306
+Source = App-SG
+
+
+This allows the application to connect
+to the database privately.
+
+
+====================================================================
+28. EASY MEMORY TRICK FOR SECURITY GROUP
+====================================================================
+
+SG = SECURITY GATE
+
+
+Ask 4 questions:
+
+WHO?
+   |
+Source IP / Security Group
+
+WHAT?
+   |
+Protocol
+
+WHICH PORT?
+   |
+22 / 80 / 443 / 3306 etc.
+
+DIRECTION?
+   |
+Inbound / Outbound
+
+
+Example:
+
+SSH
+TCP
+22
+My IP
+Inbound
+
+
+Means:
+
+WHO    = My IP
+WHAT   = TCP
+PORT   = 22
+WHERE  = Inbound
+
+
+====================================================================
+29. IMPORTANT INTERVIEW QUESTIONS
+====================================================================
+
+Q1. What is a Security Group?
+
+Answer:
+
+A Security Group is a virtual firewall that controls
+inbound and outbound network traffic for AWS resources.
+
+
+Q2. Is Security Group stateful or stateless?
+
+Answer:
+
+STATEFUL.
+
+
+Q3. Does Security Group support DENY rules?
+
+Answer:
+
+No. Security Groups use ALLOW rules.
+
+
+Q4. What is inbound traffic?
+
+Answer:
+
+Traffic coming INTO the resource.
+
+
+Q5. What is outbound traffic?
+
+Answer:
+
+Traffic going OUT from the resource.
+
+
+Q6. Can Security Group be attached to a subnet?
+
+Answer:
+
+No.
+
+Security Groups are associated with network interfaces/resources,
+while Network ACLs operate at the subnet level.
+
+
+Q7. What is 0.0.0.0/0?
+
+Answer:
+
+It represents all IPv4 addresses.
+
+
+Q8. Should we allow SSH from 0.0.0.0/0?
+
+Answer:
+
+Generally avoid it when possible.
+
+Restrict SSH to a trusted source IP, VPN, bastion,
+or other controlled access mechanism.
+
+
+Q9. What is the difference between Security Group and NACL?
+
+Answer:
+
+Security Group:
+Stateful
+Resource/ENI level
+Allow rules only
+
+
+NACL:
+Stateless
+Subnet level
+Allow + Deny rules
+
+
+====================================================================
+30. FINAL MEMORY TABLE
+====================================================================
+
++-------------+-----------------------------+
+| TYPE        | SIMPLE MEANING              |
++-------------+-----------------------------+
+| Private IP  | Internal communication      |
+| Public IP   | Internet-facing IP          |
+| EIP         | Fixed public IPv4           |
+| SG          | Virtual firewall            |
++-------------+-----------------------------+
+
+
+Remember:
+
+PRIVATE IP
+     |
+     +---- Internal communication
+
+
+PUBLIC IP
+     |
+     +---- Internet-facing communication
+
+
+EIP
+     |
+     +---- Static/FIXED public IPv4
+
+
+SECURITY GROUP
+     |
+     +---- Controls allowed traffic
+
+
+====================================================================
+31. ONE-LINE INTERVIEW ANSWERS
+====================================================================
+
+Private IP:
+
+"Private IP is used for communication within private networks
+such as a VPC."
+
+
+Public IP:
+
+"Public IP provides an Internet-facing IPv4 address."
+
+
+EIP:
+
+"Elastic IP is a static public IPv4 address allocated to an
+AWS account and can be associated with resources such as EC2."
+
+
+Security Group:
+
+"Security Group is a stateful virtual firewall that controls
+inbound and outbound traffic using allow rules."
+
+
+====================================================================
+                         END
+====================================================================
+```
