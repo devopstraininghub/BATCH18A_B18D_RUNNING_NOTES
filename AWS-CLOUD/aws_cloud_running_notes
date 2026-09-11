@@ -3654,3 +3654,1247 @@ inbound and outbound traffic using allow rules."
                          END
 ====================================================================
 ```
+==================================
+
+
+DATE: 11 SEP 2026 
+
+====================================================================
+                         AWS NIC / ENI
+====================================================================
+
+1. WHAT IS NIC?
+====================================================================
+
+NIC = Network Interface Card
+
+In AWS, we commonly use the term:
+
+ENI = Elastic Network Interface
+
+ENI is a VIRTUAL NETWORK INTERFACE that provides network
+connectivity to an EC2 instance.
+
+Simple:
+
+EC2
+ |
+ +---- ENI
+        |
+        +---- Private IP
+        +---- Security Group
+        +---- MAC Address
+        +---- Subnet
+
+
+Easy memory:
+
+ENI = Network Card of EC2
+
+
+====================================================================
+2. WHY DO WE NEED ENI?
+====================================================================
+
+An EC2 instance needs a network interface to communicate
+with other resources in the network.
+
+Example:
+
+EC2
+ |
+ v
+ENI
+ |
+ v
+VPC Network
+ |
+ +---- Other EC2
+ +---- Database
+ +---- Internet
+ +---- Other AWS Resources
+
+
+Without network connectivity through an ENI,
+the EC2 instance cannot communicate on the VPC network.
+
+
+====================================================================
+3. WHAT DOES AN ENI HAVE?
+====================================================================
+
+An ENI can have:
+
+1. Private IPv4 address
+2. Secondary private IPv4 addresses
+3. IPv6 addresses
+4. MAC address
+5. Security Groups
+6. Subnet association
+7. Network Interface ID
+
+
+Example:
+
+ENI ID:
+
+eni-123456789
+
+Private IP:
+
+10.0.1.10
+
+Security Group:
+
+web-sg
+
+Subnet:
+
+10.0.1.0/24
+
+
+====================================================================
+4. PRIMARY PRIVATE IP
+====================================================================
+
+Every ENI has a primary private IPv4 address.
+
+Example:
+
+EC2
+ |
+ v
+ENI
+ |
+ +---- Primary Private IP
+       10.0.1.10
+
+
+This IP is used for communication inside the VPC.
+
+
+====================================================================
+5. SECONDARY PRIVATE IP
+====================================================================
+
+An ENI can also have secondary private IP addresses,
+subject to AWS and instance limits.
+
+Example:
+
+ENI
+ |
+ +---- Primary IP
+ |     10.0.1.10
+ |
+ +---- Secondary IP
+       10.0.1.20
+       10.0.1.30
+
+
+This can be useful for applications that need
+multiple IP addresses.
+
+
+====================================================================
+6. SECURITY GROUP AND ENI
+====================================================================
+
+Security Groups are associated with network interfaces.
+
+Simple:
+
+EC2
+ |
+ v
+ENI
+ |
+ v
+Security Group
+ |
+ v
+Traffic rules
+
+
+Security Group controls:
+
+INBOUND traffic
+
+and
+
+OUTBOUND traffic
+
+
+Example:
+
+ENI
+ |
+ +---- Security Group
+        |
+        +---- Allow TCP 22
+        +---- Allow TCP 80
+        +---- Allow TCP 443
+
+
+====================================================================
+7. MULTIPLE ENIs
+====================================================================
+
+An EC2 instance can support multiple network interfaces,
+depending on the instance type and its limits.
+
+Example:
+
+             EC2
+            /   \
+           /     \
+        ENI-1   ENI-2
+          |       |
+       10.0.1.10 10.0.2.10
+
+
+This can be useful for special networking requirements.
+
+
+====================================================================
+8. EASY MEMORY TRICK - ENI
+====================================================================
+
+ENI = EC2's VIRTUAL NETWORK CARD
+
+ENI provides:
+
+IP
++
+Network connectivity
++
+Security Group association
+
+
+====================================================================
+                         AWS NACL
+====================================================================
+
+9. WHAT IS NACL?
+====================================================================
+
+NACL = Network Access Control List
+
+NACL is a FIREWALL at the SUBNET LEVEL.
+
+It controls traffic entering and leaving a subnet.
+
+Simple:
+
+VPC
+ |
+ +-----------------------------+
+ |                             |
+ |       SUBNET                |
+ |                             |
+ |       EC2                   |
+ |                             |
+ +-----------------------------+
+             |
+            NACL
+
+
+Easy memory:
+
+NACL = SUBNET FIREWALL
+
+
+====================================================================
+10. WHAT DOES NACL CONTROL?
+====================================================================
+
+NACL controls:
+
+INBOUND traffic
+=
+Traffic coming INTO the subnet
+
+
+OUTBOUND traffic
+=
+Traffic going OUT of the subnet
+
+
+Example:
+
+Internet
+   |
+   v
+NACL
+   |
+   v
+Subnet
+   |
+   v
+EC2
+
+
+====================================================================
+11. NACL IS STATELESS
+====================================================================
+
+VERY IMPORTANT.
+
+
+NACL is STATELESS.
+
+It means inbound and outbound traffic
+are evaluated separately.
+
+
+Example:
+
+Client
+  |
+  | Request
+  v
+EC2
+  |
+  | Response
+  v
+Client
+
+
+If the inbound traffic is allowed,
+you still need appropriate outbound rules
+for the return traffic.
+
+
+Easy memory:
+
+SG  = STATEFUL
+
+NACL = STATELESS
+
+
+====================================================================
+12. NACL SUPPORTS ALLOW AND DENY
+====================================================================
+
+Security Group:
+
+ALLOW rules
+
+
+NACL:
+
+ALLOW
+DENY
+
+
+Example:
+
+Rule 100:
+ALLOW TCP 80
+
+
+Rule 110:
+DENY TCP 22
+
+
+Therefore:
+
+HTTP → Allowed
+
+SSH → Denied
+
+
+====================================================================
+13. NACL RULE NUMBERS
+====================================================================
+
+NACL rules have rule numbers.
+
+Example:
+
+Rule     Action      Port
+
+100      ALLOW       80
+110      ALLOW       443
+120      DENY        22
+
+
+Rules are evaluated from the LOWEST NUMBER
+to the highest number.
+
+The first matching rule is applied.
+
+
+Example:
+
+100
+ |
+ v
+110
+ |
+ v
+120
+ |
+ v
+*
+
+
+Easy memory:
+
+LOWEST RULE NUMBER → CHECKED FIRST
+
+
+====================================================================
+14. DEFAULT NACL
+====================================================================
+
+AWS provides a default NACL for a VPC.
+
+By default, the default NACL allows traffic
+unless its rules are modified.
+
+
+Example:
+
+Inbound:
+ALLOW ALL
+
+
+Outbound:
+ALLOW ALL
+
+
+Important:
+
+DEFAULT NACL = ALLOW BY DEFAULT
+
+
+====================================================================
+15. CUSTOM NACL
+====================================================================
+
+We can create our own NACL.
+
+Example:
+
+Inbound:
+
+TCP 80  → ALLOW
+TCP 443 → ALLOW
+TCP 22  → DENY
+
+
+Outbound:
+
+Required traffic → ALLOW
+
+
+This gives additional subnet-level control.
+
+
+====================================================================
+16. NACL IS ASSOCIATED WITH SUBNET
+====================================================================
+
+NACL works at the SUBNET LEVEL.
+
+
+Example:
+
+VPC
+ |
+ +---- Public Subnet
+ |         |
+ |        NACL
+ |
+ +---- Private Subnet
+           |
+          NACL
+
+
+A subnet is associated with one NACL at a time.
+
+One NACL can be associated with multiple subnets.
+
+
+====================================================================
+              NACL VS SECURITY GROUP
+====================================================================
+
+17. MAIN DIFFERENCE
+====================================================================
+
+Security Group:
+
+RESOURCE / ENI LEVEL
+
+
+NACL:
+
+SUBNET LEVEL
+
+
+Simple:
+
+EC2
+ |
+ENI
+ |
+Security Group
+
+
+Subnet
+ |
+NACL
+
+
+====================================================================
+18. NACL VS SECURITY GROUP TABLE
+====================================================================
+
++----------------------+---------------------+----------------------+
+| FEATURE              | SECURITY GROUP      | NACL                 |
++----------------------+---------------------+----------------------+
+| Level                | Resource/ENI        | Subnet               |
+| State                | Stateful            | Stateless            |
+| Rules                | Allow only          | Allow + Deny         |
+| Inbound              | Yes                 | Yes                  |
+| Outbound             | Yes                 | Yes                  |
+| Rule evaluation      | SG rules            | Lowest number first  |
+| Association          | ENI/resource        | Subnet               |
++----------------------+---------------------+----------------------+
+
+
+====================================================================
+19. STATEFUL vs STATELESS
+====================================================================
+
+SECURITY GROUP = STATEFUL
+
+Example:
+
+Client
+   |
+   | Request
+   v
+EC2
+   |
+   | Response
+   v
+Client
+
+
+If the request is allowed,
+the return traffic is automatically allowed
+as part of the stateful behavior.
+
+
+NACL = STATELESS
+
+Inbound and outbound rules are evaluated separately.
+
+
+Easy memory:
+
+STATEFUL:
+
+SG remembers the connection.
+
+
+STATELESS:
+
+NACL checks each direction separately.
+
+
+====================================================================
+20. ALLOW vs DENY
+====================================================================
+
+SECURITY GROUP:
+
+ALLOW only
+
+
+NACL:
+
+ALLOW + DENY
+
+
+Example:
+
+Security Group:
+
+Allow TCP 80
+
+
+NACL:
+
+Allow TCP 80
+Deny TCP 22
+
+
+Easy memory:
+
+SG = ALLOW
+
+NACL = ALLOW + DENY
+
+
+====================================================================
+21. WHERE DO THEY WORK?
+====================================================================
+
+Security Group:
+
+EC2
+ |
+ENI
+ |
+Security Group
+
+
+NACL:
+
+VPC
+ |
+Subnet
+ |
+NACL
+
+
+Think:
+
+SG = CLOSE TO SERVER
+
+NACL = AT SUBNET
+
+
+====================================================================
+22. REAL-TIME EXAMPLE
+====================================================================
+
+Architecture:
+
+Internet
+   |
+   v
+Public Subnet
+   |
+   +---- NACL
+   |
+   +---- EC2
+          |
+          +---- ENI
+                 |
+                 +---- Security Group
+
+
+Traffic passes through multiple controls.
+
+NACL:
+
+Subnet-level protection
+
+
+Security Group:
+
+Resource-level protection
+
+
+So we can use both.
+
+
+====================================================================
+23. INTERVIEW QUESTION
+====================================================================
+
+Q: Which is more restrictive - Security Group or NACL?
+
+
+Answer:
+
+It is not simply about which one is "more restrictive."
+
+They operate at different levels and provide different
+types of control.
+
+Security Group:
+Resource/ENI level
+
+
+NACL:
+Subnet level
+
+
+In a request path, traffic can be affected by BOTH.
+
+
+====================================================================
+                         NAT GATEWAY
+====================================================================
+
+24. WHAT IS NAT GATEWAY?
+====================================================================
+
+NAT = Network Address Translation
+
+NAT Gateway allows resources in a PRIVATE SUBNET
+to initiate connections to the Internet.
+
+Example:
+
+Private EC2
+     |
+     v
+NAT Gateway
+     |
+     v
+Internet
+
+
+Main purpose:
+
+PRIVATE SUBNET → OUTBOUND INTERNET
+
+
+====================================================================
+25. WHY DO WE NEED NAT GATEWAY?
+====================================================================
+
+Suppose we have a private EC2 instance.
+
+Private EC2:
+
+10.0.2.10
+
+
+It needs to:
+
+- Download packages
+- Download updates
+- Access external APIs
+- Download software
+- Access Internet services
+
+
+But we don't want to give the EC2 instance
+a public IP.
+
+
+Use:
+
+Private EC2
+     |
+     v
+NAT Gateway
+     |
+     v
+Internet
+
+
+====================================================================
+26. WHERE IS NAT GATEWAY CREATED?
+====================================================================
+
+IMPORTANT.
+
+
+For Internet access, NAT Gateway is normally created
+in a PUBLIC SUBNET.
+
+
+Example:
+
+VPC
+ |
+ +-------------------------------+
+ |                               |
+ | PUBLIC SUBNET                 |
+ |                               |
+ | NAT GATEWAY                   |
+ |                               |
+ +-------------------------------+
+              |
+              v
+       Internet Gateway
+              |
+              v
+          Internet
+
+
+Why?
+
+Because NAT Gateway needs a route to the Internet.
+
+
+====================================================================
+27. NAT GATEWAY USES EIP
+====================================================================
+
+A public NAT Gateway uses an Elastic IP address.
+
+
+Example:
+
+NAT Gateway
+     |
+     +---- EIP
+            |
+            v
+         Internet
+
+
+Remember:
+
+NAT Gateway
++
+Elastic IP
+=
+Public Internet access for private resources
+
+
+====================================================================
+28. PRIVATE SUBNET ROUTE TABLE
+====================================================================
+
+Private subnet route table:
+
+Destination       Target
+
+0.0.0.0/0         NAT Gateway
+
+
+Meaning:
+
+Any Internet-bound traffic:
+
+Private EC2
+     |
+     v
+Route Table
+     |
+     | 0.0.0.0/0
+     v
+NAT Gateway
+     |
+     v
+Internet
+
+
+====================================================================
+29. PUBLIC SUBNET ROUTE TABLE
+====================================================================
+
+Public subnet route table:
+
+Destination       Target
+
+0.0.0.0/0         Internet Gateway
+
+
+So complete routing is:
+
+PRIVATE EC2
+     |
+     v
+Private Route Table
+     |
+     | 0.0.0.0/0
+     v
+NAT Gateway
+     |
+     v
+Public Route Table
+     |
+     | 0.0.0.0/0
+     v
+Internet Gateway
+     |
+     v
+Internet
+
+
+====================================================================
+30. NAT GATEWAY DOES NOT PROVIDE DIRECT INBOUND ACCESS
+====================================================================
+
+NAT Gateway is mainly used for
+OUTBOUND connections from private resources.
+
+
+Example:
+
+Private EC2
+     |
+     v
+NAT Gateway
+     |
+     v
+Internet
+
+
+Allowed use:
+
+EC2 → Internet
+
+
+An Internet host cannot simply initiate:
+
+Internet → NAT Gateway → Private EC2
+
+
+This is an important concept.
+
+
+====================================================================
+31. NAT GATEWAY vs INTERNET GATEWAY
+====================================================================
+
+INTERNET GATEWAY:
+
+Provides Internet connectivity for VPC resources
+that have appropriate public addressing and routing.
+
+
+NAT GATEWAY:
+
+Allows private subnet resources to initiate
+outbound Internet connections.
+
+
+Easy memory:
+
+IGW = Internet Gateway
+
+NAT = Private → Internet
+
+
+====================================================================
+32. NAT GATEWAY vs SECURITY GROUP
+====================================================================
+
+NAT Gateway:
+
+Provides network translation/connectivity
+for private subnet Internet access.
+
+
+Security Group:
+
+Controls whether network traffic is allowed
+to/from the resource.
+
+
+Example:
+
+Private EC2
+     |
+     | SG allows outbound
+     v
+NAT Gateway
+     |
+     v
+Internet
+
+
+Both networking and security configuration matter.
+
+
+====================================================================
+33. NAT GATEWAY HIGH AVAILABILITY
+====================================================================
+
+NAT Gateway is associated with an Availability Zone.
+
+For a multi-AZ production design,
+a common approach is to use a NAT Gateway
+in each AZ.
+
+
+Example:
+
+                 Internet
+                    |
+             Internet Gateway
+               /          \
+              /            \
+           AZ-1            AZ-2
+            |                |
+       NAT Gateway      NAT Gateway
+            |                |
+       Private Subnet    Private Subnet
+            |                |
+          EC2-A             EC2-B
+
+
+This avoids making one AZ's NAT Gateway
+a dependency for another AZ.
+
+
+====================================================================
+34. COMPLETE ARCHITECTURE
+====================================================================
+
+                         INTERNET
+                             |
+                             v
+                    INTERNET GATEWAY
+                             |
+              +--------------+--------------+
+              |                             |
+              v                             v
+        PUBLIC SUBNET                 PUBLIC SUBNET
+              |                             |
+        NAT GATEWAY                   NAT GATEWAY
+              |                             |
+              v                             v
+       PRIVATE SUBNET                PRIVATE SUBNET
+              |                             |
+             EC2                           EC2
+              |                             |
+             ENI                           ENI
+              |                             |
+        SECURITY GROUP              SECURITY GROUP
+              |
+             NACL
+        (Subnet level)
+
+
+Remember each component:
+
+ENI
+ |
+ +---- Network interface
+
+
+Security Group
+ |
+ +---- Resource/ENI firewall
+
+
+NACL
+ |
+ +---- Subnet firewall
+
+
+NAT Gateway
+ |
+ +---- Private subnet → Internet
+
+
+Internet Gateway
+ |
+ +---- VPC → Internet
+
+
+====================================================================
+35. TROUBLESHOOTING - PRIVATE EC2 INTERNET ACCESS
+====================================================================
+
+Problem:
+
+Private EC2 cannot access the Internet.
+
+
+Check:
+
+1. Private subnet route table
+
+   0.0.0.0/0 → NAT Gateway
+
+
+2. NAT Gateway exists and is available.
+
+
+3. NAT Gateway is in a public subnet.
+
+
+4. NAT Gateway has an Elastic IP.
+
+
+5. Public subnet route table:
+
+   0.0.0.0/0 → Internet Gateway
+
+
+6. Security Group outbound rules.
+
+
+7. NACL inbound/outbound rules.
+
+
+8. DNS configuration if accessing domain names.
+
+
+====================================================================
+36. IMPORTANT INTERVIEW QUESTIONS
+====================================================================
+
+Q1. What is an ENI?
+
+Answer:
+
+ENI is a virtual network interface that provides
+network connectivity to an EC2 instance.
+
+
+Q2. What is NACL?
+
+Answer:
+
+NACL is a subnet-level firewall that controls
+inbound and outbound traffic.
+
+
+Q3. Is NACL stateful?
+
+Answer:
+
+No.
+
+NACL is STATELESS.
+
+
+Q4. Does NACL support DENY rules?
+
+Answer:
+
+Yes.
+
+NACL supports both ALLOW and DENY.
+
+
+Q5. Where is NACL associated?
+
+Answer:
+
+SUBNET.
+
+
+Q6. Where is a Security Group associated?
+
+Answer:
+
+With resources through their network interfaces (ENIs).
+
+
+Q7. What is the biggest difference between SG and NACL?
+
+Answer:
+
+SG:
+Resource/ENI level
+Stateful
+Allow only
+
+
+NACL:
+Subnet level
+Stateless
+Allow + Deny
+
+
+Q8. What is NAT Gateway?
+
+Answer:
+
+NAT Gateway allows private subnet resources
+to initiate outbound Internet connections.
+
+
+Q9. Where is NAT Gateway normally created?
+
+Answer:
+
+PUBLIC SUBNET.
+
+
+Q10. Why does NAT Gateway use EIP?
+
+Answer:
+
+A public NAT Gateway uses an Elastic IP
+for its public-side Internet connectivity.
+
+
+Q11. What route is added in a private subnet?
+
+Answer:
+
+0.0.0.0/0 → NAT Gateway
+
+
+Q12. What route is normally added in the public subnet
+containing the NAT Gateway?
+
+Answer:
+
+0.0.0.0/0 → Internet Gateway
+
+
+====================================================================
+37. FINAL MEMORY TRICK
+====================================================================
+
+ENI
+===
+EC2 NETWORK CARD
+
+
+NACL
+====
+SUBNET FIREWALL
+STATELESS
+ALLOW + DENY
+
+
+SECURITY GROUP
+==============
+RESOURCE/ENI FIREWALL
+STATEFUL
+ALLOW ONLY
+
+
+NAT GATEWAY
+===========
+PRIVATE SUBNET
+      |
+      v
+NAT GATEWAY
+      |
+      v
+INTERNET
+
+
+====================================================================
+38. ONE-LINE INTERVIEW ANSWERS
+====================================================================
+
+ENI:
+
+"ENI is a virtual network interface that provides
+network connectivity to an EC2 instance."
+
+
+NACL:
+
+"NACL is a stateless subnet-level firewall that supports
+both allow and deny rules."
+
+
+Security Group:
+
+"Security Group is a stateful resource-level firewall
+that uses allow rules to control traffic."
+
+
+NAT Gateway:
+
+"NAT Gateway allows resources in a private subnet to
+initiate outbound Internet connections without requiring
+a public IP on those resources."
+
+
+====================================================================
+                    END OF NOTES
+====================================================================
