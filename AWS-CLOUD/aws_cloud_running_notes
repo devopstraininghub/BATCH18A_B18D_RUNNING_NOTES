@@ -5756,3 +5756,2051 @@ addressing and security configuration."
 ====================================================================
                          END
 ====================================================================
+
+
+17 SEP 2026 - AWS MINI PROJECT NOTES
+
+
+reference documet followd :
+https://docs.aws.amazon.com/vpc/latest/userguide/vpc-example-private-subnets-nat.html
+
+
+
+====================================================================
+PROJECT TITLE
+====================================================================
+
+Production-Style AWS VPC Architecture
+
+Services Used:
+
+    - Amazon VPC
+    - Public Subnets
+    - Private Subnets
+    - Internet Gateway
+    - NAT Gateway
+    - Application Load Balancer
+    - Target Group
+    - Auto Scaling Group
+    - Launch Template
+    - Amazon Linux EC2
+    - Apache HTTP Server
+    - Security Groups
+    - Route Tables
+
+
+====================================================================
+PROJECT OBJECTIVE
+====================================================================
+
+The objective of this project is to deploy a highly available
+web application architecture inside AWS.
+
+The application servers run on Amazon Linux EC2 instances
+inside PRIVATE SUBNETS.
+
+Users access the application through an
+Application Load Balancer (ALB).
+
+The private EC2 instances do not need public IP addresses.
+
+For outbound Internet access, the private EC2 instances use
+NAT Gateways located in the public subnets.
+
+The EC2 instances are managed by an Auto Scaling Group (ASG).
+
+A Launch Template is used to define how each EC2 instance
+should be created and configured.
+
+
+====================================================================
+MY PROJECT DETAILS
+====================================================================
+
+VPC Name:
+
+    prod-vpc
+
+VPC CIDR:
+
+    10.81.0.0/16
+
+EC2 Operating System:
+
+    Amazon Linux
+
+Web Server:
+
+    Apache HTTP Server (httpd)
+
+Application:
+
+    Mind Circuit Facebook Page
+
+Web Page:
+
+    /var/www/html/index.html
+
+
+====================================================================
+HIGH-LEVEL ARCHITECTURE
+====================================================================
+
+                         INTERNET
+                             |
+                             v
+                    +----------------+
+                    | Internet       |
+                    | Gateway (IGW)  |
+                    +----------------+
+                             |
+                             v
+              =================================
+                     PUBLIC SUBNETS
+              =================================
+                    |                 |
+                    |                 |
+              +-----------+     +-----------+
+              |    ALB    |     | NAT       |
+              |           |     | Gateway   |
+              +-----------+     +-----------+
+                    |                 |
+                    |                 |
+                    v                 |
+              =================================
+                     PRIVATE SUBNETS
+              =================================
+                    |                 |
+                    v                 v
+               +---------+       +---------+
+               | EC2     |       | EC2     |
+               | Apache  |       | Apache  |
+               +---------+       +---------+
+                    ^                 ^
+                    |                 |
+              Auto Scaling Group (ASG)
+                    |
+                    ^
+             Launch Template
+
+
+====================================================================
+MAIN TRAFFIC FLOW
+====================================================================
+
+USER
+ |
+ | HTTP/HTTPS request
+ v
+INTERNET
+ |
+ v
+INTERNET GATEWAY
+ |
+ v
+APPLICATION LOAD BALANCER
+ |
+ v
+TARGET GROUP
+ |
+ v
+PRIVATE EC2 INSTANCE
+ |
+ v
+APACHE HTTP SERVER
+ |
+ v
+index.html
+
+
+====================================================================
+PRIVATE EC2 OUTBOUND INTERNET FLOW
+====================================================================
+
+PRIVATE EC2
+    |
+    v
+PRIVATE ROUTE TABLE
+    |
+    | 0.0.0.0/0
+    v
+NAT GATEWAY
+    |
+    v
+PUBLIC ROUTE TABLE
+    |
+    | 0.0.0.0/0
+    v
+INTERNET GATEWAY
+    |
+    v
+INTERNET
+
+
+====================================================================
+1. AMAZON VPC
+====================================================================
+
+VPC stands for Virtual Private Cloud.
+
+It provides an isolated virtual network inside AWS.
+
+My VPC:
+
+    Name:
+        prod-vpc
+
+    CIDR:
+        10.81.0.0/16
+
+
+The VPC contains:
+
+    - Public subnets
+    - Private subnets
+    - Route tables
+    - Internet Gateway
+    - NAT Gateways
+    - Security Groups
+    - Application Load Balancer
+    - EC2 instances
+
+
+Easy Memory Trick:
+
+    VPC = AWS PRIVATE NETWORK
+
+
+====================================================================
+2. VPC CIDR
+====================================================================
+
+My VPC CIDR:
+
+    10.81.0.0/16
+
+This defines the IP address range available inside my VPC.
+
+Example:
+
+    VPC
+    10.81.0.0/16
+         |
+         +---- Public Subnet
+         |
+         +---- Public Subnet
+         |
+         +---- Private Subnet
+         |
+         +---- Private Subnet
+
+
+Important:
+
+The subnet CIDRs must be smaller ranges that fit inside
+the VPC CIDR.
+
+
+====================================================================
+3. AVAILABILITY ZONES
+====================================================================
+
+I used two Availability Zones.
+
+Example:
+
+    AZ-1
+       |
+       +---- Public Subnet
+       +---- Private Subnet
+
+    AZ-2
+       |
+       +---- Public Subnet
+       +---- Private Subnet
+
+
+Why two Availability Zones?
+
+    - High availability
+    - Better resiliency
+    - Failure of one AZ does not necessarily take down
+      the entire application
+    - EC2 instances can be distributed across AZs
+    - ALB can operate across multiple AZs
+    - NAT Gateway can be deployed per AZ
+
+
+AWS's reference architecture uses two AZs with public and
+private subnets and a NAT Gateway in each AZ for resiliency.
+:contentReference[oaicite:0]{index=0}
+
+
+====================================================================
+4. PUBLIC SUBNET
+====================================================================
+
+A public subnet is a subnet whose route table has a route
+to an Internet Gateway.
+
+Typical route:
+
+    Destination         Target
+
+    10.81.0.0/16       local
+    0.0.0.0/0          Internet Gateway
+
+
+In my architecture, public subnets contain resources such as:
+
+    - Application Load Balancer
+    - NAT Gateway
+
+
+IMPORTANT:
+
+A subnet is considered public because its route table has
+a route to the Internet Gateway.
+
+Simply placing an EC2 instance inside that subnet does not
+automatically mean the EC2 can be reached from the Internet.
+
+
+====================================================================
+5. PRIVATE SUBNET
+====================================================================
+
+A private subnet does not have a direct route to the
+Internet Gateway for Internet access.
+
+My application EC2 instances are placed in private subnets.
+
+Typical route:
+
+    Destination         Target
+
+    10.81.0.0/16       local
+    0.0.0.0/0          NAT Gateway
+
+
+The private EC2 instances use the NAT Gateway for
+outbound Internet connectivity.
+
+
+====================================================================
+6. INTERNET GATEWAY
+====================================================================
+
+Internet Gateway = IGW
+
+It provides the path between the VPC and the Internet.
+
+Architecture:
+
+    VPC
+     |
+     v
+    Internet Gateway
+     |
+     v
+    Internet
+
+
+For a public subnet:
+
+    0.0.0.0/0
+        |
+        v
+    Internet Gateway
+
+
+Important:
+
+Attaching an Internet Gateway to a VPC alone does NOT make
+an EC2 instance publicly accessible.
+
+The required networking components must also be configured.
+
+
+====================================================================
+7. NAT GATEWAY
+====================================================================
+
+NAT Gateway allows resources in private subnets to initiate
+outbound connections to the Internet.
+
+Example:
+
+    Private EC2
+        |
+        v
+    NAT Gateway
+        |
+        v
+    Internet Gateway
+        |
+        v
+    Internet
+
+
+The Internet cannot directly initiate a connection to the
+private EC2 through the NAT Gateway.
+
+This is one of the important reasons NAT Gateway is useful
+for private application servers.
+
+
+====================================================================
+NAT GATEWAY LOCATION
+====================================================================
+
+NAT Gateway is deployed in a PUBLIC SUBNET.
+
+Example:
+
+    PUBLIC SUBNET
+    ----------------------------
+    NAT Gateway
+    ----------------------------
+
+The NAT Gateway needs Internet connectivity through the
+Internet Gateway.
+
+Private subnet:
+
+    Private EC2
+         |
+         v
+    NAT Gateway
+         |
+         v
+    Internet Gateway
+         |
+         v
+    Internet
+
+
+====================================================================
+NAT GATEWAY PER AZ
+====================================================================
+
+For a highly available architecture, I used:
+
+    AZ-1
+       |
+       +---- NAT Gateway
+
+    AZ-2
+       |
+       +---- NAT Gateway
+
+
+Why?
+
+If one Availability Zone has a problem, the other AZ can
+continue using its own NAT Gateway.
+
+AWS's reference architecture recommends one NAT Gateway
+per AZ for improved resiliency. :contentReference[oaicite:1]{index=1}
+
+
+====================================================================
+8. ROUTE TABLES
+====================================================================
+
+Route tables determine where network traffic should go.
+
+--------------------------------------------------------------------
+PUBLIC ROUTE TABLE
+--------------------------------------------------------------------
+
+Example:
+
+    Destination         Target
+
+    10.81.0.0/16       local
+    0.0.0.0/0          Internet Gateway
+
+
+Meaning:
+
+    Internal VPC traffic
+            |
+            v
+        local
+
+    Internet traffic
+            |
+            v
+        Internet Gateway
+
+
+--------------------------------------------------------------------
+PRIVATE ROUTE TABLE
+--------------------------------------------------------------------
+
+Example:
+
+    Destination         Target
+
+    10.81.0.0/16       local
+    0.0.0.0/0          NAT Gateway
+
+
+Meaning:
+
+    Internal VPC traffic
+            |
+            v
+        local
+
+    Internet-bound traffic
+            |
+            v
+        NAT Gateway
+
+
+====================================================================
+9. APPLICATION LOAD BALANCER
+====================================================================
+
+ALB = Application Load Balancer.
+
+It receives application traffic from users and distributes
+that traffic to healthy EC2 instances.
+
+Flow:
+
+    User
+      |
+      v
+    ALB
+      |
+      v
+    Target Group
+      |
+      +---- EC2-1
+      |
+      +---- EC2-2
+
+
+The ALB is placed in the public subnets.
+
+The application EC2 instances are placed in private subnets.
+
+
+====================================================================
+WHY USE ALB?
+====================================================================
+
+Without ALB:
+
+    User
+      |
+      v
+    EC2
+
+The user would need direct access to an EC2 server.
+
+With ALB:
+
+    User
+      |
+      v
+    ALB
+      |
+      v
+    Private EC2
+
+
+Benefits:
+
+    - Application traffic distribution
+    - Health checks
+    - High availability
+    - Private application servers
+    - Works with Auto Scaling
+
+
+AWS's example architecture uses a load balancer to receive
+requests and distribute traffic to servers in private
+subnets. :contentReference[oaicite:2]{index=2}
+
+
+====================================================================
+10. TARGET GROUP
+====================================================================
+
+Target Group contains the backend EC2 instances that the
+ALB sends traffic to.
+
+Example:
+
+    Target Group
+       |
+       +---- EC2-1
+       |
+       +---- EC2-2
+       |
+       +---- EC2-3
+
+
+The target group also performs health checks.
+
+Example:
+
+    Protocol:
+        HTTP
+
+    Port:
+        80
+
+    Path:
+        /
+
+
+If the EC2 passes the health check:
+
+    Healthy
+
+The ALB can send traffic to it.
+
+If the EC2 fails the health check:
+
+    Unhealthy
+
+The ALB avoids sending normal traffic to that unhealthy target.
+
+
+AWS specifically notes that the server Security Group must
+allow traffic from the load balancer on the listener port
+and health-check traffic. :contentReference[oaicite:3]{index=3}
+
+
+====================================================================
+11. AUTO SCALING GROUP
+====================================================================
+
+ASG = Auto Scaling Group.
+
+It manages a group of EC2 instances.
+
+It maintains:
+
+    Minimum capacity
+    Desired capacity
+    Maximum capacity
+
+
+Example:
+
+    Minimum:
+        2
+
+    Desired:
+        2
+
+    Maximum:
+        4
+
+
+The exact values depend on the configuration used in the
+project.
+
+
+ASG can:
+
+    - Launch EC2 instances
+    - Terminate EC2 instances
+    - Replace unhealthy instances
+    - Maintain desired capacity
+    - Distribute instances across configured subnets/AZs
+    - Integrate with ALB
+
+
+AWS documents an Auto Scaling Group as a collection of EC2
+instances with minimum, maximum and desired capacity. :contentReference[oaicite:4]{index=4}
+
+
+====================================================================
+12. LAUNCH TEMPLATE
+====================================================================
+
+Launch Template = EC2 INSTANCE BLUEPRINT
+
+
+My Launch Template defines how the application EC2 instances
+should be launched.
+
+Typical configuration includes:
+
+    - Amazon Linux AMI
+    - Instance type
+    - Key pair
+    - Security Group
+    - User Data
+    - Storage
+    - Other EC2 launch settings
+
+
+The Auto Scaling Group uses this Launch Template to launch
+new EC2 instances.
+
+AWS describes the Launch Template as containing configuration
+information such as AMI, instance type, key pair, security
+groups and other launch parameters. :contentReference[oaicite:5]{index=5}
+
+
+====================================================================
+13. USER DATA
+====================================================================
+
+User Data is used to automatically perform configuration
+tasks when an EC2 instance is launched.
+
+In my project, I used User Data to install and configure
+Apache automatically.
+
+AWS supports shell scripts and cloud-init directives as
+user data for Linux EC2 instances. :contentReference[oaicite:6]{index=6}
+
+
+====================================================================
+MY ACTUAL USER DATA
+====================================================================
+
+#!/bin/bash
+
+yum update -y
+yum install -y httpd
+systemctl enable httpd
+systemctl start httpd
+
+cat > /var/www/html/index.html <<'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mind Circuit Facebook Page</title>
+</head>
+<body>
+    <h1>Welcome to Mind Circuit Facebook page</h1>
+
+</body>
+</html>
+EOF
+
+
+====================================================================
+14. USER DATA - LINE BY LINE
+====================================================================
+
+#!/bin/bash
+
+    Executes the script using Bash.
+
+
+--------------------------------------------------------------------
+
+yum update -y
+
+    Updates installed packages.
+
+    -y means automatically answer yes to prompts.
+
+
+--------------------------------------------------------------------
+
+yum install -y httpd
+
+    Installs Apache HTTP Server.
+
+    httpd = Apache web server package.
+
+
+--------------------------------------------------------------------
+
+systemctl enable httpd
+
+    Enables Apache to start automatically when the
+    operating system boots.
+
+
+--------------------------------------------------------------------
+
+systemctl start httpd
+
+    Starts Apache immediately.
+
+
+--------------------------------------------------------------------
+
+cat > /var/www/html/index.html <<'EOF'
+
+    Creates the website's index.html file.
+
+    Apache's default document root is:
+
+        /var/www/html/
+
+
+--------------------------------------------------------------------
+
+<title>Mind Circuit Facebook Page</title>
+
+    Sets the browser page title.
+
+
+--------------------------------------------------------------------
+
+<h1>Welcome to Mind Circuit Facebook page</h1>
+
+    Displays the main heading on the webpage.
+
+
+--------------------------------------------------------------------
+
+EOF
+
+    Marks the end of the multi-line HTML content.
+
+
+====================================================================
+15. WHY USER DATA + LAUNCH TEMPLATE?
+====================================================================
+
+Imagine ASG launches a new EC2.
+
+Without User Data:
+
+    EC2 launched
+        |
+        v
+    Login manually
+        |
+        v
+    Install Apache
+        |
+        v
+    Start Apache
+        |
+        v
+    Create webpage
+
+
+With User Data:
+
+    EC2 launched
+        |
+        v
+    Launch Template
+        |
+        v
+    User Data executes
+        |
+        +---- Install Apache
+        |
+        +---- Start Apache
+        |
+        +---- Create webpage
+        |
+        v
+    Web Server Ready
+
+
+This is extremely useful when ASG launches replacement
+or additional instances.
+
+
+====================================================================
+16. AMAZON LINUX EC2
+====================================================================
+
+Application servers use:
+
+    Amazon Linux
+
+The EC2 instance receives its configuration from the
+Launch Template and User Data.
+
+After startup:
+
+    Amazon Linux
+        |
+        +---- httpd installed
+        |
+        +---- httpd started
+        |
+        +---- index.html created
+        |
+        v
+    Web Server Ready
+
+
+====================================================================
+17. APACHE HTTP SERVER
+====================================================================
+
+Apache is the web server used in this project.
+
+Service name:
+
+    httpd
+
+
+Configuration directory:
+
+    /etc/httpd/
+
+
+Website directory:
+
+    /var/www/html/
+
+
+Website:
+
+    /var/www/html/index.html
+
+
+Check Apache:
+
+    systemctl status httpd
+
+
+Check if Apache is running:
+
+    systemctl is-active httpd
+
+
+Check if Apache is enabled:
+
+    systemctl is-enabled httpd
+
+
+Test locally:
+
+    curl http://localhost
+
+
+====================================================================
+18. APPLICATION PAGE
+====================================================================
+
+The application is a simple HTML page.
+
+File:
+
+    /var/www/html/index.html
+
+
+Content:
+
+    Welcome to Mind Circuit Facebook page
+
+
+When a user accesses the ALB:
+
+    User
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+      |
+      v
+    Apache
+      |
+      v
+    index.html
+
+
+The user sees:
+
+    Welcome to Mind Circuit Facebook page
+
+
+====================================================================
+19. SECURITY GROUP DESIGN
+====================================================================
+
+Security Groups act as virtual firewalls.
+
+
+--------------------------------------------------------------------
+ALB SECURITY GROUP
+--------------------------------------------------------------------
+
+The ALB Security Group allows application traffic from
+the required user/client sources.
+
+Example:
+
+    HTTP
+    Port 80
+    Source: 0.0.0.0/0
+
+
+For HTTPS:
+
+    HTTPS
+    Port 443
+    Source: appropriate client source
+
+
+--------------------------------------------------------------------
+EC2 SECURITY GROUP
+--------------------------------------------------------------------
+
+The EC2 Security Group should allow application traffic
+from the ALB Security Group.
+
+Example:
+
+    Type:
+        HTTP
+
+    Port:
+        80
+
+    Source:
+        ALB Security Group
+
+
+This is preferable to allowing:
+
+    0.0.0.0/0
+
+
+Why?
+
+Because the EC2 servers are private application servers.
+
+Users should access:
+
+    User -> ALB -> EC2
+
+instead of:
+
+    User -> EC2 directly
+
+
+====================================================================
+20. COMPLETE SECURITY FLOW
+====================================================================
+
+Internet User
+      |
+      v
+ALB Security Group
+      |
+      v
+Application Load Balancer
+      |
+      v
+EC2 Security Group
+      |
+      | Allow from ALB SG
+      v
+Private EC2
+      |
+      v
+Apache
+
+
+====================================================================
+21. COMPLETE APPLICATION FLOW
+====================================================================
+
+STEP 1
+
+User enters the ALB DNS name.
+
+        |
+        v
+
+STEP 2
+
+Request reaches the Internet Gateway.
+
+        |
+        v
+
+STEP 3
+
+Request reaches the Application Load Balancer.
+
+        |
+        v
+
+STEP 4
+
+ALB checks its Target Group.
+
+        |
+        v
+
+STEP 5
+
+ALB selects a healthy EC2 instance.
+
+        |
+        v
+
+STEP 6
+
+Request reaches Apache on port 80.
+
+        |
+        v
+
+STEP 7
+
+Apache reads:
+
+    /var/www/html/index.html
+
+        |
+        v
+
+STEP 8
+
+HTML response is returned to the user.
+
+
+====================================================================
+22. COMPLETE OUTBOUND FLOW
+====================================================================
+
+Private EC2 needs Internet access.
+
+        |
+        v
+Private Route Table
+        |
+        | 0.0.0.0/0
+        v
+NAT Gateway
+        |
+        v
+Public Route Table
+        |
+        | 0.0.0.0/0
+        v
+Internet Gateway
+        |
+        v
+Internet
+
+
+IMPORTANT:
+
+The private EC2 does not require a public IP for this
+outbound Internet path.
+
+
+====================================================================
+23. WHY PRIVATE EC2?
+====================================================================
+
+The application servers are placed in private subnets.
+
+This reduces direct Internet exposure.
+
+Users do not directly connect to:
+
+    EC2-1
+    EC2-2
+
+
+Instead:
+
+    User
+      |
+      v
+    ALB
+      |
+      v
+    Private EC2
+
+
+For outbound Internet connectivity:
+
+    Private EC2
+       |
+       v
+    NAT Gateway
+       |
+       v
+    Internet
+
+
+====================================================================
+24. WHY TWO AZs?
+====================================================================
+
+Suppose:
+
+    AZ-1
+       |
+       +---- ALB
+       +---- NAT Gateway
+       +---- Private EC2
+
+
+    AZ-2
+       |
+       +---- ALB
+       +---- NAT Gateway
+       +---- Private EC2
+
+
+If one Availability Zone has an issue,
+the other AZ can continue serving the application,
+depending on the configured capacity and health state.
+
+
+====================================================================
+25. WHY TWO NAT GATEWAYS?
+====================================================================
+
+Architecture:
+
+    AZ-1
+       |
+       +---- NAT Gateway 1
+
+
+    AZ-2
+       |
+       +---- NAT Gateway 2
+
+
+Each AZ can have its own NAT Gateway.
+
+This avoids depending on a single NAT Gateway for
+both Availability Zones.
+
+AWS recommends one NAT Gateway per AZ in this reference
+architecture for resiliency. :contentReference[oaicite:7]{index=7}
+
+
+====================================================================
+26. PROJECT RESOURCE RELATIONSHIP
+====================================================================
+
+VPC
+ |
+ +---- Internet Gateway
+ |
+ +---- Public Subnet AZ-1
+ |       |
+ |       +---- ALB
+ |       |
+ |       +---- NAT Gateway
+ |
+ +---- Public Subnet AZ-2
+ |       |
+ |       +---- ALB
+ |       |
+ |       +---- NAT Gateway
+ |
+ +---- Private Subnet AZ-1
+ |       |
+ |       +---- EC2
+ |
+ +---- Private Subnet AZ-2
+ |       |
+ |       +---- EC2
+ |
+ +---- Public Route Tables
+ |
+ +---- Private Route Tables
+ |
+ +---- Security Groups
+ |
+ +---- Target Group
+ |
+ +---- Auto Scaling Group
+ |       |
+ |       +---- Launch Template
+ |
+ +---- Amazon Linux
+         |
+         +---- Apache
+         |
+         +---- index.html
+
+
+====================================================================
+27. AUTO SCALING + LAUNCH TEMPLATE FLOW
+====================================================================
+
+                    Auto Scaling Group
+                            |
+                            v
+                    Launch Template
+                            |
+                            v
+                      Amazon Linux
+                            |
+                            v
+                       User Data
+                            |
+             +--------------+--------------+
+             |              |              |
+             v              v              v
+        Install httpd   Start httpd   Create HTML
+             |              |              |
+             +--------------+--------------+
+                            |
+                            v
+                       Web Server
+                            |
+                            v
+                       Target Group
+                            |
+                            v
+                           ALB
+
+
+====================================================================
+28. HEALTH CHECK FLOW
+====================================================================
+
+ALB
+ |
+ v
+Target Group
+ |
+ | Health Check
+ v
+EC2:80
+ |
+ v
+Apache
+ |
+ v
+/
+
+If successful:
+
+    EC2 = Healthy
+
+If failed:
+
+    EC2 = Unhealthy
+
+
+ALB sends normal traffic only to healthy targets.
+
+
+====================================================================
+29. WHAT HAPPENS IF AN EC2 INSTANCE FAILS?
+====================================================================
+
+Example:
+
+    EC2-1
+      |
+      X
+   Unhealthy
+
+
+Target Group detects the unhealthy instance.
+
+Auto Scaling Group can replace the instance
+according to its configured health-check and capacity settings.
+
+New EC2
+   |
+   v
+Launch Template
+   |
+   v
+User Data
+   |
+   v
+Apache installed
+   |
+   v
+Website created
+   |
+   v
+Health Check
+   |
+   v
+Healthy
+   |
+   v
+ALB starts sending traffic
+
+
+This is one of the main benefits of combining:
+
+    Launch Template
+          +
+    Auto Scaling Group
+          +
+    ALB
+
+
+====================================================================
+30. TROUBLESHOOTING - WEBSITE NOT WORKING
+====================================================================
+
+Problem:
+
+    ALB DNS name does not display the website.
+
+
+CHECK 1:
+    Is the ALB running?
+
+CHECK 2:
+    Is the listener configured?
+
+    Example:
+
+        HTTP : 80
+
+
+CHECK 3:
+    Is the Target Group configured?
+
+CHECK 4:
+    Are targets healthy?
+
+CHECK 5:
+    Is Apache running?
+
+    systemctl status httpd
+
+
+CHECK 6:
+    Is port 80 listening?
+
+    ss -lntp | grep :80
+
+
+CHECK 7:
+    Test locally on EC2:
+
+    curl http://localhost
+
+
+CHECK 8:
+    Is index.html present?
+
+    ls -l /var/www/html/index.html
+
+
+CHECK 9:
+    Does EC2 Security Group allow HTTP
+    from the ALB Security Group?
+
+
+CHECK 10:
+    Is the correct health check path configured?
+
+
+====================================================================
+31. TROUBLESHOOTING - PRIVATE EC2 CANNOT ACCESS INTERNET
+====================================================================
+
+Check:
+
+    1. Private subnet route table
+
+       0.0.0.0/0 -> NAT Gateway
+
+
+    2. NAT Gateway status
+
+
+    3. NAT Gateway is in a public subnet
+
+
+    4. Public subnet route table
+
+       0.0.0.0/0 -> Internet Gateway
+
+
+    5. NAT Gateway has the required public connectivity
+
+
+    6. Security Group outbound rules
+
+
+    7. Network ACL rules
+
+
+    8. Correct subnet association
+
+
+====================================================================
+32. TROUBLESHOOTING - TARGET UNHEALTHY
+====================================================================
+
+Check:
+
+    - Apache installed?
+    - Apache running?
+    - Port 80 listening?
+    - Correct target port?
+    - Correct health check path?
+    - EC2 Security Group allows ALB SG?
+    - Application actually responding?
+    - Network ACL blocking traffic?
+
+
+Useful commands:
+
+    systemctl status httpd
+
+    ss -lntp | grep :80
+
+    curl http://localhost
+
+    cat /var/www/html/index.html
+
+
+AWS also recommends Reachability Analyzer for diagnosing
+network reachability problems such as route table and
+security group configuration issues. :contentReference[oaicite:8]{index=8}
+
+
+====================================================================
+33. PROJECT CREATION ORDER
+====================================================================
+
+STEP 1
+    Create VPC
+
+    Name:
+        prod-vpc
+
+    CIDR:
+        10.81.0.0/16
+
+
+STEP 2
+    Create/select two Availability Zones.
+
+
+STEP 3
+    Create two public subnets.
+
+
+STEP 4
+    Create two private subnets.
+
+
+STEP 5
+    Attach Internet Gateway.
+
+
+STEP 6
+    Create NAT Gateway in each public subnet.
+
+
+STEP 7
+    Configure public route tables.
+
+
+STEP 8
+    Configure private route tables.
+
+
+STEP 9
+    Create ALB Security Group.
+
+
+STEP 10
+    Create EC2/Application Security Group.
+
+
+STEP 11
+    Create Launch Template.
+
+
+STEP 12
+    Select Amazon Linux AMI.
+
+
+STEP 13
+    Configure EC2 instance type.
+
+
+STEP 14
+    Configure Security Group.
+
+
+STEP 15
+    Add User Data.
+
+
+STEP 16
+    Create Auto Scaling Group.
+
+
+STEP 17
+    Select the private subnets.
+
+
+STEP 18
+    Configure minimum/desired/maximum capacity.
+
+
+STEP 19
+    Create Target Group.
+
+
+STEP 20
+    Configure ALB.
+
+
+STEP 21
+    Configure listener.
+
+
+STEP 22
+    Attach Target Group to ALB/ASG.
+
+
+STEP 23
+    Wait for EC2 instances to become healthy.
+
+
+STEP 24
+    Test the ALB DNS name.
+
+
+====================================================================
+34. IMPORTANT DIFFERENCE
+====================================================================
+
+ALB:
+
+    Handles INBOUND application traffic.
+
+NAT Gateway:
+
+    Handles OUTBOUND Internet traffic from
+    private resources.
+
+Internet Gateway:
+
+    Provides the VPC's Internet connectivity path.
+
+Launch Template:
+
+    Defines how EC2 instances are launched.
+
+Auto Scaling Group:
+
+    Manages the EC2 instance fleet.
+
+Target Group:
+
+    Defines the backend targets and health checks.
+
+Apache:
+
+    Serves the actual web content.
+
+
+====================================================================
+35. QUICK COMPARISON
+====================================================================
+
+Component              Purpose
+--------------------------------------------------------------------
+VPC                    AWS virtual network
+Subnet                 Network segment inside VPC
+Public Subnet          Subnet with route to IGW
+Private Subnet         Application subnet without direct IGW route
+IGW                    VPC <-> Internet connectivity
+NAT Gateway            Private subnet outbound Internet access
+ALB                    Distributes inbound application traffic
+Target Group           Backend targets + health checks
+ASG                    Manages EC2 instance capacity
+Launch Template        EC2 launch blueprint
+User Data              Instance startup configuration
+Security Group         Stateful virtual firewall
+Apache/httpd           Web server
+index.html              Application webpage
+
+
+====================================================================
+36. PROJECT FLOW - ONE PAGE REVISION
+====================================================================
+
+                         INTERNET
+                             |
+                             v
+                            IGW
+                             |
+                             v
+                           ALB
+                             |
+                    +--------+--------+
+                    |                 |
+                    v                 v
+                EC2-AZ1           EC2-AZ2
+                Private           Private
+                    |                 |
+                    +--------+--------+
+                             |
+                        Apache httpd
+                             |
+                         index.html
+
+
+For outbound traffic:
+
+    EC2-AZ1
+       |
+       v
+    NAT Gateway-AZ1
+       |
+       v
+    IGW
+       |
+       v
+    Internet
+
+
+    EC2-AZ2
+       |
+       v
+    NAT Gateway-AZ2
+       |
+       v
+    IGW
+       |
+       v
+    Internet
+
+
+EC2 instances are created by:
+
+    Auto Scaling Group
+            |
+            v
+    Launch Template
+            |
+            v
+        User Data
+
+
+====================================================================
+37. EASY MEMORY TRICK
+====================================================================
+
+Remember:
+
+    VPC
+      =
+    NETWORK
+
+
+    PUBLIC SUBNET
+      =
+    INTERNET-FACING COMPONENTS
+
+
+    PRIVATE SUBNET
+      =
+    APPLICATION SERVERS
+
+
+    IGW
+      =
+    INTERNET DOOR
+
+
+    NAT
+      =
+    PRIVATE SERVER'S OUTBOUND DOOR
+
+
+    ALB
+      =
+    TRAFFIC DISTRIBUTOR
+
+
+    TARGET GROUP
+      =
+    BACKEND SERVER LIST
+
+
+    ASG
+      =
+    SERVER MANAGER
+
+
+    LAUNCH TEMPLATE
+      =
+    SERVER BLUEPRINT
+
+
+    USER DATA
+      =
+    SERVER STARTUP SCRIPT
+
+
+    APACHE
+      =
+    WEB SERVER
+
+
+====================================================================
+38. INTERVIEW QUESTIONS
+====================================================================
+
+Q1. Explain your AWS project.
+
+A:
+I created a VPC named prod-vpc with CIDR 10.81.0.0/16,
+using public and private subnets across two Availability Zones.
+The ALB was deployed in the public subnets, while Amazon Linux
+EC2 web servers were deployed in private subnets and managed
+by an Auto Scaling Group. The EC2 instances used a Launch
+Template with User Data to automatically install Apache and
+deploy the application webpage. NAT Gateways provided outbound
+Internet access for the private instances.
+
+
+Q2. Why did you put EC2 in private subnets?
+
+A:
+To avoid direct Internet exposure of the application servers
+and allow users to access them through the ALB.
+
+
+Q3. How can private EC2 access the Internet?
+
+A:
+The private subnet routes Internet-bound traffic to a NAT Gateway,
+which is in a public subnet and has connectivity through the IGW.
+
+
+Q4. Why did you use NAT Gateway?
+
+A:
+To provide outbound Internet connectivity to private EC2
+instances without requiring public IP addresses on those
+instances.
+
+
+Q5. Why did you use an ALB?
+
+A:
+To receive application traffic and distribute it to healthy
+EC2 instances in the Target Group.
+
+
+Q6. Why did you use an Auto Scaling Group?
+
+A:
+To maintain the required EC2 capacity and automatically
+launch or replace instances according to the configured
+capacity and health requirements.
+
+
+Q7. Why did you use a Launch Template?
+
+A:
+To define a reusable EC2 configuration that the Auto Scaling
+Group can use when launching instances.
+
+
+Q8. What is User Data?
+
+A:
+User Data is instance initialization data used to automate
+configuration tasks when an EC2 instance launches.
+
+
+Q9. What does your User Data script do?
+
+A:
+It updates packages, installs Apache, enables and starts
+Apache, and creates the index.html webpage.
+
+
+Q10. Why did you use httpd?
+
+A:
+httpd is the Apache HTTP Server package used to serve the
+HTML application.
+
+
+Q11. Where is your webpage stored?
+
+A:
+
+    /var/www/html/index.html
+
+
+Q12. How does the ALB know whether an EC2 instance is healthy?
+
+A:
+The ALB Target Group performs health checks against the
+registered EC2 instances.
+
+
+Q13. What happens when an EC2 instance becomes unhealthy?
+
+A:
+The ALB stops sending normal traffic to the unhealthy target,
+and the Auto Scaling Group can replace the instance according
+to its configuration.
+
+
+Q14. Why did you use two Availability Zones?
+
+A:
+To improve availability and resiliency by distributing
+application resources across multiple AZs.
+
+
+Q15. Why did you use one NAT Gateway per AZ?
+
+A:
+To improve resiliency and avoid relying on a single NAT
+Gateway for both Availability Zones.
+
+
+Q16. What is the difference between ALB and NAT Gateway?
+
+A:
+ALB handles inbound application traffic, while NAT Gateway
+provides outbound Internet connectivity for private resources.
+
+
+Q17. What is the difference between Launch Template and ASG?
+
+A:
+Launch Template defines how an EC2 instance should be launched,
+while the Auto Scaling Group manages the number and lifecycle
+of EC2 instances.
+
+
+Q18. What happens when ASG launches a new EC2?
+
+A:
+It uses the Launch Template, launches the Amazon Linux instance,
+runs the User Data configuration, installs Apache, creates the
+webpage, and then the instance can become a healthy ALB target.
+
+
+====================================================================
+39. 30-SECOND INTERVIEW ANSWER
+====================================================================
+
+"I created a production-style AWS VPC named prod-vpc with the
+CIDR 10.81.0.0/16 across two Availability Zones. I created
+public and private subnets, placed an Application Load Balancer
+and NAT Gateways in the public subnets, and deployed Amazon Linux
+EC2 web servers in the private subnets. The EC2 instances were
+managed by an Auto Scaling Group using a Launch Template.
+
+In the Launch Template, I configured Amazon Linux and used
+User Data to install Apache, start the httpd service, and create
+an index.html page containing our Mind Circuit Facebook page.
+Users access the application through the ALB, while the private
+EC2 instances use NAT Gateways for outbound Internet connectivity."
+
+
+====================================================================
+40. FINAL PROJECT ARCHITECTURE
+====================================================================
+
+                         USERS
+                           |
+                           v
+                      INTERNET
+                           |
+                           v
+                  INTERNET GATEWAY
+                           |
+                           v
+             +-------------------------+
+             |   PUBLIC SUBNETS        |
+             |                         |
+             |   Application Load      |
+             |   Balancer              |
+             |                         |
+             |   NAT Gateway AZ-1       |
+             |   NAT Gateway AZ-2       |
+             +-------------------------+
+                       |
+                       |
+                       v
+             +-------------------------+
+             |   PRIVATE SUBNETS       |
+             |                         |
+             |   EC2 - Amazon Linux    |
+             |   Apache                |
+             |                         |
+             |   EC2 - Amazon Linux    |
+             |   Apache                |
+             +-------------------------+
+                       ^
+                       |
+                 Auto Scaling
+                    Group
+                       ^
+                       |
+                Launch Template
+                       ^
+                       |
+                   User Data
+                       |
+             +---------+---------+
+             |                   |
+        Install httpd       Create HTML
+             |                   |
+             +---------+---------+
+                       |
+                       v
+             Mind Circuit Facebook
+                    Web Page
+
+
+====================================================================
+FINAL MEMORY LINE
+====================================================================
+
+USER
+  -> ALB
+  -> PRIVATE EC2
+  -> APACHE
+  -> WEBSITE
+
+PRIVATE EC2
+  -> NAT
+  -> IGW
+  -> INTERNET
+
+ASG
+  -> LAUNCH TEMPLATE
+  -> USER DATA
+  -> AMAZON LINUX
+  -> APACHE
+
+
+====================================================================
+PROJECT IN ONE SENTENCE
+====================================================================
+
+"Public ALB receives traffic, private Amazon Linux EC2 servers
+serve the application, Auto Scaling manages the servers,
+Launch Template defines the server configuration, User Data
+installs Apache automatically, and NAT Gateway provides
+outbound Internet access."
+
+
+====================================================================
