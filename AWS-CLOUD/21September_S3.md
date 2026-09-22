@@ -80,25 +80,97 @@ Used for cost optimization — see `3September_EFS.md` §8 for the same idea app
 
 ## 7. S3 storage classes
 
-| Storage class | Best for | Notes |
-|---|---|---|
-| **Standard** | Frequently accessed, active data | High availability, low latency, higher cost |
-| **Standard-IA** | Rarely accessed data | Lower storage cost, small retrieval fee |
-| **One Zone-IA** | Secondary backups, re-creatable data | Single AZ only — cheaper, but less resilient |
-| **Intelligent-Tiering** | Unpredictable access patterns | Auto-moves data between tiers; small monitoring fee |
-| **Glacier Instant Retrieval** | Archived but occasionally needed data | Lower cost than Standard, retrieval is immediate |
-| **Glacier Flexible Retrieval** | Long-term backups, rarely accessed archives | Very low cost, retrieval takes minutes to hours |
-| **Glacier Deep Archive** | Legal/compliance, 7+ year retention | Lowest cost, retrieval takes hours |
+⚠️ **One thing true of every class below:** all of them give the same **11 nines (99.999999999%) durability** — durability means "will AWS ever lose this object," and that answer is the same everywhere. What actually changes between classes is **availability** (can you reach it right now), **retrieval speed**, **minimum storage duration**, and **cost**.
+
+### S3 Standard
+
+- Designed for **99.99% availability** — under ~52 minutes of downtime a year.
+- Data is stored across **3 or more Availability Zones**.
+- No minimum storage duration, no retrieval fee.
+- Highest per-GB storage cost of the "hot" tiers, in exchange for the best availability and lowest latency.
+
+**Real-time example:** a live application's assets, a website's images, or any file your application reads/writes constantly.
+
+### S3 Standard-IA (Infrequent Access)
+
+- Same 11-nines durability, but designed for **99.9% availability**, still across 3+ AZs.
+- Storage cost is lower than Standard, but there's a **small per-GB retrieval fee** every time you read an object.
+- **30-day minimum storage duration** — if you delete or transition an object before 30 days, you're still billed as if you'd kept it the full 30 days.
+
+**Real-time example:** disaster-recovery copies, or backups you hope never to need, but must be able to read in full **immediately** if you ever do.
+
+### S3 One Zone-IA
+
+- Same low cost profile as Standard-IA, but roughly 20% cheaper again.
+- Stored in **only one** Availability Zone — if that AZ is lost, the data is lost with it.
+- Same **30-day minimum storage duration** as Standard-IA.
+
+**Real-time example:** a secondary copy of data whose primary lives somewhere else already (e.g. you also keep it on-prem), or easily-regenerable data — never your only copy of something important.
+
+### S3 Intelligent-Tiering
+
+- **Automatically moves objects between access tiers** based on actual usage — no lifecycle rules to write or maintain yourself.
+- Built-in tiers: **Frequent Access** (default, new objects start here) → **Infrequent Access** (after 30 consecutive days with no access) → **Archive Instant Access** (after 90 days with no access) → optional **Archive Access** / **Deep Archive Access** tiers for data left untouched even longer.
+- **No retrieval fees at all** on the Frequent/Infrequent/Archive Instant tiers — you're only ever charged for storage plus a small monitoring fee.
+- Monitoring & automation fee: about **$0.0025 per 1,000 objects/month**.
+- Objects smaller than **128 KB are never monitored or moved** — they always stay billed at Frequent Access rates, with no monitoring charge on them.
+- If an object in a colder tier is accessed again, it moves straight back to Frequent Access automatically.
+
+**Real-time example:** a shared team drive or a data lake where nobody can predict in advance how often any given file will actually get touched.
+
+### S3 Glacier Instant Retrieval
+
+- Same 11-nines durability, 99.9% availability, across 3+ AZs.
+- Retrieval is **milliseconds** — the same speed as Standard, just at a much lower storage cost.
+- **90-day minimum storage duration.**
+
+**Real-time example:** medical imaging or news-archive photos — rarely opened, but must load instantly the moment someone does need one.
+
+### S3 Glacier Flexible Retrieval
+
+- Very low storage cost.
+- **90-day minimum storage duration.**
+- Three retrieval speed options, each a cost/time trade-off:
+  - **Expedited** — typically 1–5 minutes.
+  - **Standard** — typically 3–5 hours.
+  - **Bulk** — typically 5–12 hours, and free.
+
+**Real-time example:** long-term backups you occasionally need to restore, but where waiting a few hours is genuinely fine.
+
+### S3 Glacier Deep Archive
+
+- **Lowest storage cost** of any S3 class.
+- **180-day minimum storage duration** — the longest of any class.
+- Two retrieval options: **Standard** (~12 hours) or **Bulk** (~48 hours).
+- Built for data you're required to keep for **7+ years**, and essentially never expect to open.
+
+**Real-time example:** regulatory or audit records kept purely for legal/compliance reasons.
+
+### ⚠️ The minimum-storage-duration trap
+
+For any class with a minimum storage duration (Standard-IA/One Zone-IA: 30 days, Glacier Instant/Flexible: 90 days, Deep Archive: 180 days) — deleting or transitioning an object **before** that period ends still bills you for the **entire** minimum period, as if you'd kept it the whole time. A lifecycle policy that moves objects to a colder tier too aggressively (e.g. after just a few days) can end up costing **more**, not less, because of this.
+
+### Quick reference table
+
+| Storage class | Best for | Availability | Min. storage duration | Retrieval |
+|---|---|---|---|---|
+| Standard | Frequently accessed, active data | 99.99% | None | Instant, no fee |
+| Standard-IA | Rarely accessed data | 99.9% | 30 days | Instant, small fee |
+| One Zone-IA | Secondary/re-creatable data | Single AZ | 30 days | Instant, small fee |
+| Intelligent-Tiering | Unpredictable access patterns | Matches underlying tier | None | Instant, no fee |
+| Glacier Instant Retrieval | Archived but occasionally needed | 99.9% | 90 days | Milliseconds |
+| Glacier Flexible Retrieval | Long-term backups | Multi-AZ | 90 days | Minutes to ~12 hours |
+| Glacier Deep Archive | 7+ year legal/compliance retention | Multi-AZ | 180 days | ~12–48 hours |
 
 **Simple decision guide:**
 ```
-Frequent access      → Standard
-Rare access          → Standard-IA
-Single AZ + cheaper   → One Zone-IA
-Unknown pattern       → Intelligent-Tiering
-Archive + fast read   → Glacier Instant Retrieval
-Archive + low cost    → Glacier Flexible Retrieval
-Very long-term        → Glacier Deep Archive
+Frequent access       → Standard
+Rare access           → Standard-IA
+Single AZ + cheaper    → One Zone-IA
+Unknown pattern        → Intelligent-Tiering
+Archive + fast read    → Glacier Instant Retrieval
+Archive + low cost     → Glacier Flexible Retrieval
+Very long-term         → Glacier Deep Archive
 ```
 
 **Easy memory trick:** Standard = active data. IA = less-frequently-used data. Glacier = archive data. Intelligent-Tiering = "let AWS figure it out for me."
