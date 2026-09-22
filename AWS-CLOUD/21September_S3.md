@@ -102,10 +102,17 @@ Used for cost optimization — see `3September_EFS.md` §8 for the same idea app
 ### S3 One Zone-IA
 
 - Same low cost profile as Standard-IA, but roughly 20% cheaper again.
-- Stored in **only one** Availability Zone — if that AZ is lost, the data is lost with it.
+- Stored in **only one** Availability Zone — if that AZ is lost (a real, if rare, possibility), the data is lost with it.
 - Same **30-day minimum storage duration** as Standard-IA.
 
-**Real-time example:** a secondary copy of data whose primary lives somewhere else already (e.g. you also keep it on-prem), or easily-regenerable data — never your only copy of something important.
+**What "Best for: secondary / re-creatable data" actually means** — this class is only a safe choice when losing the object wouldn't actually be a disaster, which happens in two different situations:
+
+- **"Secondary" data** — this copy is **not the only place the data exists**. The real, trusted copy lives somewhere else (in S3 Standard, on-premises, in another Region) — so if this One Zone-IA copy were lost, you'd still have the original to fall back on. You're just storing an extra copy here cheaply, not relying on it as your source of truth.
+- **"Re-creatable" data** — this copy **can be regenerated** if it's lost, usually by re-running some process. Examples: a thumbnail image generated from an original photo, a video re-encoded into a different format, or a build artifact that can be rebuilt from source code. If it disappears, you shrug and regenerate it — you don't lose anything you can't get back.
+
+**The rule of thumb:** never put your **only** copy of something genuinely important in One Zone-IA. Use it only when a copy being lost is an inconvenience, not a catastrophe.
+
+**Real-time example:** a company keeps its production data in S3 Standard, and also drops a cheap secondary copy into One Zone-IA purely to save a bit of cost on top of an already-safe primary copy — never the other way around.
 
 ### S3 Intelligent-Tiering
 
