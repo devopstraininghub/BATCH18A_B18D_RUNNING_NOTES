@@ -170,22 +170,35 @@ This matters most when the ASG launches a **replacement** instance after a failu
 
 ---
 
-## 9. Security Group design
+## 9. Security Group design (as actually built)
 
-**ALB Security Group:**
+**What was actually created:** just **one** Security Group, `prod_vpc_sg`, with **all traffic allowed** — and this same single SG was attached to both the ALB and the EC2 instances.
+
 ```
-Inbound: HTTP (80) — Source 0.0.0.0/0
+prod_vpc_sg
+Inbound:  All traffic — Source 0.0.0.0/0
+Outbound: All traffic — Destination 0.0.0.0/0
 ```
 
-**EC2 Security Group:**
+**Complete security flow (as built):**
 ```
-Inbound: HTTP (80) — Source = ALB Security Group  (not 0.0.0.0/0)
+Internet User → prod_vpc_sg (all traffic allowed) → ALB → prod_vpc_sg (same SG) → Private EC2 → Apache
 ```
-The EC2 instances are private application servers — they should only ever hear from the ALB, never directly from the internet. (Same SG-to-SG reference pattern as `10September_SG.md`.)
 
-**Complete security flow:**
+This works — the project runs — but it's worth understanding **why** this isn't how a real production account would set it up, since it comes up constantly in reviews and interviews.
+
+### ⚠️ Recommended best practice (not what was built, but worth knowing)
+
+- **Use a separate Security Group per tier**, not one shared SG for everything:
+  - `alb-sg` — inbound HTTP/HTTPS (80/443) from `0.0.0.0/0`, since the ALB genuinely needs to be reachable by anyone.
+  - `ec2-sg` — inbound HTTP (80) with the **source set to `alb-sg`**, not `0.0.0.0/0`. The EC2 instances are private — they should only ever hear from the ALB, never directly from the internet. (Same SG-to-SG reference pattern as `10September_SG.md`.)
+- **Never use "All traffic" as a blanket rule.** Allow only the specific ports the application actually needs (here, just port 80) — an "allow all" rule also opens every other port/protocol on the instance, which is unnecessary exposure.
+- **Restrict outbound too, where practical** — the default "allow all outbound" is convenient but wider than most applications actually need.
+- **If SSH access is ever added**, put it on a separate rule restricted to a specific admin IP or a Bastion Host's Security Group (see `17September_Bastion.md`) — never `0.0.0.0/0` on port 22.
+
+**Corrected flow, if rebuilt with best practices:**
 ```
-Internet User → ALB Security Group → ALB → EC2 Security Group (allow from ALB SG) → Private EC2 → Apache
+Internet User → alb-sg (80/443 from 0.0.0.0/0) → ALB → ec2-sg (80 from alb-sg only) → Private EC2 → Apache
 ```
 
 ---
@@ -226,7 +239,7 @@ This is the entire point of combining **Launch Template + ASG + ALB** — a fail
 6. Is port 80 listening? — `ss -lntp | grep :80`
 7. Test locally on the EC2: `curl http://localhost`
 8. Is `index.html` actually present? — `ls -l /var/www/html/index.html`
-9. Does the EC2 Security Group allow HTTP from the ALB Security Group?
+9. Does `prod_vpc_sg` actually allow HTTP (80)? (It should, since it allows all traffic — but worth confirming the SG is attached to the instance at all.)
 10. Is the correct health check path configured?
 
 **Private EC2 can't reach the internet:**
@@ -243,7 +256,7 @@ This is the entire point of combining **Launch Template + ASG + ALB** — a fail
 - Is Apache installed? Running? Port 80 listening?
 - Is the target group pointed at the correct port?
 - Is the health check path correct?
-- Does the EC2 Security Group allow the ALB Security Group?
+- Is `prod_vpc_sg` actually attached to the instance?
 - Is a NACL blocking the traffic?
 
 **Useful commands:**
@@ -267,8 +280,7 @@ cat /var/www/html/index.html
 6. Create a NAT Gateway in each public subnet.
 7. Configure the public route tables.
 8. Configure the private route tables.
-9. Create the ALB Security Group.
-10. Create the EC2/application Security Group.
+9. Create the Security Group (`prod_vpc_sg`, all traffic allowed) — attached to both the ALB and the EC2 instances.
 11. Create the Launch Template.
 12. Select the Amazon Linux AMI.
 13. Configure the instance type.
@@ -316,4 +328,5 @@ VPC (prod-vpc)
 | Auto Scaling Group (2/2/4) | Keeps the right number of EC2 instances running, replaces failures |
 | Launch Template | The blueprint ASG uses to launch each new instance |
 | User Data | Auto-installs and starts Apache, creates `index.html`, on first boot |
-| ALB-SG / EC2-SG (SG-to-SG) | EC2 only accepts traffic from the ALB, never directly from the internet |
+| `prod_vpc_sg` (single SG, all traffic) | As built — one shared SG on both the ALB and EC2, everything allowed |
+| Recommended: `alb-sg` + `ec2-sg` (SG-to-SG) | Best practice — EC2 only accepts traffic from the ALB, never directly from the internet |
