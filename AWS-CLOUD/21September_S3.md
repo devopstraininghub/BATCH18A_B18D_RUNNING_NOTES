@@ -49,15 +49,64 @@ Friends, today's topic — **S3**, one of the oldest and most-used AWS services.
 
 ## 5. S3 Lifecycle Policy
 
-- Automatically **moves or deletes** objects based on time-based rules.
+- Automatically **moves or deletes** objects based on time-based rules — you set the rules once, and S3 keeps applying them forever with no manual work.
+- S3 checks its lifecycle rules **once per day** — it evaluates every object that matches a rule's scope, and runs whatever action that rule specifies.
+- Used for **cost optimization** — see `3September_EFS.md` §8 for the same idea applied to EFS.
 
-**Example:**
+**Simple example:**
 ```
 After 30 days  → move to Standard-IA
 After 90 days  → move to Glacier
 After 365 days → Delete
 ```
-Used for cost optimization — see `3September_EFS.md` §8 for the same idea applied to EFS.
+
+### Creating a rule — what you actually configure
+
+- **Rule name** — just a label to identify the rule.
+- **Scope** — which objects the rule applies to: the whole bucket, or filtered by a prefix (e.g. `logs/`) and/or object tags.
+- **Status** — the rule can be enabled or disabled without deleting it.
+- **One or more actions** — see below; a single rule can combine several of these together.
+
+### The lifecycle rule actions
+
+A lifecycle rule's actions fall into these categories — it's worth knowing all of them individually, since each solves a different problem:
+
+**1. Transition current version of objects between storage classes**
+- Moves the **live, current** version of an object from one storage class to a cheaper one, after a set number of days.
+- **Real-time example:** application logs move from Standard → Standard-IA after 30 days, then → Glacier after 90 days, since nobody reads a 3-month-old log unless there's an incident.
+
+**2. Transition noncurrent versions of objects between storage classes**
+- Only applies in a **versioning-enabled** bucket — moves **older, non-current** versions of an object (see §3, S3 Versioning) to a cheaper storage class.
+- **Real-time example:** the current version of a config file stays in Standard for fast access, but every older version of it automatically drops to Glacier after 30 days, since old versions are only ever needed for rollback, not daily use.
+
+**3. Expire current version of objects**
+- Deletes the **current** version of an object once it reaches a certain age.
+- In a **versioning-enabled** bucket, this doesn't actually erase the data — it just adds a **Delete Marker** (see §4) on top, so the object "disappears" from normal view but the old versions are still there underneath.
+- **Real-time example:** temporary build artifacts that are only useful for 90 days after being produced.
+
+**4. Permanently delete noncurrent versions of objects**
+- Actually and permanently removes **old, noncurrent** versions of an object after a set number of days — this one genuinely deletes data, unlike action 3.
+- **Real-time example:** keeping the last 30 days of every edit to a file for rollback purposes, then permanently clearing out anything older than that, so old versions don't quietly pile up storage cost forever.
+
+**5. Delete expired object delete markers**
+- In a versioning-enabled bucket, once every noncurrent version behind a Delete Marker has itself been cleaned up, that Delete Marker becomes pointless clutter — this action removes those leftover, "expired" delete markers automatically.
+- **Real-time example:** housekeeping — keeps the bucket's version history tidy instead of accumulating orphaned delete markers with nothing left underneath them.
+
+**6. Abort incomplete multipart uploads**
+- A large file uploaded to S3 in multiple parts (a "multipart upload") that never finishes — because of a crashed script, a lost connection, etc. — leaves behind **partial data that still costs money**, even though it was never a complete, usable object.
+- This action automatically cancels and cleans up any multipart upload that's been sitting incomplete for a set number of days.
+- ⚠️ **Important:** normal object-expiration rules do **not** clean these up — an incomplete multipart upload needs this specific action.
+- **Real-time example:** a CI/CD pipeline job that uploads a large build artifact and sometimes fails mid-upload — without this rule, those failed partial uploads would silently accumulate storage cost forever.
+
+**Easy memory trick:**
+```
+Transition (current)     → move the live object to a cheaper class
+Transition (noncurrent)  → move old versions to a cheaper class
+Expire (current)         → "delete" the live object (adds a delete marker, if versioned)
+Permanently delete (noncurrent) → actually erase old versions
+Delete (expired markers) → clean up leftover, pointless delete markers
+Abort (incomplete uploads) → stop paying for uploads that never finished
+```
 
 ---
 
