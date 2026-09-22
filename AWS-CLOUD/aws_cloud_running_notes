@@ -7804,3 +7804,928 @@ outbound Internet access."
 
 
 ====================================================================
+
+DATE: 18 september 2026
+IAM SERVICE
+
+[REDACTED - AWS console login URL/username/password removed, was pasted here in class]
+
+admin access
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+
+
+
+    IAM –  NOTES
+
+    --------------------------------------------------
+    AUTHENTICATION VS AUTHORIZATION
+    --------------------------------------------------
+
+        Authentication:
+            Verifying WHO you are.
+            Example:
+                - Username + Password
+                - Access Key + Secret Key
+                - MFA
+
+        Authorization:
+            Deciding WHAT you are allowed to do.
+            Example:
+                - Can you create EC2?
+                - Can you delete S3 bucket?
+                - Can you access RDS?
+
+        Simple meaning:
+            Authentication → Identity check
+            Authorization  → Permission check
+
+
+    --------------------------------------------------
+    WHAT IS IAM?
+    --------------------------------------------------
+
+        IAM = Identity and Access Management.
+
+        IAM is a service in Amazon Web Services (AWS)
+        that controls:
+
+            • Who can access AWS (Authentication)
+            • What they can do (Authorization)
+
+        It manages users, groups, roles, and policies.
+
+
+    --------------------------------------------------
+    WHAT IS AN IAM USER?
+    --------------------------------------------------
+
+        An IAM User represents a person or application
+        that needs access to AWS.
+
+        It can have:
+            • Console password
+            • Access keys (for CLI/API)
+
+        Example:
+            - Developer
+            - DevOps engineer
+            - Automation script
+
+
+    --------------------------------------------------
+    WHAT IS AN IAM POLICY?
+    --------------------------------------------------
+
+        An IAM Policy is a JSON document
+        that defines permissions.
+
+        It controls:
+            • Allowed actions
+            • Denied actions
+            • Specific resources
+            • Optional conditions
+
+        Example:
+            Allow:
+                ec2:StartInstances
+                ec2:StopInstances
+
+
+    --------------------------------------------------
+    WHAT IS A CUSTOM POLICY?
+    --------------------------------------------------
+
+        Custom Policy = A policy created by you.
+
+        Used when AWS managed policies
+        do not meet your exact requirement.
+
+        Gives fine-grained control.
+		
+		
+		
+
+    --------------------------------------------------
+    BASIC STRUCTURE OF A POLICY
+    --------------------------------------------------
+
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "ec2:StartInstances",
+              "Resource": "*"
+            }
+          ]
+        }
+
+
+    --------------------------------------------------
+    IMPORTANT KEYWORDS EXPLAINED
+    --------------------------------------------------
+
+    1) Version
+        • Defines policy language version.
+        • Usually: "2012-10-17"
+
+    2) Statement
+        • Main block containing permission rules.
+        • A policy can have multiple statements.
+
+    3) Effect
+        • Defines whether access is allowed or denied.
+        • Values:
+              - "Allow"
+              - "Deny"
+
+        Example:
+            "Effect": "Allow"
+
+    4) Action
+        • Defines what operation is permitted.
+        • Format:
+              service:operation
+
+        Examples:
+              ec2:StartInstances
+              s3:PutObject
+              iam:CreateUser
+
+    5) Resource
+        • Defines on which AWS resource
+          the action is allowed.
+
+        Example:
+              "*" → All resources
+              Specific EC2 ARN
+              Specific S3 bucket ARN
+
+
+    --------------------------------------------------
+    OPTIONAL: CONDITION (ADVANCED)
+    --------------------------------------------------
+
+        You can add conditions like:
+
+            • Allow only from specific IP
+            • Allow only during certain time
+            • Allow only if MFA is enabled
+
+
+    --------------------------------------------------
+    SIMPLE MEANING
+    --------------------------------------------------
+
+        Effect   → Allow or Deny
+        Action   → What operation
+        Resource → On which resource
+
+        In simple words:
+
+            "Allow this action on this resource."
+
+
+
+    --------------------------------------------------
+    WHAT IS AN IAM GROUP?
+    --------------------------------------------------
+
+        An IAM Group is a collection of IAM users.
+
+        You attach a policy to the group,
+        and all users inside inherit permissions.
+
+        Example:
+            Group: Developers → S3 Read Only
+            Group: Admins → Full Access
+
+
+    --------------------------------------------------
+    SIMPLE SUMMARY
+    --------------------------------------------------
+
+        Authentication → Verify identity
+        Authorization  → Grant permissions
+
+        IAM        → Access control system
+        IAM User   → Individual identity
+        IAM Policy → Permission rules
+        IAM Group  → Collection of users
+        Custom Policy → User-defined permission rules
+
+
+************************************************************************************************
+
+
+
+DATE: 21 september 2026
+
+S3 SERVICE
+
+
+
+
+    AMAZON S3 – COMPLETE NOTES (FINAL UPDATED)
+
+    --------------------------------------------------
+    WHAT IS S3?
+    --------------------------------------------------
+
+        S3 = Simple Storage Service.
+
+        It is an object storage service in Amazon Web Services (AWS).
+
+        • Stores data as objects
+        • Highly durable (11 9’s durability)
+        • Infinitely scalable
+        • Accessible over HTTP/HTTPS
+        • No server management required
+
+
+    --------------------------------------------------
+    BASIC TERMINOLOGY
+    --------------------------------------------------
+
+        Bucket:
+            Container that stores objects.
+            Bucket name must be globally unique.
+
+        Object:
+            File stored in S3 (data + metadata + key).
+
+        Key:
+            Unique name of the object inside bucket.
+
+        Region:
+            Bucket is created in a specific AWS region.
+
+
+    --------------------------------------------------
+    S3 VERSIONING
+    --------------------------------------------------
+
+        Versioning allows multiple versions
+        of the same object.
+
+        • Protects from accidental delete
+        • Protects from accidental overwrite
+        • Each upload creates new Version ID
+
+        States:
+            - Enabled
+            - Suspended
+            - Never enabled
+
+
+    --------------------------------------------------
+    DELETE MARKER
+    --------------------------------------------------
+
+        When versioning is enabled:
+
+            Deleting an object creates
+            a "Delete Marker".
+
+        • Object appears deleted
+        • Old versions still exist
+        • Can restore by removing delete marker
+
+
+    --------------------------------------------------
+    S3 LIFECYCLE POLICY
+    --------------------------------------------------
+
+        Automatically moves or deletes objects
+        based on time rules.
+
+        Example:
+
+            After 30 days → Standard-IA
+            After 90 days → Glacier
+            After 365 days → Delete
+
+        Used for cost optimization.
+
+
+    --------------------------------------------------
+    WHAT IS A STATIC WEBSITE?
+    --------------------------------------------------
+
+        A static website contains only:
+
+            • HTML
+            • CSS
+            • JavaScript
+            • Images
+
+        No backend processing.
+        No database.
+        No server-side logic.
+
+        Example:
+            Portfolio website
+            Landing page
+            Company info page
+
+
+    --------------------------------------------------
+    HOW TO HOST STATIC WEBSITE IN S3
+    --------------------------------------------------
+
+        Step 1:
+            Create an S3 bucket
+            (Bucket name = domain name recommended)
+
+        Step 2:
+            Upload:
+                - index.html
+                - error.html
+                - CSS, JS files
+
+        Step 3:
+            Enable "Static Website Hosting"
+                • Set index document
+                • Set error document
+
+        Step 4:
+            Update Bucket Policy
+                Allow public read access
+
+        Step 5:
+            Use generated S3 website URL
+
+        Optional:
+            Use CloudFront for HTTPS + CDN
+
+
+    --------------------------------------------------
+    WHY STATIC WEBSITE IS GOOD FOR S3?
+    --------------------------------------------------
+
+        • No server required
+        • No EC2 cost
+        • Highly scalable
+        • Very low cost
+        • High availability
+        • Easy deployment
+        • Integrated with CloudFront CDN
+
+        Perfect for:
+            - React apps
+            - Angular apps
+            - Documentation sites
+            - Landing pages
+
+
+    --------------------------------------------------
+    S3 STORAGE CLASSES
+    --------------------------------------------------
+
+        • Standard
+        • Standard-IA
+        • One Zone-IA
+        • Intelligent Tiering
+        • Glacier
+        • Deep Archive
+
+
+    --------------------------------------------------
+    S3 FEATURES
+    --------------------------------------------------
+
+        • High durability
+        • Versioning
+        • Lifecycle policies
+        • Encryption
+        • Replication
+        • Event notifications
+        • Static website hosting
+        • Access control
+
+
+    --------------------------------------------------
+    REAL-TIME USE CASES
+    --------------------------------------------------
+
+        • Backups
+        • Log storage
+        • Media storage
+        • CI/CD artifacts
+        • Data lake
+        • Static website hosting
+
+
+    --------------------------------------------------
+    S3 VS EBS VS EFS
+    --------------------------------------------------
+
+        S3  → Object storage (HTTP based)
+        EBS → Block storage (attached disk)
+        EFS → Shared file storage (NFS based)
+
+
+    --------------------------------------------------
+    SIMPLE SUMMARY
+    --------------------------------------------------
+
+        S3 = Scalable object storage
+        Versioning = Keeps multiple copies
+        Delete Marker = Hides object on delete
+        Lifecycle = Auto move/delete
+        Static Hosting = Host HTML websites without servers
+
+        S3 is best for scalable, durable,
+        low-cost storage and static websites.
+
+
+-------------------------------------------------------------------------------
+
+    REAL DEVOPS PROJECT USING S3
+
+    --------------------------------------------------
+    PROJECT 1: STATIC WEBSITE + CI/CD PIPELINE
+    --------------------------------------------------
+
+        Use Case:
+            Deploy a React/Angular static website automatically.
+
+        Architecture:
+            Developer pushes code → GitHub
+            CI/CD Pipeline builds app
+            Build output uploaded to S3 bucket
+            CloudFront serves website globally
+
+        Steps:
+
+            1) Create S3 bucket
+                   Enable static website hosting
+                   Upload index.html
+
+            2) Create CloudFront distribution
+                   Set S3 as origin
+
+            3) Setup CI/CD (GitHub Actions / Jenkins)
+                   - Build project
+                   - Upload build folder to S3
+                   - Invalidate CloudFront cache
+
+        Why S3?
+            • No EC2 required
+            • Auto scaling
+            • Very low cost
+            • Highly available
+
+
+    --------------------------------------------------
+    PROJECT 2: LOG STORAGE + MONITORING
+    --------------------------------------------------
+
+        Use Case:
+            Store application logs securely.
+
+        Architecture:
+            EC2 / Containers generate logs
+            Logs pushed to S3
+            Athena used for querying
+            CloudWatch alerts on errors
+
+        Why S3?
+            • Cheap long-term storage
+            • Lifecycle rules to move to Glacier
+            • Durable storage
+
+
+    --------------------------------------------------
+    PROJECT 3: BACKUP & DISASTER RECOVERY
+    --------------------------------------------------
+
+        Use Case:
+            Backup EBS snapshots or database dumps.
+
+        Flow:
+            RDS snapshot / DB dump
+                ↓
+            Stored in S3
+                ↓
+            Replicated to another region
+
+        Benefits:
+            • Cross-region replication
+            • Versioning protects backups
+            • Lifecycle reduces cost
+
+
+    --------------------------------------------------
+    PROJECT 4: TERRAFORM REMOTE STATE STORAGE
+    --------------------------------------------------
+
+        Use Case:
+            Store Terraform state file securely.
+
+        Setup:
+            Create S3 bucket
+            Enable versioning
+            Enable encryption
+            Use DynamoDB for locking
+
+        Benefit:
+            • Team collaboration
+            • State file safety
+            • Prevent corruption
+
+
+    --------------------------------------------------
+    PROJECT 5: CI/CD ARTIFACT STORAGE
+    --------------------------------------------------
+
+        Use Case:
+            Store build artifacts (JAR, WAR, Docker layers)
+
+        Flow:
+            Code build → Artifact generated
+            Artifact uploaded to S3
+            Deployment server downloads artifact
+
+        Why?
+            • Central storage
+            • Secure
+            • Easy integration
+
+
+    --------------------------------------------------
+    WHY S3 IS PERFECT FOR DEVOPS
+    --------------------------------------------------
+
+        • Highly scalable
+        • Cost-effective
+        • No infrastructure management
+        • Easy integration with:
+              - EC2
+              - Lambda
+              - CloudFront
+              - Athena
+              - Glue
+              - CI/CD tools
+
+        • Supports automation via CLI and SDK
+
+
+    --------------------------------------------------
+    SIMPLE SUMMARY
+    --------------------------------------------------
+
+        In DevOps, S3 is used for:
+
+            • Static website hosting
+            • Backup storage
+            • Log storage
+            • Terraform state
+            • Artifact repository
+            • Data lake storage
+
+        S3 is one of the most used AWS services
+        in real-world DevOps projects.
+
+========================================================
+
+    AWS S3 STORAGE CLASSES – SHORT NOTES
+
+    (Inside Amazon Web Services (AWS))
+
+
+    --------------------------------------------------
+    1) S3 STANDARD
+    --------------------------------------------------
+
+        • Frequently accessed data
+        • High availability
+        • Low latency
+        • Higher storage cost
+
+        Use When:
+            - Active websites
+            - Applications
+            - Frequently used files
+
+
+    --------------------------------------------------
+    2) S3 STANDARD – INFREQUENT ACCESS (STANDARD-IA)
+    --------------------------------------------------
+
+        • Rarely accessed data
+        • Lower storage cost
+        • Small retrieval fee
+
+        Use When:
+            - Backups
+            - Disaster recovery copies
+            - Data accessed occasionally
+
+
+    --------------------------------------------------
+    3) S3 ONE ZONE-IA
+    --------------------------------------------------
+
+        • Stored in single Availability Zone
+        • Lower cost than Standard-IA
+        • Less resilient
+
+        Use When:
+            - Secondary backups
+            - Re-creatable data
+            - Non-critical data
+
+
+    --------------------------------------------------
+    4) S3 INTELLIGENT-TIERING
+    --------------------------------------------------
+
+        • Automatically moves data
+          between frequent and infrequent tiers
+        • Slight monitoring fee
+
+        Use When:
+            - Access pattern is unpredictable
+            - You don’t want to manage lifecycle rules
+
+
+    --------------------------------------------------
+    5) S3 GLACIER INSTANT RETRIEVAL
+    --------------------------------------------------
+
+        • Archival data
+        • Immediate retrieval
+        • Lower cost than Standard
+
+        Use When:
+            - Archived but occasionally needed data
+            - Compliance documents
+
+
+    --------------------------------------------------
+    6) S3 GLACIER FLEXIBLE RETRIEVAL
+    --------------------------------------------------
+
+        • Very low storage cost
+        • Retrieval takes minutes to hours
+
+        Use When:
+            - Long-term backups
+            - Rarely accessed archives
+
+
+    --------------------------------------------------
+    7) S3 GLACIER DEEP ARCHIVE
+    --------------------------------------------------
+
+        • Lowest storage cost
+        • Retrieval takes hours
+        • Designed for long-term retention (7+ years)
+
+        Use When:
+            - Legal/compliance storage
+            - Old audit data
+            - Rarely accessed historical data
+
+
+    --------------------------------------------------
+    SIMPLE DECISION GUIDE
+    --------------------------------------------------
+
+        Frequent access      → Standard
+        Rare access          → Standard-IA
+        Single AZ + cheaper  → One Zone-IA
+        Unknown pattern      → Intelligent-Tiering
+        Archive + fast read  → Glacier Instant
+        Archive + low cost   → Glacier Flexible
+        Very long-term       → Glacier Deep Archive
+
+
+    --------------------------------------------------
+    SIMPLE SUMMARY
+    --------------------------------------------------
+
+        Standard = Active data  
+        IA = Less frequently used data  
+        Glacier = Archive data  
+        Intelligent-Tiering = Auto optimization  
+
+==================================
+
+
+
+DATE: 22 september 2026
+
+
+    AWS CLI – COMPLETE SHORT NOTES
+
+    --------------------------------------------------
+    WHAT IS AWS CLI?
+    --------------------------------------------------
+
+        AWS CLI = Command Line Interface.
+
+        It is a tool that allows you to interact with
+        Amazon Web Services (AWS) using commands
+        from terminal instead of the web console (GUI).
+
+        Example:
+            aws s3 ls
+            aws ec2 describe-instances
+
+
+    --------------------------------------------------
+    WHY DO WE NEED AWS CLI WHEN GUI EXISTS?
+    --------------------------------------------------
+
+        GUI:
+            • Good for beginners
+            • Manual operations
+            • Not automation-friendly
+
+        AWS CLI:
+            • Faster
+            • Scriptable
+            • Automatable
+            • Used in CI/CD pipelines
+            • Used in production troubleshooting
+            • Works in servers without browser
+
+        DevOps rule:
+            If you repeat a task → Automate it.
+            CLI helps automation.
+
+AKIA5Wxxxxxxxxxxxxxxxxxxxxxxxx
+elFDCxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+    --------------------------------------------------
+    HOW AWS CLI WORKS
+    --------------------------------------------------
+
+        1) Install AWS CLI
+        2) Configure credentials:
+
+            aws configure
+
+            Enter:
+                Access Key
+                Secret Key
+                Region
+                Output format -- none / json 
+
+        Credentials are stored locally ( in user home directly 
+
+    --------------------------------------------------
+    BASIC COMMAND STRUCTURE
+    --------------------------------------------------
+
+        aws <service> <operation> --parameters
+
+        Example:
+            aws ec2 describe-instances
+            aws s3 cp file.txt s3://mybucket/
+
+
+    --------------------------------------------------
+    DAY-TO-DAY DEVOPS OPERATIONS USING AWS CLI
+    --------------------------------------------------
+
+    1) S3 OPERATIONS
+
+        List buckets:
+            aws s3 ls
+
+        List files inside bucket:
+            aws s3 ls s3://mybucket/
+
+        Upload file:
+            aws s3 cp file.txt s3://mybucket/
+
+        Download file:
+            aws s3 cp s3://mybucket/file.txt .
+
+        Sync local folder:
+            aws s3 sync ./app s3://mybucket/
+
+
+    2) EC2 OPERATIONS
+
+        List EC2 instances:
+            aws ec2 describe-instances
+
+        Start instance:
+            aws ec2 start-instances --instance-ids i-0a54fdb26081aade5
+
+        Stop instance:
+            aws ec2 stop-instances --instance-ids i-123456
+
+        Terminate instance:
+            aws ec2 terminate-instances --instance-ids i-123456
+			
+	
+        TO create instance
+
+aws ec2 run-instances \
+  --image-id ami-0c1fe732b5494dc14 \
+  --instance-type t3.micro \
+  --key-name batch17a \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=Dev-Server},{Key=Env,Value=Dev}]'
+
+
+
+	
+
+
+    3) SECURITY GROUP OPERATIONS
+
+        List security groups:
+            aws ec2 describe-security-groups
+
+        Authorize inbound rule:
+            aws ec2 authorize-security-group-ingress \
+                --group-id sg-12345 \
+                --protocol tcp \
+                --port 22 \
+                --cidr 0.0.0.0/0
+
+
+    4) IAM OPERATIONS
+
+        List IAM users:
+            aws iam list-users
+
+        Create IAM user:
+            aws iam create-user --user-name devuser
+
+        Attach policy:
+            aws iam attach-user-policy \
+                --user-name devuser \
+                --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+
+    5) CLOUDWATCH LOGS
+
+        Describe log groups:
+            aws logs describe-log-groups
+
+
+    6) AUTO SCALING
+
+        Describe ASGs:
+            aws autoscaling describe-auto-scaling-groups
+
+
+    --------------------------------------------------
+    REAL DEVOPS USE CASES
+    --------------------------------------------------
+
+        • Automate deployments
+        • Upload build artifacts to S3
+        • Trigger infrastructure changes
+        • Backup automation scripts
+        • Monitoring and log retrieval
+        • Managing EC2 fleet
+        • Managing IAM users programmatically
+        • Used inside:
+              - Jenkins
+              - GitHub Actions
+              - Terraform external scripts
+
+
+    --------------------------------------------------
+    WHY CLI IS VERY IMPORTANT FOR DEVOPS
+    --------------------------------------------------
+
+        • Infrastructure as Code relies on CLI
+        • Automation requires CLI
+        • GUI is not scalable
+        • Production servers don’t have browsers
+        • Faster troubleshooting
+
+
+    --------------------------------------------------
+    SIMPLE SUMMARY
+    --------------------------------------------------
+
+        AWS CLI = Terminal-based access to AWS.
+
+        GUI = Manual work
+        CLI = Automation + Speed + DevOps
+
+        Every DevOps engineer must know AWS CLI.
+
