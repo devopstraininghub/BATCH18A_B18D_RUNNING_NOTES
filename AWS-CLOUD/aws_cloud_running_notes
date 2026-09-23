@@ -8729,3 +8729,432 @@ aws ec2 run-instances \
 
         Every DevOps engineer must know AWS CLI.
 
+
+
+==================================================
+
+18 FEB 2026
+7
+    IAM ROLE 
+
+    --------------------------------------------------
+    WHAT IS AN IAM ROLE?
+    --------------------------------------------------
+
+An IAM role is an identity you can create that has specific permissions with credentials that are valid for short durations. Roles can be assumed by entities that you trust.
+
+
+        An IAM Role is an AWS identity
+        that has permissions but does NOT have
+        permanent credentials (no username/password).
+
+        A role is assumed temporarily
+        by a user, application, or AWS service.
+
+
+    --------------------------------------------------
+    SIMPLE DEFINITION
+    --------------------------------------------------
+
+        IAM User  → Permanent identity (person or app)
+        IAM Role  → Temporary identity (assumed when needed)
+
+
+    --------------------------------------------------
+    IAM USER VS IAM ROLE
+    --------------------------------------------------
+
+        IAM User:
+            • Has username
+            • Has password
+            • Has access keys
+            • Long-term credentials
+            • Used for people or external apps
+
+        IAM Role:
+            • No password
+            • No permanent access keys
+            • Temporary security credentials
+            • Automatically rotated credentials
+            • Used by AWS services or cross-account access
+
+
+    --------------------------------------------------
+    WHY IAM ROLE IS IMPORTANT?
+    --------------------------------------------------
+
+        • More secure (no hardcoded access keys)
+        • Temporary credentials
+        • Automatically rotated
+        • Best practice in production
+        • Required for service-to-service access
+
+
+    --------------------------------------------------
+    REAL-TIME USE CASES
+    --------------------------------------------------
+
+    1) EC2 ACCESSING S3
+
+        Scenario:
+            EC2 needs to upload logs to S3.
+
+        Wrong Way:
+            Store access key inside EC2 (unsafe).
+
+        Correct Way:
+            Attach IAM Role to EC2.
+            EC2 automatically gets temporary credentials.
+
+        Benefit:
+            No secret keys stored on server.
+
+
+    --------------------------------------------------
+
+    2) LAMBDA ACCESSING DYNAMODB
+
+        Lambda function needs database access.
+
+        Solution:
+            Attach IAM Role to Lambda
+            with required DynamoDB permissions.
+
+
+    --------------------------------------------------
+
+    3) CROSS-ACCOUNT ACCESS
+
+        Company has:
+            Account A (Dev)
+            Account B (Prod)
+
+        Dev engineers assume a role
+        in Production account temporarily.
+
+
+    --------------------------------------------------
+
+    4) CI/CD PIPELINE ACCESS
+
+        Jenkins / GitHub Actions
+        assumes an IAM Role to:
+
+            • Deploy EC2
+            • Upload artifacts to S3
+            • Modify infrastructure
+
+
+    --------------------------------------------------
+
+    5) EKS / ECS SERVICE ROLES
+
+        Containers need access to:
+            • S3
+            • Secrets Manager
+            • RDS
+
+        IAM Role provides temporary secure access.
+
+
+    --------------------------------------------------
+    HOW IAM ROLE WORKS (SIMPLE FLOW)
+    --------------------------------------------------
+
+        User / Service
+                ↓
+        Assumes Role
+                ↓
+        Gets Temporary Credentials
+                ↓
+        Performs allowed actions
+
+
+    --------------------------------------------------
+    IMPORTANT TERMS
+    --------------------------------------------------
+
+        Trust Policy:
+            Defines WHO can assume the role.
+			
+			
+			
+	    {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Principal": {
+                "Service": [
+                    "ec2.amazonaws.com"
+                ]
+            }
+        }
+    ]
+    }		
+			
+			
+
+        Permission Policy:
+            Defines WHAT actions are allowed.
+
+
+    --------------------------------------------------
+    SIMPLE SUMMARY
+    --------------------------------------------------
+
+        IAM User  → Permanent login identity
+        IAM Role  → Temporary permission identity
+
+        Role is safer and preferred
+        for applications and AWS services.
+
+        DevOps best practice:
+            Always use IAM Role instead of storing access keys.
+
+
+===============================================================
+
+
+====================================================================
+====================================================================
+RDS & DATABASE TYPES
+====================================================================
+
+
+DATABASE SERVICES IN AWS
+------------------------
+
+AWS provides database services under Amazon RDS
+(Relational Database Service) and other NoSQL services.
+
+
+====================================================================
+1) STRUCTURED DATABASES (RELATIONAL DATABASES)
+====================================================================
+
+Definition:
+
+    Structured databases store data in predefined schemas.
+    Data is organized into tables with rows and columns.
+
+    They use SQL (Structured Query Language)
+    to query and manage data.
+
+Key Characteristics:
+
+    • Fixed schema
+    • Tables, rows, columns
+    • Relationships using foreign keys
+    • ACID compliant (transactions)
+    • Strong consistency
+
+
+Examples:
+
+MySQL
+    Open-source RDBMS.
+    Commonly used for web applications.
+
+PostgreSQL
+    Advanced open-source RDBMS.
+    Supports complex queries and extensions.
+
+Microsoft SQL Server
+    Enterprise database by Microsoft.
+    Strong integration with .NET ecosystem.
+
+Oracle Database
+    Enterprise-grade commercial database.
+    High scalability and performance.
+
+IBM Db2
+    Enterprise RDBMS optimized for large workloads.
+
+SQLite
+    Lightweight embedded relational database.
+    Used in mobile and desktop apps.
+
+
+AWS RELATIONAL SERVICE:
+
+    Amazon RDS supports:
+        - MySQL
+        - PostgreSQL
+        - MariaDB
+        - SQL Server
+        - Oracle
+
+    Amazon Aurora
+        AWS-optimized high-performance relational database.
+
+
+CRUD 
+
+====================================================================
+2) SEMI-STRUCTURED DATABASES (NoSQL – Flexible Schema)
+====================================================================
+
+Definition:
+
+    Semi-structured databases do not require fixed schema.
+    Data structure can vary between records.
+
+    Often use:
+        - JSON
+        - Key-value
+        - Wide-column format
+
+Key Characteristics:
+
+    • Flexible schema
+    • Horizontally scalable
+    • High availability
+    • Suitable for large-scale distributed systems
+
+
+Examples:
+
+MongoDB
+    Document database storing JSON-like documents.
+
+Apache Cassandra
+    Distributed wide-column database.
+    Designed for high scalability.
+
+Amazon DynamoDB
+    Fully managed NoSQL key-value database by AWS.
+
+Google Cloud Datastore
+    Document-based NoSQL database.
+
+OrientDB
+    Multi-model database (graph + document).
+
+
+AWS NoSQL Services:
+
+    DynamoDB
+    DocumentDB (MongoDB compatible)
+
+
+====================================================================
+3) UNSTRUCTURED DATA (NOT A DATABASE TYPE)
+====================================================================
+
+Important note:
+
+    Unstructured data is NOT equal to NoSQL database.
+
+    Unstructured data means:
+        Data without fixed format or schema.
+
+Examples of Unstructured Data:
+
+    • Images
+    • Videos
+    • Audio
+    • Log files
+    • PDFs
+    • Backups
+
+
+Tools Used to Store Unstructured Data:
+
+Amazon S3
+    Object storage for unlimited unstructured data.
+
+Azure Blob Storage
+    Object storage for binary data.
+
+Hadoop (HDFS)
+    Distributed file system for big data.
+
+Elasticsearch
+    Search engine for logs and text indexing.
+
+Apache Solr
+    Text search engine built on Lucene.
+
+Cassandra (with blobs)
+    Can store binary data, but not ideal for large files.
+
+
+Important Note:
+
+    Object storage like S3 is NOT a database.
+    It is storage service.
+
+
+====================================================================
+SIMPLE COMPARISON
+====================================================================
+
+Structured
+    Fixed schema
+    SQL based
+    Strong consistency
+    Example: MySQL, PostgreSQL
+
+Semi-Structured (NoSQL)
+    Flexible schema
+    JSON / key-value
+    Highly scalable
+    Example: MongoDB, DynamoDB
+
+Unstructured
+    No defined format
+    Stored in object storage
+    Example: Images in S3
+
+
+====================================================================
+WHEN TO USE WHAT?
+====================================================================
+
+Use Relational DB:
+    - Banking systems
+    - ERP systems
+    - Transactions
+    - Strong consistency required
+
+Use NoSQL:
+    - Large-scale web apps
+    - Real-time apps
+    - IoT data
+    - High traffic apps
+
+Use Object Storage (S3):
+    - Media storage
+    - Backups
+    - Logs
+    - Data lakes
+
+
+====================================================================
+AWS DATABASE SUMMARY
+====================================================================
+
+Relational:
+    Amazon RDS
+    Amazon Aurora
+
+NoSQL:
+    DynamoDB
+    DocumentDB
+
+In-memory:
+    ElastiCache (Redis, Memcached)
+
+Search:
+    OpenSearch (Elasticsearch service)
+
+Object Storage:
+    Amazon S3
+
+
+
+

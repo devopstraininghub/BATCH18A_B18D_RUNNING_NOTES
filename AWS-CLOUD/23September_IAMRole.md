@@ -1,0 +1,121 @@
+# Batch 18 — AWS Cloud Running Notes: 23 September 2026
+
+**Topic: IAM Role**
+
+Friends, on 18 September we covered IAM Users, Policies, and Groups. Today's topic — the **IAM Role** — is the piece that makes AWS's real security best practice actually work: giving an application or service the permissions it needs, **without** ever handing it a permanent password or access key.
+
+---
+
+## 1. What is an IAM Role?
+
+- An **IAM Role** is an AWS identity that has **permissions**, but **no permanent credentials** — no username, no password, no long-term access key.
+- A role is **assumed temporarily** by a trusted user, application, or AWS service, whenever it's needed.
+
+**Simple definition:**
+```
+IAM User → a permanent identity (a person or an app)
+IAM Role → a temporary identity (assumed only when needed)
+```
+
+---
+
+## 2. IAM User vs IAM Role
+
+| | IAM User | IAM Role |
+|---|---|---|
+| Password | Yes | No |
+| Access keys | Long-term | No permanent keys — temporary, auto-rotated credentials |
+| Typical use | People, or an external app that needs a fixed identity | AWS services, or cross-account access |
+
+---
+
+## 3. Why IAM Role matters
+
+- More secure — no hardcoded access keys sitting anywhere.
+- Credentials are **temporary** and **automatically rotated**.
+- The standard **production best practice**.
+- Required whenever one AWS service needs to talk to another (**service-to-service access**).
+
+**Easy memory trick:** an IAM User is like a permanent employee ID badge. An IAM Role is like a visitor badge — issued fresh each time, expires on its own, never something you'd want to leave lying around.
+
+---
+
+## 4. Real-time use cases
+
+**1. EC2 accessing S3**
+- Scenario: an EC2 instance needs to upload logs to S3.
+- **Wrong way:** hardcode an access key inside the EC2 instance — unsafe, and the key never expires on its own.
+- **Correct way:** attach an IAM Role to the EC2 instance — it automatically gets temporary credentials, and no secret key is ever stored on the server.
+
+**2. Lambda accessing DynamoDB**
+- A Lambda function needs database access — attach an IAM Role to the function with the required DynamoDB permissions.
+
+**3. Cross-account access**
+- A company has `Account A` (Dev) and `Account B` (Prod). A Dev engineer **assumes a role** in the Production account temporarily, instead of having a separate permanent login there.
+
+**4. CI/CD pipeline access**
+- Jenkins or GitHub Actions assumes an IAM Role to deploy EC2 instances, upload artifacts to S3, or modify infrastructure — no long-lived credentials stored in the pipeline's configuration.
+
+**5. EKS/ECS service roles**
+- Containers need access to S3, Secrets Manager, or RDS — an IAM Role provides temporary, secure access instead of baking credentials into the container image.
+
+---
+
+## 5. How an IAM Role works — the flow
+
+```
+User / Service → Assumes Role → Gets Temporary Credentials → Performs allowed actions
+```
+
+Under the hood, this is powered by **AWS STS (Security Token Service)** — when something "assumes a role," it's really calling STS's `AssumeRole` API, which hands back a short-lived Access Key, Secret Key, and Session Token.
+
+- **Default session duration:** 1 hour.
+- **Maximum session duration:** configurable up to 12 hours, depending on the role's own settings.
+- Once the session expires, the credentials simply stop working — nothing to manually revoke or rotate.
+
+---
+
+## 6. Important terms
+
+**Trust Policy** — defines **WHO** is allowed to assume the role.
+
+**Example — allowing EC2 to assume this role:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["sts:AssumeRole"],
+      "Principal": {
+        "Service": ["ec2.amazonaws.com"]
+      }
+    }
+  ]
+}
+```
+- `Action: sts:AssumeRole` — the actual permission being granted is "allowed to assume this role."
+- `Principal.Service: ec2.amazonaws.com` — specifically the EC2 service is trusted to assume it. For cross-account access (use case 3 above), the `Principal` would instead reference another AWS account or a specific role's ARN.
+
+**Permission Policy** — defines **WHAT** actions are actually allowed once the role has been assumed (a normal IAM policy, same shape as the ones covered on 18 September — see `18September_IAM.md`).
+
+**Easy memory trick:** Trust Policy → who's allowed **in**. Permission Policy → what they can **do** once they're in.
+
+---
+
+## 7. EC2 and IAM Roles — a detail worth knowing
+
+When you "attach a role to an EC2 instance" in the console, AWS is actually creating something called an **Instance Profile** behind the scenes — a small container that wraps the role so it can be attached to an instance. The console hides this step, so most people never see it directly, but it explains why, if you're ever doing this via the CLI or Terraform instead of the console, you'll see an `instance-profile` resource alongside the role itself.
+
+---
+
+## Quick Recap Table
+
+| Concept | One-line meaning | Real-time (DevOps) example |
+|---|---|---|
+| IAM Role | A temporary identity with permissions, no permanent credentials | EC2 uploading to S3 without a hardcoded access key |
+| Trust Policy | Defines who/what can assume the role | Allowing `ec2.amazonaws.com` to assume it |
+| Permission Policy | Defines what the role can actually do | `s3:PutObject` on a specific bucket |
+| STS `AssumeRole` | The API call that issues temporary credentials | Default 1 hour, up to 12 hours max session |
+| Cross-account role | Assuming a role in a different AWS account | A Dev engineer temporarily accessing the Prod account |
+| Instance Profile | The wrapper that lets a role attach to EC2 | Created automatically when you attach a role via the console |
