@@ -48,6 +48,142 @@ Friends, today's topic steps back from pure networking/IAM and looks at **where 
 
 Almost everything an application does to a relational database boils down to one of these four operations — worth knowing the acronym by heart, since it comes up constantly in both interviews and everyday application design.
 
+### What is SQL?
+
+- **SQL** = **S**tructured **Q**uery **L**anguage — the language used to talk to a relational database.
+- Lets you **create** tables, **insert** data, **read/filter** data, **update** existing rows, and **delete** rows — i.e. SQL is literally how you perform CRUD.
+- One core language, understood (with small dialect differences) across MySQL, PostgreSQL, SQL Server, Oracle, and every other relational database — learn SQL once, and it transfers almost everywhere.
+
+**Easy memory trick:** SQL is to a database what the AWS CLI is to AWS — the actual command interface, underneath whatever GUI tool you might click through instead.
+
+### What is an ACID transaction?
+
+A **transaction** is a group of one or more database operations that must succeed or fail **together, as a single unit**. **ACID** is the set of four guarantees that make transactions trustworthy:
+
+- **Atomicity** — a transaction is **all-or-nothing**. If any part of it fails, the **entire** transaction is rolled back, as if it never happened.
+- **Consistency** — a transaction always moves the database from one **valid** state to another valid state — it can never leave the data broken or half-updated.
+- **Isolation** — transactions running **at the same time** don't see each other's unfinished, in-progress changes.
+- **Durability** — once a transaction is **committed**, the change is permanent — it survives even if the server crashes or loses power one second later.
+
+**Real-time example — a bank transfer (the classic ACID example):** transferring ₹500 from Account A to Account B is really two operations: debit A, credit B.
+- **Atomicity:** if the debit succeeds but the credit fails (say, the app crashes mid-transaction), the **whole** transaction rolls back — the ₹500 is never silently deducted without landing somewhere.
+- **Consistency:** if a rule says "balance can never go negative," the transaction is rejected outright rather than leaving an account in an invalid state.
+- **Isolation:** if two transfers touch Account A at the exact same moment, one doesn't see the other's half-finished update and calculate the wrong balance.
+- **Durability:** once the transfer is confirmed, it's on disk — even a power failure immediately after doesn't undo it.
+
+**Easy memory trick:** ACID → a transaction that's **A**ll-or-nothing, keeps the data **C**orrect, doesn't **I**nterfere with others running at the same time, and **D**oesn't disappear once confirmed.
+
+### Example tables — a mini relational schema
+
+To make CRUD and SQL concrete, here are three simple, related tables — exactly the kind of setup used in almost every SQL tutorial:
+
+**`department`**
+| dept_id | dept_name |
+|---|---|
+| 101 | HR |
+| 102 | Engineering |
+| 103 | Sales |
+
+**`employee`** (`dept_id` here is a **foreign key**, pointing back to `department`)
+| emp_id | emp_name | salary | dept_id |
+|---|---|---|---|
+| 1 | Ravi | 55000 | 102 |
+| 2 | Priya | 62000 | 102 |
+| 3 | Kiran | 48000 | 101 |
+| 4 | Anjali | 51000 | 103 |
+
+**`student`**
+| student_id | student_name | age | course |
+|---|---|---|---|
+| 1 | Arjun | 21 | DevOps |
+| 2 | Meena | 22 | Cloud Computing |
+| 3 | Suresh | 20 | DevOps |
+
+### Basic SQL queries against these tables
+
+**Creating a table:**
+```sql
+CREATE TABLE department (
+    dept_id   INT PRIMARY KEY,
+    dept_name VARCHAR(50)
+);
+
+CREATE TABLE employee (
+    emp_id   INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    salary   INT,
+    dept_id  INT,
+    FOREIGN KEY (dept_id) REFERENCES department(dept_id)
+);
+```
+`FOREIGN KEY` is what actually creates the relationship between `employee` and `department` — it's the mechanism behind the "relationships using foreign keys" bullet from earlier in this file.
+
+**Inserting data:**
+```sql
+INSERT INTO department VALUES (102, 'Engineering');
+INSERT INTO employee VALUES (1, 'Ravi', 55000, 102);
+```
+
+**Reading data — the `SELECT` statement:**
+```sql
+SELECT * FROM employee;
+```
+```
+emp_id | emp_name | salary | dept_id
+-------+----------+--------+--------
+     1 | Ravi     |  55000 |     102
+     2 | Priya    |  62000 |     102
+     3 | Kiran    |  48000 |     101
+     4 | Anjali   |  51000 |     103
+```
+
+**Filtering with `WHERE`:**
+```sql
+SELECT emp_name, salary FROM employee WHERE salary > 50000;
+```
+```
+emp_name | salary
+---------+-------
+Ravi     |  55000
+Priya    |  62000
+Anjali   |  51000
+```
+
+**Sorting with `ORDER BY`:**
+```sql
+SELECT student_name, age FROM student ORDER BY age DESC;
+```
+
+**Updating a row:**
+```sql
+UPDATE employee SET salary = 60000 WHERE emp_id = 1;
+```
+Only Ravi's row (`emp_id = 1`) changes — every other row is untouched. **Always include a `WHERE` clause on an `UPDATE`** — without one, it updates **every single row** in the table.
+
+**Deleting a row:**
+```sql
+DELETE FROM student WHERE student_id = 3;
+```
+Same warning applies — a `DELETE` with no `WHERE` clause deletes the **entire table's data**.
+
+**Joining two related tables — `JOIN`:**
+```sql
+SELECT employee.emp_name, department.dept_name
+FROM employee
+JOIN department ON employee.dept_id = department.dept_id;
+```
+```
+emp_name | dept_name
+---------+-----------
+Ravi     | Engineering
+Priya    | Engineering
+Kiran    | HR
+Anjali   | Sales
+```
+This is exactly what "relationships using foreign keys" is for — pulling the department **name** for each employee, even though the `employee` table itself only stores a `dept_id` number.
+
+**Easy memory trick:** `SELECT` = read, `INSERT` = create, `UPDATE` = update, `DELETE` = delete — literally CRUD, mapped one-to-one onto SQL keywords.
+
 ---
 
 ## 2. Semi-structured databases (NoSQL — flexible schema)
@@ -141,6 +277,9 @@ Almost everything an application does to a relational database boils down to one
 | Concept | One-line meaning | Real-time (DevOps) example |
 |---|---|---|
 | Structured / relational | Fixed schema, SQL, ACID transactions | A banking application's account balances |
+| SQL | The language used to query/manage a relational database | `SELECT`, `INSERT`, `UPDATE`, `DELETE` — CRUD as actual keywords |
+| ACID | Atomicity, Consistency, Isolation, Durability | A bank transfer that's all-or-nothing, never half-completed |
+| `FOREIGN KEY` / `JOIN` | Links two tables together, pulls related data | Getting an employee's department name from a `dept_id` |
 | Semi-structured / NoSQL | Flexible schema, horizontally scalable | A product catalog with wildly different fields per item |
 | Unstructured data | No fixed format at all — not a database type | Images, videos, and logs, stored in S3 |
 | RDS | AWS's fully managed relational database service | MySQL/PostgreSQL without managing the server yourself |
