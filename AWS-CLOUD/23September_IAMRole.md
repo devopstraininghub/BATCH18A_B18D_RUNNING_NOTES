@@ -126,6 +126,60 @@ When you "attach a role to an EC2 instance" in the console, AWS is actually crea
 
 ---
 
+## 9. Worked scenario — "How long can my EC2 access S3?"
+
+**Setup:**
+```
+Trust Entity : EC2
+Permissions  : S3 Full Access
+Attached to  : EC2 Instance
+```
+
+**Question:** How long can this EC2 instance access S3?
+1. As long as the IAM role is attached
+2. For a few minutes
+3. Till the session is active
+4. Some other duration
+
+**Answer:** EC2 can access S3 for **as long as the IAM role remains attached/usable and its permissions still allow the S3 actions** — not for a fixed few minutes, and not tied to any single "session."
+
+The key thing this question is testing: the **IAM Role** and the **temporary credentials** it hands out are **two different things**, on two different clocks.
+
+**How it flows:**
+```
+EC2 Instance
+     │  (IAM Role attached)
+     ▼
+IAM Role: EC2-S3-Role
+     ├── Trust Policy       — "EC2 is allowed to assume/use this role"
+     └── Permission Policy  — "This role can access S3"
+     ▼
+Temporary AWS Credentials
+     ▼
+S3
+```
+
+**Role attachment vs credential expiration:**
+
+| | Role attachment | Temporary credentials |
+|---|---|---|
+| Lifespan | Can stay attached indefinitely | Short-lived — ~6 hours (§8) |
+| What it is | A long-term authorization relationship | What the instance actually presents to S3 on each call |
+| What happens at expiry | Nothing — it's not a "session" that ends | Auto-refreshed by AWS via IMDS, invisibly, while the role is still valid |
+
+So a credential set expiring at, say, 11:00 AM does **not** mean the EC2 instance loses S3 access at 11:00 AM — AWS has already handed it a fresh set through IMDS before that happens, and the application never notices.
+
+**So when does EC2 actually lose S3 access?** Tying this back to §8, there are really only a few real triggers:
+- The role is **detached** from the instance — no *new* credentials can be issued after this, though any already-cached ones keep working until they expire.
+- The role's **Permission Policy is edited** to remove S3 access — takes effect on the very next API call, live.
+- An explicit **Deny** statement is added, blocking S3 actions.
+- The role itself is **deleted**.
+- Someone explicitly triggers **"Revoke active sessions"** on the role.
+
+**Easy memory trick:** Role attachment = the relationship. Credentials = just the current ID card, reissued automatically while the relationship holds. Losing access needs one of those 5 specific triggers — expiration of a single credential set, by itself, is never one of them.
+
+---
+
 ## Quick Recap Table
 
 | Concept | One-line meaning | Real-time (DevOps) example |
@@ -139,3 +193,4 @@ When you "attach a role to an EC2 instance" in the console, AWS is actually crea
 | IMDS credential rotation | ~6-hour validity, refreshed automatically ~5 min before expiry | The SDK/CLI never has to be told to "refresh," it just works |
 | Detaching a role | Does NOT instantly revoke already-issued credentials | Old credentials keep working until they naturally expire |
 | Revoke active sessions | Immediately kills active sessions (~30s propagation) | The actual fix for "I need this access gone right now" |
+| Role attachment vs credentials | Two separate clocks — one long-term, one short-lived | A credential expiring at 11 AM ≠ EC2 losing S3 access at 11 AM |
