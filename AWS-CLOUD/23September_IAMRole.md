@@ -109,6 +109,23 @@ When you "attach a role to an EC2 instance" in the console, AWS is actually crea
 
 ---
 
+## 8. How the credentials actually get rotated — and what happens when you detach the role
+
+**How auto-rotation works, mechanically:**
+- The EC2 instance doesn't get handed credentials once — it **fetches** them from the **Instance Metadata Service (IMDS)**, a special local-only address every EC2 instance can reach: `http://169.254.169.254/latest/meta-data/iam/security-credentials/<role-name>`.
+- Each set of credentials returned by IMDS is valid for about **6 hours**.
+- AWS starts making a **new** set of credentials available through IMDS about **5 minutes before** the current set expires.
+- The AWS SDK/CLI running on the instance reads the `Expiration` timestamp in the credentials it already has, and automatically re-fetches a fresh set from IMDS as that time approaches — no restart, no manual refresh, nothing the application's code has to handle itself.
+
+**⚠️ What happens when you detach the role — a common misunderstanding:**
+- **Detaching the role from the instance does NOT immediately revoke anything.** Any credentials already fetched — cached by your application, the SDK, or even an open shell session — stay valid and usable until their own natural expiration (up to ~6 hours later), **even if** you detach the role, and **even if** you reboot the instance.
+- To actually cut off active sessions **immediately**, IAM has a dedicated **"Revoke active sessions"** action on the role itself — this attaches a special policy that denies every session that started before that moment, with roughly a **30-second propagation delay**.
+- The more reliable lever in practice: **editing or removing the role's Permission Policy** (rather than detaching the role). AWS checks the role's **current, live** policy on **every single API call** — not a snapshot taken when the credentials were first issued. So tightening the policy takes effect on the *next* call the credentials try to make, even though the credentials themselves are technically still "valid" until they expire.
+
+**Easy memory trick:** Detach the role → old credentials keep working until they expire on their own. Revoke sessions / edit the policy → cuts access off on the next API call, in seconds.
+
+---
+
 ## Quick Recap Table
 
 | Concept | One-line meaning | Real-time (DevOps) example |
@@ -119,3 +136,6 @@ When you "attach a role to an EC2 instance" in the console, AWS is actually crea
 | STS `AssumeRole` | The API call that issues temporary credentials | Default 1 hour, up to 12 hours max session |
 | Cross-account role | Assuming a role in a different AWS account | A Dev engineer temporarily accessing the Prod account |
 | Instance Profile | The wrapper that lets a role attach to EC2 | Created automatically when you attach a role via the console |
+| IMDS credential rotation | ~6-hour validity, refreshed automatically ~5 min before expiry | The SDK/CLI never has to be told to "refresh," it just works |
+| Detaching a role | Does NOT instantly revoke already-issued credentials | Old credentials keep working until they naturally expire |
+| Revoke active sessions | Immediately kills active sessions (~30s propagation) | The actual fix for "I need this access gone right now" |
