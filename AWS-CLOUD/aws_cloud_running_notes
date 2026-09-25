@@ -9158,3 +9158,1431 @@ Object Storage:
 
 
 
+=============================================================
+
+DATE: 25 SEPTEMBER 2026
+
+====================================================================
+AWS RDS - AMAZON RELATIONAL DATABASE SERVICE
+====================================================================
+
+RDS
+=
+Relational Database Service
+
+Amazon RDS is a managed database service provided by AWS.
+
+It allows us to run relational databases without manually
+managing the underlying database server operating system.
+
+Supported database engines include:
+
+    - MySQL
+    - PostgreSQL
+    - MariaDB
+    - Oracle
+    - Microsoft SQL Server
+    - Db2
+
+
+In this project we are using:
+
+    Amazon RDS
+        |
+        v
+    MySQL
+
+
+====================================================================
+1. WHAT IS AMAZON RDS?
+====================================================================
+
+Amazon RDS is a managed relational database service.
+
+Instead of installing MySQL manually on an EC2 server:
+
+    EC2
+      |
+      v
+    Linux
+      |
+      v
+    Install MySQL
+      |
+      v
+    Configure MySQL
+      |
+      v
+    Manage database
+
+
+AWS RDS manages much of the underlying infrastructure
+and database administration for us.
+
+We mainly manage:
+
+    - Database configuration
+    - Database users
+    - Databases
+    - Tables
+    - SQL queries
+    - Security
+    - Connectivity
+    - Performance settings
+
+
+Easy Memory Trick:
+
+    EC2 + MySQL
+        =
+    YOU MANAGE SERVER + DATABASE
+
+
+    RDS MySQL
+        =
+    AWS MANAGES DATABASE INFRASTRUCTURE
+
+
+====================================================================
+2. WHY DO WE USE RDS?
+====================================================================
+
+Without RDS:
+
+    EC2
+      |
+      +---- OS management
+      |
+      +---- MySQL installation
+      |
+      +---- MySQL configuration
+      |
+      +---- Patching
+      |
+      +---- Backup
+      |
+      +---- Monitoring
+      |
+      +---- Recovery
+      |
+      +---- High availability
+
+
+With RDS:
+
+    AWS RDS
+       |
+       +---- Managed database infrastructure
+       |
+       +---- Automated backups
+       |
+       +---- Monitoring
+       |
+       +---- Maintenance options
+       |
+       +---- High availability options
+       |
+       +---- Database snapshots
+       |
+       +---- Scaling options
+
+
+RDS reduces the amount of database infrastructure
+management required by the application team.
+
+
+====================================================================
+3. WHY NOT INSTALL MYSQL ON EC2?
+====================================================================
+
+We CAN install MySQL on EC2.
+
+Example:
+
+    EC2
+      |
+      v
+    Amazon Linux
+      |
+      v
+    MySQL
+
+
+But then we are responsible for many infrastructure tasks.
+
+Example:
+
+    OS patching
+    MySQL installation
+    MySQL configuration
+    Backup strategy
+    Monitoring
+    Disk management
+    Recovery
+    High availability
+    Database maintenance
+
+
+With RDS:
+
+    Application
+        |
+        v
+    RDS MySQL
+
+AWS manages much of the underlying infrastructure.
+
+
+====================================================================
+4. RDS VS MYSQL ON EC2
+====================================================================
+
++----------------------+-------------------------+
+| MySQL on EC2         | RDS MySQL               |
++----------------------+-------------------------+
+| You manage OS        | AWS manages underlying  |
+|                      | infrastructure          |
++----------------------+-------------------------+
+| Install MySQL        | AWS provisions MySQL    |
+| manually              |                         |
++----------------------+-------------------------+
+| More administration  | Less infrastructure    |
+|                      | administration         |
++----------------------+-------------------------+
+| Manual backup setup  | Automated backup       |
+| is possible          | features available     |
++----------------------+-------------------------+
+| You manage server    | AWS manages DB host    |
++----------------------+-------------------------+
+| More control         | Managed service        |
++----------------------+-------------------------+
+
+
+IMPORTANT:
+
+RDS does NOT mean we don't manage the database.
+
+We still manage:
+
+    - Users
+    - Passwords
+    - Databases
+    - Tables
+    - SQL
+    - Permissions
+    - Application connectivity
+
+
+====================================================================
+5. WHAT IS AN RDS DB INSTANCE?
+====================================================================
+
+A DB instance is the basic compute/storage environment
+provided by Amazon RDS for running a database engine.
+
+Example:
+
+    RDS DB Instance
+          |
+          +---- MySQL Engine
+          |
+          +---- CPU / Memory
+          |
+          +---- Storage
+          |
+          +---- Network
+          |
+          +---- Security Group
+          |
+          +---- Endpoint
+
+
+Think:
+
+    EC2 instance
+        =
+    compute server
+
+
+    RDS DB instance
+        =
+    managed database environment
+
+
+====================================================================
+6. RDS MYSQL ARCHITECTURE
+====================================================================
+
+                    APPLICATION
+                         |
+                         |
+                         v
+                +----------------+
+                | RDS MySQL      |
+                | DB Instance    |
+                +----------------+
+                         |
+              +----------+----------+
+              |          |          |
+              v          v          v
+          Database    Tables      Users
+
+
+Application can be:
+
+    - EC2
+    - Kubernetes
+    - Lambda
+    - Application server
+    - Local SQL client
+    - Other AWS services
+    - On-premises system with connectivity
+
+
+====================================================================
+7. IMPORTANT RDS COMPONENTS
+====================================================================
+
+When creating RDS, you commonly deal with:
+
+    1. DB Engine
+    2. DB Engine Version
+    3. DB Instance Class
+    4. Storage
+    5. DB Identifier
+    6. Master Username
+    7. Password
+    8. VPC
+    9. DB Subnet Group
+    10. Security Group
+    11. Public Accessibility
+    12. Port
+    13. Backup
+    14. Multi-AZ
+    15. Monitoring
+
+
+====================================================================
+8. DATABASE ENGINE
+====================================================================
+
+Database Engine defines which database software RDS runs.
+
+Examples:
+
+    MySQL
+    PostgreSQL
+    MariaDB
+    Oracle
+    SQL Server
+    Db2
+
+
+Our project:
+
+    Engine:
+        MySQL
+
+
+====================================================================
+9. MYSQL DEFAULT PORT
+====================================================================
+
+MySQL default port:
+
+    3306
+
+
+Connection:
+
+    SQL Client
+        |
+        | TCP 3306
+        v
+    RDS MySQL
+
+
+AWS documents 3306 as the default port for RDS for MySQL. :contentReference[oaicite:1]{index=1}
+
+
+====================================================================
+10. RDS ENDPOINT
+====================================================================
+
+RDS provides a DNS endpoint for the DB instance.
+
+Example:
+
+    mydb.xxxxxxxxxxxx.us-east-1.rds.amazonaws.com
+
+
+Application uses:
+
+    Endpoint
+       +
+    Port
+       +
+    Username
+       +
+    Password
+
+
+Example:
+
+    Host:
+        mydb.xxxxxxxxxxxx.us-east-1.rds.amazonaws.com
+
+    Port:
+        3306
+
+    Username:
+        admin
+
+    Password:
+        ********
+
+
+AWS documents the endpoint and port as the key connection
+information for an RDS DB instance. :contentReference[oaicite:2]{index=2}
+
+
+====================================================================
+11. RDS DB SUBNET GROUP
+====================================================================
+
+DB Subnet Group tells RDS which subnets can be used
+for the database.
+
+For production architectures, the DB subnet group normally
+contains subnets in multiple Availability Zones.
+
+Example:
+
+    VPC
+    |
+    +---- AZ-1
+    |      |
+    |      +---- Private DB Subnet
+    |
+    +---- AZ-2
+           |
+           +---- Private DB Subnet
+
+
+RDS can then place the DB instance in an appropriate
+subnet within the selected VPC/network configuration.
+
+
+====================================================================
+12. WHY PRIVATE SUBNET FOR RDS?
+====================================================================
+
+Database servers normally should not be directly exposed
+to the Internet.
+
+Recommended architecture:
+
+    Internet
+        |
+        v
+       ALB
+        |
+        v
+    Private EC2
+        |
+        v
+    Private RDS MySQL
+
+
+NOT:
+
+    Internet
+        |
+        v
+    Public RDS
+        |
+        v
+    Database
+
+
+Private RDS means:
+
+    No direct public Internet access.
+
+
+AWS specifically recommends keeping databases private
+when they don't need direct Internet access. :contentReference[oaicite:3]{index=3}
+
+
+====================================================================
+13. PUBLIC VS PRIVATE RDS
+====================================================================
+
+PUBLIC RDS
+
+    RDS can be reachable from outside the VPC if the
+    networking and Security Group rules allow it.
+
+Typical use:
+
+    Development
+    Testing
+    Temporary remote administration
+
+
+PRIVATE RDS
+
+    RDS is accessible only through private network
+    connectivity to the VPC.
+
+Typical use:
+
+    Production applications
+    Internal applications
+    Sensitive databases
+
+
+Production architecture:
+
+    User
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+      |
+      v
+    Private RDS
+
+
+AWS notes that a private DB instance doesn't have a public IP
+and isn't reachable directly from the Internet. :contentReference[oaicite:4]{index=4}
+
+
+====================================================================
+14. RDS SECURITY GROUP
+====================================================================
+
+RDS Security Group acts as a virtual firewall.
+
+It controls which clients can connect to the database.
+
+Example:
+
+    RDS Security Group
+
+    Inbound:
+
+        MySQL
+        TCP
+        3306
+        Source: Application EC2 Security Group
+
+
+This means:
+
+    Application EC2
+          |
+          | TCP 3306
+          v
+    RDS MySQL
+
+
+Only resources associated with the allowed source SG
+can connect.
+
+AWS states that RDS Security Groups control inbound and
+outbound traffic and that inbound access must be explicitly
+allowed. :contentReference[oaicite:5]{index=5}
+
+
+====================================================================
+15. BEST SECURITY GROUP DESIGN
+====================================================================
+
+Application EC2:
+
+    EC2-SG
+
+
+RDS:
+
+    RDS-SG
+
+
+RDS inbound rule:
+
+    Type:
+        MySQL/Aurora
+
+    Port:
+        3306
+
+    Source:
+        EC2-SG
+
+
+Architecture:
+
+    EC2
+     |
+     | 3306
+     v
+    RDS
+
+
+DO NOT unnecessarily use:
+
+    0.0.0.0/0
+
+
+for the RDS database port.
+
+Instead, restrict the source to the application
+Security Group or trusted IP range.
+
+
+====================================================================
+16. AWS PROJECT ARCHITECTURE WITH RDS
+====================================================================
+
+                         INTERNET
+                             |
+                             v
+                            IGW
+                             |
+                             v
+                           ALB
+                             |
+                             v
+                  +---------------------+
+                  | PRIVATE SUBNET     |
+                  |                     |
+                  | Amazon Linux EC2    |
+                  | Apache              |
+                  +---------------------+
+                             |
+                             | TCP 3306
+                             v
+                  +---------------------+
+                  | PRIVATE SUBNET     |
+                  |                     |
+                  | RDS MySQL           |
+                  +---------------------+
+
+
+EC2:
+
+    Application/Web Server
+
+
+RDS:
+
+    Database Server
+
+
+ALB:
+
+    Incoming Application Traffic
+
+
+NAT:
+
+    Outbound Internet access for private EC2
+
+
+====================================================================
+17. HOW TO CREATE MYSQL RDS INSTANCE
+====================================================================
+
+STEP 1
+
+Open AWS Console.
+
+
+STEP 2
+
+Search:
+
+    RDS
+
+
+STEP 3
+
+Open:
+
+    Amazon RDS
+
+
+STEP 4
+
+Choose:
+
+    Databases
+
+
+STEP 5
+
+Choose:
+
+    Create database
+
+
+AWS provides both console and CLI workflows for creating
+RDS DB instances. :contentReference[oaicite:6]{index=6}
+
+
+====================================================================
+18. SELECT DATABASE CREATION METHOD
+====================================================================
+
+You may see options such as:
+
+    Standard create
+    Easy create
+
+
+For learning and DevOps practice:
+
+    Standard create
+
+is useful because it exposes more configuration options.
+
+
+====================================================================
+19. SELECT ENGINE
+====================================================================
+
+Choose:
+
+    Engine:
+        MySQL
+
+
+Then select the required supported MySQL version.
+
+
+Example:
+
+    Engine:
+        MySQL
+
+    Version:
+        Select required version
+
+
+IMPORTANT:
+
+Always check your application's compatibility with the
+selected MySQL version.
+
+
+====================================================================
+20. SELECT TEMPLATE
+====================================================================
+
+AWS may provide templates such as:
+
+    Production
+    Dev/Test
+    Free tier
+
+
+For learning:
+
+    Free Tier / Dev/Test
+
+may be appropriate if your account and region offer
+the corresponding eligible option.
+
+
+For production:
+
+    Production
+
+configuration should be selected based on actual
+availability, performance and resilience requirements.
+
+
+====================================================================
+21. DB INSTANCE IDENTIFIER
+====================================================================
+
+DB instance identifier is the name used to identify
+the RDS instance in AWS.
+
+Example:
+
+    prod-mysql-db
+
+
+or:
+
+    mind-circuit-mysql
+
+
+IMPORTANT:
+
+This is NOT necessarily the same thing as the database name.
+
+
+Example:
+
+    DB Identifier:
+        prod-mysql-db
+
+    Initial Database:
+        mindcircuit
+
+
+====================================================================
+22. MASTER USERNAME
+====================================================================
+
+Example:
+
+    Username:
+        admin
+
+
+This user is created during database provisioning.
+
+
+IMPORTANT:
+
+Do not hard-code database passwords in:
+
+    - Git
+    - GitHub
+    - Terraform files
+    - Shell scripts
+    - Dockerfiles
+    - Public documentation
+
+
+Use secure secret-management approaches for real projects.
+
+
+====================================================================
+23. MASTER PASSWORD
+====================================================================
+
+Set a strong password.
+
+Example:
+
+    **************
+
+
+Do NOT use simple passwords such as:
+
+    password
+    admin123
+    mysql123
+
+
+For production, use a secrets-management strategy
+and rotate credentials according to your security requirements.
+
+
+====================================================================
+24. INSTANCE CLASS
+====================================================================
+
+DB instance class defines the compute capacity.
+
+It determines resources such as:
+
+    CPU
+    Memory
+    Network performance
+
+
+Example:
+
+    db.t3.micro
+
+
+may be suitable for learning/testing where eligible.
+
+For production:
+
+    Select the instance class based on workload.
+
+
+Think:
+
+    DB Instance Class
+          =
+    CPU + Memory capacity
+
+
+====================================================================
+25. STORAGE
+====================================================================
+
+RDS storage stores the database data.
+
+You may configure:
+
+    - Storage type
+    - Allocated storage
+    - Storage autoscaling
+
+
+Example:
+
+    Storage:
+        20 GiB
+
+
+The actual value depends on the workload.
+
+
+Think:
+
+    Instance Class
+        =
+    Compute
+
+
+    Storage
+        =
+    Database Disk
+
+
+====================================================================
+26. CONNECTIVITY
+====================================================================
+
+This is one of the most important sections.
+
+
+Select:
+
+    VPC:
+        Your required VPC
+
+
+For your previous project:
+
+    VPC:
+        prod-vpc
+
+    CIDR:
+        10.81.0.0/16
+
+
+Then select:
+
+    DB Subnet Group
+
+
+and:
+
+    Security Group
+
+
+====================================================================
+27. PUBLIC ACCESSIBILITY
+====================================================================
+
+For a production-style architecture:
+
+    Public access:
+        No
+
+
+This means the RDS database is not directly publicly
+accessible.
+
+
+Architecture:
+
+    Internet
+       |
+       v
+      ALB
+       |
+       v
+      EC2
+       |
+       v
+      RDS
+
+
+Instead of:
+
+    Internet
+       |
+       v
+      RDS
+
+
+AWS's current documentation recommends private access
+for databases that don't need direct Internet access. :contentReference[oaicite:7]{index=7}
+
+
+====================================================================
+28. SECURITY GROUP FOR RDS
+====================================================================
+
+Create or select:
+
+    RDS-SG
+
+
+Inbound:
+
+    Type:
+        MySQL/Aurora
+
+    Protocol:
+        TCP
+
+    Port:
+        3306
+
+    Source:
+        Application EC2 Security Group
+
+
+Example:
+
+    RDS-SG
+       |
+       +---- Inbound TCP 3306
+                    |
+                    v
+                 EC2-SG
+
+
+This is better than:
+
+    TCP 3306
+    Source: 0.0.0.0/0
+
+
+====================================================================
+29. DATABASE PORT
+====================================================================
+
+MySQL:
+
+    3306
+
+
+So:
+
+    EC2
+      |
+      | TCP 3306
+      v
+    RDS MySQL
+
+
+If you change the port:
+
+    EC2/application
+          |
+          | custom port
+          v
+        RDS
+
+
+Your client/application must use the same port.
+
+
+====================================================================
+30. INITIAL DATABASE NAME
+====================================================================
+
+You can specify an initial database.
+
+Example:
+
+    Initial database name:
+
+        mindcircuit
+
+
+Then after creation:
+
+    RDS
+      |
+      v
+    mindcircuit
+
+
+You can connect to this database and create tables.
+
+
+AWS's creation workflow includes an optional initial database
+name. :contentReference[oaicite:8]{index=8}
+
+
+====================================================================
+31. CREATE DATABASE
+====================================================================
+
+Review configuration.
+
+Then:
+
+    Create database
+
+
+RDS status initially may show:
+
+    Creating
+
+
+Wait until:
+
+    Available
+
+
+Only after the instance becomes available should you
+normally proceed with the connection test.
+
+
+====================================================================
+32. FIND RDS ENDPOINT
+====================================================================
+
+Go to:
+
+    RDS
+      |
+      v
+    Databases
+      |
+      v
+    Select your DB
+      |
+      v
+    Connectivity & security
+
+
+Find:
+
+    Endpoint
+
+    Port
+
+
+Example:
+
+    Endpoint:
+        prod-mysql.xxxxxxxxxxxx.ap-south-1.rds.amazonaws.com
+
+    Port:
+        3306
+
+
+AWS documents this exact console path for retrieving
+the endpoint and port. :contentReference[oaicite:9]{index=9}
+
+
+====================================================================
+33. SQL ELECTRON
+====================================================================
+
+SQL Electron is a graphical SQL client.
+
+It can be used to connect to a database server and execute
+SQL queries.
+
+For your RDS MySQL connection, the important information is:
+
+    Host
+    Port
+    Username
+    Password
+    Database
+
+
+Example:
+
+    Host:
+        prod-mysql.xxxxxxxxxxxx.ap-south-1.rds.amazonaws.com
+
+    Port:
+        3306
+
+    User:
+        admin
+
+    Password:
+        ********
+
+    Database:
+        mindcircuit
+
+
+The RDS endpoint is the hostname used by a standard
+MySQL client. :contentReference[oaicite:10]{index=10}
+
+
+====================================================================
+34. CONNECT RDS TO SQL ELECTRON
+====================================================================
+
+STEP 1
+
+Open SQL Electron.
+
+
+STEP 2
+
+Create a new MySQL connection.
+
+
+STEP 3
+
+Enter:
+
+    Host:
+        <RDS-ENDPOINT>
+
+
+    Port:
+        3306
+
+
+    Username:
+        <RDS-MASTER-USERNAME>
+
+
+    Password:
+        <RDS-PASSWORD>
+
+
+    Database:
+        <DATABASE-NAME>
+
+
+STEP 4
+
+Test connection.
+
+
+STEP 5
+
+Connect.
+
+
+STEP 6
+
+Open SQL editor/query window.
+
+
+STEP 7
+
+Run SQL queries.
+
+
+====================================================================
+35. IMPORTANT - SQL ELECTRON CONNECTION REQUIREMENTS
+====================================================================
+
+For SQL Electron to connect successfully:
+
+    1. RDS must be Available.
+
+    2. Correct endpoint must be used.
+
+    3. Correct port must be used.
+
+    4. Username must be correct.
+
+    5. Password must be correct.
+
+    6. RDS Security Group must allow your client IP
+       if connecting directly from your laptop.
+
+    7. RDS must be publicly accessible if your laptop
+       is connecting directly over the public Internet.
+
+    8. Network ACLs must not block the connection.
+
+    9. Your local/company firewall must allow the connection.
+
+AWS notes that connecting from outside the VPC requires the
+DB instance to be publicly accessible, appropriate Security
+Group access, and the other required networking conditions. :contentReference[oaicite:11]{index=11}
+
+
+====================================================================
+36. IMPORTANT - PRIVATE RDS + SQL ELECTRON
+====================================================================
+
+If:
+
+    RDS
+      |
+      v
+    Private
+
+then your laptop cannot simply connect directly over
+the public Internet.
+
+
+You need private connectivity such as:
+
+    VPN
+    Direct Connect
+    Bastion/Jump Host
+    Other approved private access architecture
+
+
+Example:
+
+    Laptop
+       |
+       v
+    Bastion / VPN
+       |
+       v
+    Private RDS
+
+
+AWS specifically describes VPN, Direct Connect and bastion-host
+approaches for accessing private RDS from outside the VPC. :contentReference[oaicite:12]{index=12}
+
+
+====================================================================
+37. SIMPLE DEVELOPMENT CONNECTION
+====================================================================
+
+For learning/testing, you may temporarily configure:
+
+    RDS:
+        Public access = Yes
+
+
+RDS Security Group:
+
+    MySQL
+    TCP
+    3306
+    Source = YOUR PUBLIC IP/32
+
+
+Example:
+
+    203.0.113.25/32
+
+
+NOT:
+
+    0.0.0.0/0
+
+
+Then:
+
+    Laptop
+       |
+       | TCP 3306
+       v
+    RDS MySQL
+
+
+IMPORTANT:
+
+Use this only when appropriate for development/testing.
+
+For production, prefer private connectivity.
+
+
+====================================================================
+38. SQL BASICS
+====================================================================
+
+Once connected to RDS MySQL through SQL Electron,
+you can execute standard MySQL SQL commands.
+
+
+Examples:
+
+    CREATE DATABASE
+    USE
+    CREATE TABLE
+    INSERT
+    SELECT
+    UPDATE
+    DELETE
+    ALTER
+    DROP
+
+
+====================================================================
+39. CREATE DATABASE
+====================================================================
+
+
+SHOW DATABASES;  - to view all available databases:
+
+USE database_name;
+SELECT DATABASE();
+
+
+CREATE TABLE employees (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,  -- Employee ID, auto-incremented
+    first_name VARCHAR(50),                      -- First Name
+    last_name VARCHAR(50)                        -- Last Name
+);
+
+
+
+
+
+=======
+
+SHOW DATABASES;
+USE facebookdb;
+SELECT DATABASE();
+
+CREATE TABLE employees (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,  -- Employee ID, auto-incremented
+    first_name VARCHAR(50),                      -- First Name
+    last_name VARCHAR(50)                        -- Last Name
+);
+
+INSERT INTO employees (first_name, last_name)
+VALUES ('MADHU', 'KIRAN');
+
+INSERT INTO employees (first_name, last_name)
+VALUES ('x', 'y');
+
+INSERT INTO employees (first_name, last_name)
+VALUES ('a', 'b');
+
+===========
+
+SELECT * FROM employees;
+
+SELECT first_name, last_name FROM employees;
+
+=================================
+UPDATE employees
+SET last_name = 'kotha'
+WHERE employee_id = 3;
+
+
+DELETE FROM employees
+WHERE employee_id = 3;
+
+
+==============
+Create: INSERT INTO employees
+
+Read: SELECT * FROM employees
+
+Update: UPDATE employees SET column_name = value WHERE condition
+
+Delete: DELETE FROM employees WHERE condition
+
+
+====================================
