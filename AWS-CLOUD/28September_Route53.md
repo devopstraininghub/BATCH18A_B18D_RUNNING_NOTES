@@ -31,7 +31,7 @@ Route 53 does four things: registers domain names, hosts DNS records, routes tra
 
 ## 3. What can Route 53 do?
 
-1. **Domain Registration** — buy a domain directly (e.g. `myapp.com`).
+1. **Domain Registration** — buy a domain directly (e.g. `myapp.com`). This is optional — you can just as easily buy the domain at a different registrar (GoDaddy, Namecheap, etc.) and still use Route 53 purely as the DNS host, by pointing the domain's name servers at Route 53 (§6 below covers exactly this setup, which is what we did in class).
 2. **DNS Hosting** — create DNS records: A, AAAA, CNAME, Alias, MX, TXT, and more.
 3. **Route Traffic** — to EC2, Load Balancers, S3 static websites, CloudFront, or even external (non-AWS) servers.
 4. **Health Checks** — detect an unhealthy endpoint and stop sending traffic to it.
@@ -49,6 +49,7 @@ Route 53 does four things: registers domain names, hosts DNS records, routes tra
 | **Alias** | AWS-specific — domain → an AWS resource, no IP involved | `myapp.com → ALB / CloudFront / S3` |
 | **MX** | Domain → mail servers | Routing email for the domain |
 | **TXT** | Verification / metadata text | DKIM, SPF, Google site verification |
+| **NS** | Domain (or subdomain) → the authoritative name servers responsible for it | Route 53 auto-creates 4 of these for every Hosted Zone — this is exactly what GoDaddy needs to point at (§6) |
 
 **Alias vs CNAME — why Route 53 has both:** a plain CNAME can't be used on a **zone apex** (the bare domain, e.g. `myapp.com` with no `www.` or subdomain) — that's a rule from the DNS standard itself, not an AWS limitation. AWS's **Alias record** is built specifically to get around this: it works at the zone apex, points directly at AWS resources like an ALB, CloudFront distribution, or S3 website endpoint, automatically follows that resource's IP if it ever changes, and — unlike a CNAME — Route 53 doesn't charge for Alias queries to AWS resources.
 
@@ -70,7 +71,72 @@ Route 53 does four things: registers domain names, hosts DNS records, routes tra
 
 ---
 
-## 6. Real-time example — routing a production website through Route 53
+## 6. Using a domain bought outside AWS — GoDaddy + Route 53 (what we actually set up)
+
+Buying the domain and hosting its DNS don't have to happen in the same place. **In our case: the domain was purchased on GoDaddy, and Route 53 is only being used as the DNS host** — this is a very common real-world pattern, not a workaround.
+
+**Who does what:**
+```
+GoDaddy   → the registrar. Owns the "you own this domain" record (WHOIS),
+             handles renewal/billing for the domain name itself.
+
+Route 53  → the DNS host. Holds the actual DNS records (A, Alias, CNAME,
+             MX, TXT, ...) that decide where myapp.com's traffic goes.
+```
+
+**Step-by-step — how the two get connected:**
+
+**1) Create a Hosted Zone in Route 53 manually**
+- Since the domain wasn't registered *through* Route 53, the Hosted Zone is **not** auto-created — you create a **Public Hosted Zone** yourself, for your exact domain name.
+```
+Route 53 → Hosted zones → Create hosted zone → myapp.com (Public)
+```
+
+**2) Route 53 auto-generates 4 NS (Name Server) records for that zone**
+
+**Example:**
+```
+ns-123.awsdns-45.com
+ns-456.awsdns-67.net
+ns-789.awsdns-01.org
+ns-012.awsdns-23.co.uk
+```
+These 4 values are what tell the entire Internet's DNS system "Route 53 is now authoritative for this domain."
+
+**3) Update the NS records at GoDaddy**
+- Log in to GoDaddy → the domain's DNS/Nameservers settings → switch from GoDaddy's default name servers to **Custom**, and enter Route 53's 4 NS values from Step 2, exactly as shown.
+```
+GoDaddy (registrar)
+     │  Nameservers changed to →
+     ▼
+Route 53's 4 NS records
+     │
+     ▼
+Route 53 Hosted Zone (myapp.com) now answers all DNS queries for the domain
+```
+
+**4) Create the actual DNS records inside the Route 53 Hosted Zone**
+- Now add the A/Alias/CNAME/MX/TXT records exactly as in §7 below (e.g. `myapp.com → ALB DNS name`) — these are what actually resolve, once the NS delegation from Step 3 is in place.
+
+**5) Wait for propagation**
+- NS changes aren't instant — DNS propagation can take anywhere from a few minutes up to ~48 hours, since resolvers around the world cache the old name servers until their TTL expires. In practice it's often much faster.
+- You can check whether it's live with:
+```
+nslookup -type=NS myapp.com
+```
+or
+```
+dig NS myapp.com
+```
+If the output shows the `awsdns` name servers from Step 2, the delegation has taken effect and Route 53 is now authoritative.
+
+⚠️ **The domain still renews at GoDaddy, not AWS** — Route 53 hosts the DNS records, but GoDaddy remains the registrar of record. Missing a renewal at GoDaddy will take the domain down regardless of how the DNS is configured in Route 53.
+
+**Easy memory trick:** GoDaddy = where you *own* the domain. Route 53 = where you *steer* the domain. The 4 NS records are the handoff between the two — GoDaddy points at Route 53, and from then on Route 53 has the final say on where `myapp.com` actually goes.
+
+---
+
+## 7. Real-time example — routing a production website through Route 53
 
 **Scenario:** a production website hosted in AWS.
 
@@ -86,16 +152,16 @@ Domain purchased: myapp.com
 
 **Steps:**
 
-**1) Buy the domain in Route 53**
+**1) Domain already purchased — at GoDaddy, not Route 53**
 ```
-myapp.com
+myapp.com   (registrar: GoDaddy)
 ```
 
-**2) Create a Hosted Zone**
-- Auto-created for you the moment you register the domain through Route 53.
-- A **Hosted Zone** is simply the container that holds all the DNS records for that domain.
+**2) Create a Hosted Zone in Route 53, then delegate to it via NS records at GoDaddy**
+- A **Hosted Zone** is simply the container that holds all the DNS records for a domain — since `myapp.com` wasn't registered through Route 53, this zone is created manually, not auto-created.
+- Full mechanics of this handoff are in §6 above — in short: Route 53 hands you 4 NS records, and those get pasted into GoDaddy's nameserver settings.
 
-**3) Create a DNS record**
+**3) Create a DNS record inside the Route 53 Hosted Zone**
 ```
 Record type: A or Alias
 myapp.com → ALB DNS name
@@ -126,7 +192,7 @@ This ties directly into everything covered so far: Route 53 sits **in front of**
 
 ---
 
-## 7. Why Route 53 matters for DevOps
+## 8. Why Route 53 matters for DevOps
 
 - Used in nearly every real production application — domain-to-application mapping is a basic requirement, not optional.
 - Pairs directly with: S3 static websites, CloudFront, ALB/NLB, multi-region deployments, and disaster-recovery setups.
@@ -134,7 +200,7 @@ This ties directly into everything covered so far: Route 53 sits **in front of**
 
 ---
 
-## 8. Simple summary
+## 9. Simple summary
 
 ```
 Route 53 = DNS + Traffic Routing + Domain Registration
@@ -154,7 +220,9 @@ Route 53 = DNS + Traffic Routing + Domain Registration
 | A Record | Domain → IPv4 address | `myapp.com → 54.10.20.30` |
 | CNAME | Alias → another domain name (not usable at the zone apex) | `api.myapp.com → backend.myapp.com` |
 | Alias Record | AWS-only record, works at the zone apex, free queries to AWS resources | `myapp.com → ALB / CloudFront / S3` |
-| Hosted Zone | The container holding all DNS records for a domain | Auto-created when you register a domain in Route 53 |
+| Hosted Zone | The container holding all DNS records for a domain | Auto-created if registered via Route 53; created manually otherwise (our case) |
+| NS Record | Points a domain to its authoritative name servers | Route 53's 4 NS values, pasted into GoDaddy's nameserver settings |
+| GoDaddy + Route 53 | Domain purchased at GoDaddy, DNS hosted in Route 53 | GoDaddy = registrar/ownership+renewal, Route 53 = actual DNS answers |
 | Weighted Routing | Split traffic by percentage across endpoints | 70% to v1, 30% to v2 — canary releases |
 | Failover Routing | Automatic switch to backup when primary fails a health check | Basic disaster-recovery setup |
 | Health Check | Route 53 monitors an endpoint's health | Stops routing to an EC2/ALB that's gone unhealthy |
