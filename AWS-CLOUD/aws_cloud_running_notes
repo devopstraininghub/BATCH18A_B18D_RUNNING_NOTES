@@ -10766,3 +10766,2339 @@ DATE: 28 SEPTEMBER 2026
         Essential for hosting websites & APIs in AWS.
 ======================================================================================================
 
+DATE: 29 SEPTEMBER 2026
+
+ACM
+
+====================================================================
+AWS CERTIFICATE MANAGER (ACM) — COMPLETE NOTES
+==============================================
+
+1. WHAT IS AWS CERTIFICATE MANAGER (ACM)?
+   ====================================================================
+
+AWS Certificate Manager (ACM) is an AWS service used to provision,
+manage, store, and renew SSL/TLS certificates.
+
+In simple words:
+
+```
+ACM helps us enable HTTPS for our applications.
+```
+
+Example:
+
+```
+HTTP:
+
+http://www.example.com
+
+
+HTTPS:
+
+https://www.example.com
+```
+
+ACM manages the certificate required to establish the secure HTTPS
+connection.
+
+Common AWS services that can use ACM certificates:
+
+```
+- Application Load Balancer (ALB)
+- Network Load Balancer (NLB)
+- CloudFront
+- API Gateway
+```
+
+Easy definition:
+
+```
+ACM = AWS service for managing SSL/TLS certificates.
+```
+
+====================================================================
+2. WHY DO WE NEED ACM?
+======================
+
+We use ACM mainly to secure communication between users and our
+applications.
+
+Without HTTPS:
+
+```
+User
+  |
+  | HTTP
+  v
+Application
+```
+
+With HTTPS:
+
+```
+User
+  |
+  | HTTPS
+  v
+Application
+```
+
+HTTPS protects data while it travels between the client and server.
+
+Examples of information that should be protected:
+
+```
+- Username
+- Password
+- Session information
+- Payment information
+- Personal information
+- API requests
+- Application data
+```
+
+ACM makes certificate management easier because AWS handles much of
+the certificate lifecycle.
+
+====================================================================
+3. WHAT IS HTTPS?
+=================
+
+HTTPS = HyperText Transfer Protocol Secure
+
+HTTPS is HTTP communication protected using TLS.
+
+HTTP:
+
+```
+http://example.com
+```
+
+HTTPS:
+
+```
+https://example.com
+```
+
+HTTPS normally uses:
+
+```
+Port 443
+```
+
+HTTP normally uses:
+
+```
+Port 80
+```
+
+Easy memory trick:
+
+```
+HTTP  = 80
+HTTPS = 443
+```
+
+====================================================================
+4. WHAT IS SSL?
+===============
+
+SSL = Secure Sockets Layer
+
+SSL was an older security protocol.
+
+Today, modern HTTPS communication uses:
+
+```
+TLS = Transport Layer Security
+```
+
+However, people commonly continue to say:
+
+```
+SSL Certificate
+```
+
+Technically, the better term is:
+
+```
+TLS Certificate
+```
+
+When people say:
+
+```
+"Install an SSL certificate"
+```
+
+they generally mean:
+
+```
+"Configure a TLS certificate for HTTPS."
+```
+
+====================================================================
+5. WHAT DOES HTTPS PROVIDE?
+===========================
+
+HTTPS mainly provides:
+
+```
+1. Encryption
+2. Authentication
+3. Data integrity
+```
+
+1. ENCRYPTION
+
+---
+
+Data transmitted between client and server is encrypted.
+
+Example:
+
+```
+User
+  |
+  | Encrypted communication
+  v
+Server
+```
+
+## 2. AUTHENTICATION
+
+The certificate helps the browser verify that the server is associated
+with the requested domain.
+
+3. DATA INTEGRITY
+
+---
+
+TLS helps protect data from being modified during transmission.
+
+====================================================================
+6. WHAT IS AN SSL/TLS CERTIFICATE?
+==================================
+
+A certificate is a digital document used during a TLS connection.
+
+It contains information such as:
+
+```
+- Domain name
+- Public key
+- Certificate authority information
+- Validity information
+- Digital signature
+```
+
+Example:
+
+```
+Certificate:
+
+www.example.com
+```
+
+When a user accesses:
+
+```
+https://www.example.com
+```
+
+the browser checks the certificate presented by the server.
+
+====================================================================
+7. SIMPLE HTTPS FLOW
+====================
+
+User enters:
+
+```
+https://www.example.com
+
+
+    |
+    v
+```
+
+DNS resolves the domain
+
+```
+    |
+    v
+```
+
+Request reaches HTTPS endpoint
+
+```
+    |
+    v
+```
+
+Server presents TLS certificate
+
+```
+    |
+    v
+```
+
+Browser validates certificate
+
+```
+    |
+    v
+```
+
+TLS connection is established
+
+```
+    |
+    v
+```
+
+Encrypted HTTPS communication starts
+
+====================================================================
+8. WHAT IS A CERTIFICATE AUTHORITY (CA)?
+========================================
+
+CA = Certificate Authority
+
+A Certificate Authority is a trusted organization/system that issues
+digital certificates.
+
+Basic process:
+
+```
+Domain Owner
+     |
+     | Request certificate
+     v
+     CA
+     |
+     | Validate domain ownership
+     v
+Certificate issued
+```
+
+The browser trusts certificates issued by trusted Certificate
+Authorities.
+
+====================================================================
+9. WHAT DOES ACM ACTUALLY DO?
+=============================
+
+ACM helps with the certificate lifecycle.
+
+The lifecycle is roughly:
+
+```
+Request
+   |
+   v
+Validate
+   |
+   v
+Issue
+   |
+   v
+Use
+   |
+   v
+Renew
+   |
+   v
+Continue using
+```
+
+Instead of manually managing certificates, ACM manages the certificate
+through AWS-integrated services.
+
+====================================================================
+10. ACM CERTIFICATE LIFECYCLE
+=============================
+
+Typical flow:
+
+```
+1. Request certificate
+
+2. Specify domain
+
+3. Choose validation method
+
+4. Prove domain ownership
+
+5. ACM issues certificate
+
+6. Attach certificate to supported AWS service
+
+7. Use HTTPS
+
+8. ACM manages renewal
+```
+
+Easy memory:
+
+```
+REQUEST
+   ↓
+VALIDATE
+   ↓
+ISSUE
+   ↓
+USE
+   ↓
+RENEW
+```
+
+====================================================================
+11. WHAT IS DOMAIN VALIDATION?
+==============================
+
+Before ACM issues a public certificate, AWS needs to verify that we
+control the domain.
+
+For example:
+
+```
+Domain:
+
+mindcircuit.com
+```
+
+ACM needs proof that we control:
+
+```
+mindcircuit.com
+```
+
+This process is called:
+
+```
+Domain validation
+```
+
+Common validation methods:
+
+```
+1. DNS validation
+2. Email validation
+```
+
+DNS validation is commonly preferred for AWS environments.
+
+====================================================================
+12. DNS VALIDATION
+==================
+
+In DNS validation, ACM gives us a special DNS record.
+
+Example:
+
+```
+Name:
+
+_abc123.mindcircuit.com
+
+
+Type:
+
+CNAME
+
+
+Value:
+
+_xyz456.acm-validations.aws
+```
+
+We add this CNAME record to DNS.
+
+ACM checks the record.
+
+If the record is correct:
+
+```
+Domain ownership confirmed
+```
+
+Then:
+
+```
+Certificate status
+        |
+        v
+    ISSUED
+```
+
+====================================================================
+13. WHY DOES ACM USE DNS VALIDATION?
+====================================
+
+DNS validation proves that we control the DNS zone for the domain.
+
+Example:
+
+```
+Domain:
+
+mindcircuit.com
+```
+
+If we can create the required DNS record:
+
+```
+_abc123.mindcircuit.com
+```
+
+then ACM can verify that we control the domain.
+
+Simple concept:
+
+```
+Can you create the DNS validation record?
+
+          YES
+           |
+           v
+   Domain control verified
+```
+
+====================================================================
+14. ACM + ROUTE 53
+==================
+
+Route 53 is AWS's DNS service.
+
+ACM manages:
+
+```
+Certificate
+```
+
+Route 53 manages:
+
+```
+DNS
+```
+
+They work very well together.
+
+Example:
+
+```
+ACM
+ |
+ | Certificate validation
+ v
+Route 53
+```
+
+ACM can provide a DNS validation CNAME that is added to the Route 53
+hosted zone.
+
+====================================================================
+15. WHAT IS ROUTE 53 HOSTED ZONE?
+=================================
+
+A hosted zone is a container for DNS records for a domain.
+
+Example:
+
+```
+Hosted Zone:
+
+mindcircuit.com
+```
+
+Inside the hosted zone we may have:
+
+```
+www.mindcircuit.com
+
+api.mindcircuit.com
+
+dev.mindcircuit.com
+```
+
+There can also be ACM validation records.
+
+====================================================================
+16. VERY IMPORTANT — TWO DIFFERENT DNS RECORDS
+==============================================
+
+This is an important concept.
+
+Suppose:
+
+```
+mindcircuit.com
+```
+
+ACM needs a validation record:
+
+```
+_abc123.mindcircuit.com
+        |
+        v
+    CNAME
+        |
+        v
+ACM validation target
+```
+
+Our application also needs a DNS record:
+
+```
+www.mindcircuit.com
+        |
+        v
+   ALB destination
+```
+
+These have completely different purposes.
+
+ACM validation record:
+
+```
+Proves domain ownership.
+```
+
+Application DNS record:
+
+```
+Sends users to the application.
+```
+
+Easy memory:
+
+```
+ACM CNAME = Certificate validation
+
+www Alias = Application traffic
+```
+
+====================================================================
+17. REAL-TIME USE CASE
+======================
+
+Let's create a production-style example.
+
+Company:
+
+```
+Mind Circuit
+```
+
+Domain:
+
+```
+mindcircuit.com
+```
+
+Application:
+
+```
+Web application
+```
+
+Requirement:
+
+```
+Users should access the application securely using:
+
+https://www.mindcircuit.com
+```
+
+AWS components:
+
+```
+- Route 53
+- ACM
+- Application Load Balancer
+- EC2
+```
+
+Architecture:
+
+```
+                     INTERNET
+                         |
+                         |
+                       HTTPS
+                         |
+                         v
+              www.mindcircuit.com
+                         |
+                         v
+                     Route 53
+                         |
+                         v
+                        ALB
+                         |
+                         v
+                        EC2
+```
+
+ACM provides the certificate used by the HTTPS endpoint.
+
+====================================================================
+18. OUR ACM REQUIREMENT
+=======================
+
+We want:
+
+```
+https://www.mindcircuit.com
+```
+
+Therefore we need a certificate covering:
+
+```
+www.mindcircuit.com
+```
+
+We could request:
+
+```
+www.mindcircuit.com
+```
+
+Or, if multiple subdomains are needed:
+
+```
+*.mindcircuit.com
+```
+
+If we want both:
+
+```
+mindcircuit.com
+```
+
+and:
+
+```
+www.mindcircuit.com
+```
+
+we can request both names on the certificate.
+
+====================================================================
+19. SINGLE-DOMAIN CERTIFICATE
+=============================
+
+Example:
+
+```
+www.mindcircuit.com
+```
+
+Certificate:
+
+```
+www.mindcircuit.com
+```
+
+Useful when only one domain needs HTTPS.
+
+====================================================================
+20. MULTI-DOMAIN CERTIFICATE
+============================
+
+One certificate can contain multiple domain names.
+
+Example:
+
+```
+mindcircuit.com
+www.mindcircuit.com
+api.mindcircuit.com
+admin.mindcircuit.com
+```
+
+These are commonly called:
+
+```
+SANs
+
+Subject Alternative Names
+```
+
+Useful when an application has multiple domains.
+
+====================================================================
+21. WILDCARD CERTIFICATE
+========================
+
+Example:
+
+```
+*.mindcircuit.com
+```
+
+This can cover:
+
+```
+www.mindcircuit.com
+api.mindcircuit.com
+dev.mindcircuit.com
+test.mindcircuit.com
+```
+
+But:
+
+```
+*.mindcircuit.com
+```
+
+does NOT itself cover:
+
+```
+mindcircuit.com
+```
+
+If both are required, request:
+
+```
+mindcircuit.com
+
+*.mindcircuit.com
+```
+
+Also:
+
+```
+*.mindcircuit.com
+```
+
+does not cover:
+
+```
+api.dev.mindcircuit.com
+```
+
+because that is another subdomain level.
+
+====================================================================
+22. HOW TO CREATE ACM CERTIFICATE
+=================================
+
+AWS Console:
+
+```
+AWS Console
+    |
+    v
+Certificate Manager
+    |
+    v
+Request
+    |
+    v
+Request a public certificate
+```
+
+Enter domain:
+
+```
+www.mindcircuit.com
+```
+
+or:
+
+```
+mindcircuit.com
+```
+
+or:
+
+```
+mindcircuit.com
+*.mindcircuit.com
+```
+
+Choose:
+
+```
+DNS validation
+```
+
+Then:
+
+```
+Request
+```
+
+Certificate status initially:
+
+```
+Pending validation
+```
+
+====================================================================
+23. ACM CERTIFICATE STATUS
+==========================
+
+After requesting a certificate, you may see:
+
+```
+Pending validation
+```
+
+This means:
+
+```
+ACM is waiting for domain ownership validation.
+```
+
+After successful validation:
+
+```
+Issued
+```
+
+Issued means:
+
+```
+The certificate is ready to be used by a supported AWS service.
+```
+
+====================================================================
+24. CREATE DNS VALIDATION RECORD
+================================
+
+ACM provides a CNAME record.
+
+Example:
+
+```
+Name:
+
+_abc123.mindcircuit.com
+
+
+Type:
+
+CNAME
+
+
+Value:
+
+_xyz456.acm-validations.aws
+```
+
+Add this record to the DNS provider managing the domain.
+
+If Route 53 manages the domain, we can create the record in the
+Route 53 hosted zone.
+
+====================================================================
+25. ACM + ROUTE 53 VALIDATION FLOW
+==================================
+
+```
+                ACM
+                 |
+                 |
+          Generate CNAME
+                 |
+                 v
+             Route 53
+                 |
+            CNAME record
+                 |
+                 v
+                DNS
+                 |
+                 v
+                ACM
+                 |
+         Validate ownership
+                 |
+                 v
+          Certificate Issued
+```
+
+====================================================================
+26. WHY SHOULD WE NOT DELETE THE VALIDATION CNAME?
+==================================================
+
+The ACM DNS validation CNAME should remain in DNS.
+
+Why?
+
+Because ACM uses DNS validation as part of its managed renewal process.
+
+If the required validation record is removed or changed, future
+automatic renewal can fail.
+
+Easy memory:
+
+```
+ACM Validation CNAME
+        =
+KEEP IT
+```
+
+====================================================================
+27. AUTOMATIC CERTIFICATE RENEWAL
+=================================
+
+One major advantage of ACM is managed renewal for eligible ACM
+certificates.
+
+Traditional certificate management may look like:
+
+```
+Certificate expires
+      |
+      v
+Find new certificate
+      |
+      v
+Install certificate
+      |
+      v
+Configure application
+      |
+      v
+Restart/reload service
+```
+
+With ACM:
+
+```
+ACM
+ |
+ v
+Monitor certificate lifecycle
+ |
+ v
+Managed renewal
+ |
+ v
+Continue HTTPS
+```
+
+This reduces manual certificate-management work.
+
+====================================================================
+28. WHY AUTOMATIC RENEWAL IS IMPORTANT
+======================================
+
+Imagine:
+
+```
+Production website:
+
+https://shop.example.com
+```
+
+Certificate expires.
+
+The user may see a certificate warning or the HTTPS service may
+experience problems.
+
+Therefore:
+
+```
+Certificate renewal
+       =
+Critical production activity
+```
+
+ACM reduces the manual effort involved in this lifecycle.
+
+====================================================================
+29. WHAT IF ACM VALIDATION FAILS?
+=================================
+
+Certificate remains:
+
+```
+Pending validation
+```
+
+Check:
+
+```
+1. Is the domain correct?
+2. Is the CNAME correct?
+3. Is the CNAME publicly resolvable?
+4. Was the record created in the correct DNS zone?
+5. Was the record accidentally deleted?
+6. Are there DNS conflicts?
+7. Are we using the correct AWS account/permissions?
+```
+
+Basic troubleshooting:
+
+```
+ACM
+ |
+ v
+Pending validation
+ |
+ v
+Check CNAME
+ |
+ v
+Check DNS
+ |
+ v
+Wait for validation
+ |
+ v
+Certificate becomes ISSUED
+```
+
+====================================================================
+30. USING ACM CERTIFICATE WITH ALB
+==================================
+
+We only need to understand the important part.
+
+ALB has an HTTPS listener:
+
+```
+ALB
+ |
+ v
+HTTPS :443
+```
+
+We select:
+
+```
+ACM Certificate
+```
+
+So:
+
+```
+ALB HTTPS Listener
+        |
+        v
+  ACM Certificate
+```
+
+The certificate allows the ALB to serve:
+
+```
+https://www.mindcircuit.com
+```
+
+We do not need to manually install the ACM certificate on each EC2
+server in this architecture.
+
+====================================================================
+31. HTTPS LISTENER
+==================
+
+The ALB can have:
+
+```
+HTTP :80
+```
+
+and:
+
+```
+HTTPS :443
+```
+
+A common setup is:
+
+```
+HTTP :80
+   |
+   | Redirect
+   v
+HTTPS :443
+   |
+   v
+Application
+```
+
+Therefore:
+
+```
+http://www.mindcircuit.com
+```
+
+automatically redirects to:
+
+```
+https://www.mindcircuit.com
+```
+
+====================================================================
+32. COMPLETE REAL-TIME FLOW
+===========================
+
+User enters:
+
+```
+https://www.mindcircuit.com
+```
+
+STEP 1:
+
+```
+Browser performs DNS lookup.
+```
+
+STEP 2:
+
+```
+Route 53 resolves:
+
+www.mindcircuit.com
+
+to the ALB.
+```
+
+STEP 3:
+
+```
+Browser connects to:
+
+ALB :443
+```
+
+STEP 4:
+
+```
+ALB presents the ACM certificate.
+```
+
+STEP 5:
+
+```
+Browser validates the certificate.
+```
+
+STEP 6:
+
+```
+TLS connection is established.
+```
+
+STEP 7:
+
+```
+HTTPS request is sent securely.
+```
+
+STEP 8:
+
+```
+ALB forwards the request to the application server.
+```
+
+STEP 9:
+
+```
+Application processes the request.
+```
+
+STEP 10:
+
+```
+Response is returned to the user.
+```
+
+====================================================================
+33. COMPLETE ARCHITECTURE
+=========================
+
+```
+                     USER
+                       |
+                       |
+                 HTTPS :443
+                       |
+                       v
+              www.mindcircuit.com
+                       |
+                       v
+                  ROUTE 53
+                       |
+                       | DNS
+                       v
+                     ALB
+                       |
+                       | HTTPS
+                       |
+                ACM CERTIFICATE
+                       |
+                       v
+                     EC2
+                       |
+                       v
+                 APPLICATION
+```
+
+Responsibilities:
+
+```
+Route 53
+   =
+DNS
+
+
+ACM
+   =
+Certificate
+
+
+ALB
+   =
+HTTPS endpoint / traffic distribution
+
+
+EC2
+   =
+Application
+```
+
+====================================================================
+34. ACM IS NOT DNS
+==================
+
+Important:
+
+```
+ACM does NOT resolve domain names.
+```
+
+Route 53 does DNS.
+
+ACM manages certificates.
+
+Example:
+
+```
+Route 53:
+
+www.mindcircuit.com
+        |
+        v
+       ALB
+```
+
+ACM:
+
+```
+Certificate for:
+
+www.mindcircuit.com
+```
+
+====================================================================
+35. ACM IS NOT A LOAD BALANCER
+==============================
+
+ACM does not distribute traffic.
+
+ALB distributes traffic.
+
+Example:
+
+```
+User
+  |
+  v
+ALB
+ / \
+/   \
+```
+
+EC2  EC2
+
+ACM simply provides the certificate used for HTTPS.
+
+====================================================================
+36. ACM CERTIFICATE REGION
+==========================
+
+ACM certificates are regional resources.
+
+For an ALB:
+
+```
+ALB Region:
+
+ap-south-1
+```
+
+The ACM certificate should normally be requested in:
+
+```
+ap-south-1
+```
+
+Example:
+
+```
+ALB
+ap-south-1
+   |
+   v
+ACM Certificate
+ap-south-1
+```
+
+====================================================================
+37. SPECIAL CASE — CLOUDFRONT
+=============================
+
+CloudFront has a special ACM requirement.
+
+For a CloudFront distribution, the ACM certificate must be requested
+in:
+
+```
+us-east-1
+```
+
+This is a very common interview question.
+
+Remember:
+
+```
+ALB
+  =
+Certificate in ALB Region
+
+
+CloudFront
+  =
+Certificate in us-east-1
+```
+
+====================================================================
+38. CERTIFICATE ARN
+===================
+
+After ACM creates the certificate, AWS provides a Certificate ARN.
+
+Example:
+
+```
+arn:aws:acm:ap-south-1:123456789012:
+certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+ARN = Amazon Resource Name
+
+The ARN uniquely identifies the certificate.
+
+It can be referenced when configuring AWS resources.
+
+====================================================================
+39. ACM PUBLIC VS PRIVATE CERTIFICATES
+======================================
+
+ACM supports public and private certificate use cases.
+
+## PUBLIC CERTIFICATE
+
+Used for publicly trusted domains.
+
+Example:
+
+```
+www.example.com
+```
+
+Typical use:
+
+```
+Public website
+```
+
+## PRIVATE CERTIFICATE
+
+Used for private/internal PKI environments.
+
+Example:
+
+```
+internal.company.local
+```
+
+Typical use:
+
+```
+Internal applications
+Private services
+Internal corporate infrastructure
+```
+
+For our website example:
+
+```
+Public ACM certificate
+```
+
+====================================================================
+40. ACM AND CUSTOM DOMAIN
+=========================
+
+Suppose the ALB originally provides an AWS DNS name such as:
+
+```
+my-alb-123456.ap-south-1.elb.amazonaws.com
+```
+
+Instead of asking users to remember that name, we create:
+
+```
+www.mindcircuit.com
+```
+
+Route 53:
+
+```
+www.mindcircuit.com
+         |
+         v
+        ALB
+```
+
+ACM:
+
+```
+Certificate:
+
+www.mindcircuit.com
+```
+
+Now users access:
+
+```
+https://www.mindcircuit.com
+```
+
+instead of:
+
+```
+http://my-alb-123456.ap-south-1.elb.amazonaws.com
+```
+
+====================================================================
+41. WHY CUSTOM DOMAIN + ACM IS USEFUL
+=====================================
+
+Benefits:
+
+```
+- Professional domain
+- HTTPS
+- Trusted certificate
+- Better user experience
+- Secure communication
+- Easier certificate lifecycle management
+- Supports production applications
+```
+
+Example:
+
+```
+Bad for users:
+
+http://random-alb-name.amazonaws.com
+```
+
+Better application endpoint:
+
+```
+https://www.mindcircuit.com
+```
+
+====================================================================
+42. IMPORTANT DIFFERENCE:
+ACM VALIDATION VS APPLICATION ACCESS
+====================================
+
+This is one of the most important concepts.
+
+ACM validation:
+
+```
+ACM
+ |
+ v
+CNAME
+ |
+ v
+Route 53
+```
+
+Purpose:
+
+```
+Prove domain ownership.
+```
+
+Application access:
+
+```
+User
+ |
+ v
+www.mindcircuit.com
+ |
+ v
+Route 53 Alias
+ |
+ v
+ALB
+```
+
+Purpose:
+
+```
+Send user traffic to the application.
+```
+
+They are separate processes.
+
+====================================================================
+43. SECURITY GROUP — ONLY BRIEF CONCEPT
+=======================================
+
+For our architecture, the ALB needs to allow HTTPS traffic.
+
+Typically:
+
+```
+ALB Security Group
+
+HTTPS :443
+    |
+    v
+Allowed client traffic
+```
+
+Backend instances should generally accept application traffic from
+the ALB rather than exposing the application port directly to the
+Internet.
+
+We do not need to manage these details to understand ACM.
+
+====================================================================
+44. TARGET GROUP — ONLY BRIEF CONCEPT
+=====================================
+
+ALB sends traffic to a Target Group.
+
+Example:
+
+```
+ALB
+ |
+ v
+Target Group
+  /      \
+ v        v
+EC2-A   EC2-B
+```
+
+The Target Group contains the application servers.
+
+Again:
+
+```
+ACM = certificate
+
+ALB = traffic
+
+Target Group = backend servers
+```
+
+====================================================================
+45. HOW TO TEST HTTPS
+=====================
+
+After configuration:
+
+Open browser:
+
+```
+https://www.mindcircuit.com
+```
+
+Check:
+
+```
+- Website loads
+- HTTPS lock icon appears
+- Certificate is valid
+- Certificate domain matches the requested domain
+```
+
+We can also inspect the certificate from the browser's security
+information.
+
+====================================================================
+46. COMMON ACM PROBLEMS
+=======================
+
+PROBLEM 1:
+
+```
+Certificate stuck at Pending validation.
+```
+
+Check:
+
+```
+DNS validation CNAME.
+```
+
+---
+
+PROBLEM 2:
+
+```
+Certificate does not match domain.
+```
+
+Example:
+
+```
+User:
+
+www.example.com
+```
+
+Certificate:
+
+```
+api.example.com
+```
+
+Solution:
+
+```
+Request/use a certificate covering www.example.com.
+```
+
+---
+
+PROBLEM 3:
+
+```
+HTTPS does not work.
+```
+
+Check:
+
+```
+- Certificate status
+- HTTPS listener
+- Port 443
+- DNS
+- ALB configuration
+- Application health
+```
+
+---
+
+PROBLEM 4:
+
+```
+Certificate renewal fails.
+```
+
+Check:
+
+```
+ACM DNS validation CNAME still exists.
+```
+
+====================================================================
+47. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+What happens when a user accesses
+https://www.example.com?
+```
+
+Answer:
+
+```
+"The browser first resolves the domain through DNS. The request
+reaches the HTTPS endpoint, such as an ALB, on port 443. The ALB
+presents the ACM-managed certificate. The browser validates the
+certificate and establishes a TLS connection. The request is then
+forwarded to the backend application."
+```
+
+====================================================================
+48. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Why do we use ACM?
+```
+
+Answer:
+
+```
+"ACM simplifies provisioning and management of SSL/TLS
+certificates and integrates with AWS services such as ALB,
+CloudFront and API Gateway. It also supports managed renewal for
+eligible certificates."
+```
+
+====================================================================
+49. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+How do you validate an ACM certificate?
+```
+
+Answer:
+
+```
+"I commonly use DNS validation by creating the CNAME record
+provided by ACM in the domain's DNS zone."
+```
+
+====================================================================
+50. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Why is DNS validation preferred?
+```
+
+Answer:
+
+```
+"DNS validation is convenient for AWS-managed domains and supports
+managed certificate renewal as long as the required validation
+record remains available."
+```
+
+====================================================================
+51. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+What happens if I delete the ACM validation CNAME?
+```
+
+Answer:
+
+```
+"The certificate may continue working for some time, but managed
+renewal can fail because ACM may no longer be able to validate
+domain ownership."
+```
+
+====================================================================
+52. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Can I use ACM with an ALB?
+```
+
+Answer:
+
+```
+"Yes. An ACM certificate can be associated with an ALB HTTPS
+listener."
+```
+
+====================================================================
+53. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Where is the ACM certificate attached to an ALB?
+```
+
+Answer:
+
+```
+"It is attached to the ALB HTTPS listener, typically on port 443."
+```
+
+====================================================================
+54. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Does ACM provide DNS?
+```
+
+Answer:
+
+```
+"No. Route 53 provides DNS. ACM manages SSL/TLS certificates."
+```
+
+====================================================================
+55. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Does ACM route traffic?
+```
+
+Answer:
+
+```
+"No. ACM manages certificates. The load balancer handles traffic
+distribution."
+```
+
+====================================================================
+56. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+What is a wildcard certificate?
+```
+
+Answer:
+
+```
+"A wildcard certificate such as *.example.com can secure multiple
+subdomains at one level, such as www.example.com and
+api.example.com."
+```
+
+====================================================================
+57. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Does *.example.com cover example.com?
+```
+
+Answer:
+
+```
+"No. The apex domain example.com must be included separately if
+it also needs to be secured."
+```
+
+====================================================================
+58. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Which port does HTTPS use?
+```
+
+Answer:
+
+```
+"HTTPS normally uses TCP port 443."
+```
+
+====================================================================
+59. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+Which port does HTTP use?
+```
+
+Answer:
+
+```
+"HTTP normally uses TCP port 80."
+```
+
+====================================================================
+60. COMMON INTERVIEW QUESTION
+=============================
+
+Q:
+
+```
+What is TLS termination?
+```
+
+Answer:
+
+```
+"TLS termination means the HTTPS/TLS connection is terminated at
+a service such as the load balancer, which handles the TLS
+encryption/decryption for the client connection."
+```
+
+====================================================================
+61. ACM VS ROUTE 53
+===================
+
++----------------+-----------------------------------+
+| Service        | Responsibility                    |
++----------------+-----------------------------------+
+| ACM            | SSL/TLS certificate management    |
+| Route 53       | DNS                               |
++----------------+-----------------------------------+
+
+Easy memory:
+
+```
+ACM = Certificate
+
+Route 53 = DNS
+```
+
+====================================================================
+62. ACM VS ALB
+==============
+
++----------------+-----------------------------------+
+| Service        | Responsibility                    |
++----------------+-----------------------------------+
+| ACM            | Certificate management             |
+| ALB            | Traffic distribution / HTTPS       |
++----------------+-----------------------------------+
+
+Easy memory:
+
+```
+ACM = Certificate
+
+ALB = Traffic
+```
+
+====================================================================
+63. COMPLETE PRODUCTION EXAMPLE
+===============================
+
+Requirement:
+
+```
+Company wants:
+
+https://www.mindcircuit.com
+```
+
+Components:
+
+```
+Domain:
+mindcircuit.com
+
+
+DNS:
+Route 53
+
+
+Certificate:
+ACM
+
+
+Load Balancer:
+ALB
+
+
+Backend:
+EC2
+```
+
+Configuration:
+
+```
+1. Create Route 53 hosted zone.
+
+2. Request ACM public certificate.
+
+3. Add:
+   mindcircuit.com
+
+   and/or:
+
+   www.mindcircuit.com
+
+
+4. Select DNS validation.
+
+5. Create ACM validation CNAME in Route 53.
+
+6. Wait for certificate status:
+
+   ISSUED
+
+
+7. Create/configure ALB.
+
+8. Configure HTTPS listener on port 443.
+
+9. Attach ACM certificate.
+
+10. Create Route 53 Alias:
+
+    www.mindcircuit.com
+             |
+             v
+            ALB
+
+
+11. Test:
+
+    https://www.mindcircuit.com
+```
+
+Final result:
+
+```
+User
+  |
+  | HTTPS
+  v
+Route 53
+  |
+  v
+ALB
+  |
+  | ACM Certificate
+  v
+Application
+```
+
+====================================================================
+64. WHAT ACM SOLVES
+===================
+
+Without ACM:
+
+```
+Certificate management can become a manual operational task.
+```
+
+With ACM:
+
+```
+Certificate request
+      |
+      v
+Domain validation
+      |
+      v
+Certificate issuance
+      |
+      v
+AWS service integration
+      |
+      v
+Managed renewal
+```
+
+Therefore:
+
+```
+ACM
+  =
+Simplified certificate lifecycle management
+```
+
+====================================================================
+65. MOST IMPORTANT ACM POINTS TO REMEMBER
+=========================================
+
+```
+1. ACM = AWS Certificate Manager.
+
+2. ACM manages SSL/TLS certificates.
+
+3. HTTPS normally uses port 443.
+
+4. HTTPS uses TLS.
+
+5. ACM certificates can be used with supported AWS services.
+
+6. DNS validation is commonly used.
+
+7. ACM provides a CNAME for DNS validation.
+
+8. Keep the validation CNAME in DNS.
+
+9. ACM supports managed renewal for eligible certificates.
+
+10. ACM is different from Route 53.
+
+11. Route 53 = DNS.
+
+12. ACM = Certificate.
+
+13. ALB can use an ACM certificate on its HTTPS listener.
+
+14. ACM certificates are regional resources.
+
+15. For ALB, certificate should normally be in the ALB Region.
+
+16. CloudFront certificates must be in us-east-1.
+
+17. *.example.com does not cover example.com.
+
+18. *.example.com covers one subdomain level.
+
+19. ACM validation DNS record and application DNS record have
+    different purposes.
+
+20. ACM alone does not automatically make an application HTTPS.
+```
+
+====================================================================
+66. EASY MEMORY TRICK
+=====================
+
+Remember these four:
+
+```
+ROUTE 53
+    =
+DNS / DOMAIN
+
+
+ACM
+    =
+CERTIFICATE
+
+
+HTTPS
+    =
+SECURE COMMUNICATION
+
+
+ALB
+    =
+TRAFFIC
+```
+
+Complete flow:
+
+```
+DOMAIN
+   |
+   v
+ROUTE 53
+   |
+   v
+  ALB
+   |
+   v
+  ACM
+   |
+   v
+HTTPS
+   |
+   v
+APPLICATION
+```
+
+====================================================================
+67. ONE-MINUTE INTERVIEW ANSWER
+===============================
+
+" AWS Certificate Manager, or ACM, is an AWS service used to provision
+and manage SSL/TLS certificates. I use ACM to enable HTTPS for
+applications running behind services such as an Application Load
+Balancer. For example, if I have a domain [www.mindcircuit.com](http://www.mindcircuit.com) managed
+through Route 53, I can request a public ACM certificate and validate
+the domain using DNS validation. ACM provides a CNAME record, which I
+add to the Route 53 hosted zone. Once the certificate is issued, I
+associate it with the ALB HTTPS listener on port 443. Then I create a
+Route 53 Alias record pointing [www.mindcircuit.com](http://www.mindcircuit.com) to the ALB. When a
+user accesses https://www.mindcircuit.com, the DNS request is resolved
+through Route 53, the ALB presents the ACM certificate, the browser
+validates it, and secure HTTPS communication is established. ACM also
+supports managed certificate renewal for eligible certificates."
+
+====================================================================
+68. FINAL CONCEPT
+=================
+
+```
+                DOMAIN
+                   |
+                   v
+              ROUTE 53
+                   |
+              DNS RECORD
+                   |
+                   v
+                  ALB
+                   |
+              HTTPS :443
+                   |
+            ACM CERTIFICATE
+                   |
+                   v
+             APPLICATION
+```
+
+Remember:
+
+```
+Route 53
+   |
+   +--> Where is my application?
+
+
+ACM
+   |
+   +--> Is my HTTPS certificate available?
+
+
+HTTPS
+   |
+   +--> Can I communicate securely?
+
+
+ALB
+   |
+   +--> Where should the request go?
+```
+
+====================================================================
+END OF AWS CERTIFICATE MANAGER NOTES
+====================================
+
+
+
+
+
