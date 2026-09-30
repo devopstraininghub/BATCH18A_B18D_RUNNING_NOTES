@@ -13098,7 +13098,3856 @@ ALB
 END OF AWS CERTIFICATE MANAGER NOTES
 ====================================
 
+dATE: 30   SEP 2026 
 
 
 
+====================================================================
+AWS CLOUDFRONT
+====================================================================
+
+MODULE:
+    AWS CloudFront
+
+TOPICS COVERED:
+
+    1. What is CloudFront?
+    2. What is CDN?
+    3. Why do we need CDN?
+    4. What is Point of Presence?
+    5. What is Edge Location?
+    6. Edge Location vs POP
+    7. Regional Edge Cache
+    8. Origin
+    9. CloudFront Distribution
+    10. How CloudFront works
+    11. CloudFront + ALB architecture
+    12. How to create CloudFront Distribution
+    13. How to attach CloudFront to ALB
+    14. Distribution configuration
+    15. Cache behavior
+    16. Cache policy
+    17. Origin request policy
+    18. Cache key
+    19. TTL
+    20. Cache Hit / Cache Miss
+    21. Cache invalidation
+    22. Viewer Protocol Policy
+    23. Origin Protocol Policy
+    24. HTTP methods
+    25. HTTPS / SSL Certificate
+    26. Custom domain
+    27. Security Groups with CloudFront + ALB
+    28. AWS WAF
+    29. Compression
+    30. Price Class
+    31. Logging
+    32. Monitoring
+    33. Real-time request flow
+    34. Troubleshooting
+    35. Interview questions
+    36. Easy memory tricks
+
+
+====================================================================
+1. WHAT IS AMAZON CLOUDFRONT?
+====================================================================
+
+Amazon CloudFront is AWS's Content Delivery Network (CDN).
+
+It helps deliver:
+
+    - HTML
+    - CSS
+    - JavaScript
+    - Images
+    - Videos
+    - APIs
+    - Dynamic web content
+    - Other HTTP/HTTPS content
+
+
+CloudFront sits between the USER and the ORIGIN.
+
+Example:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    Origin
+
+
+The origin can be:
+
+    - Amazon S3
+    - Application Load Balancer
+    - Network Load Balancer
+    - EC2 / HTTP server
+    - API Gateway
+    - Other supported HTTP origins
+
+
+AWS describes CloudFront as a service that speeds delivery
+of static and dynamic content through a worldwide network
+of edge locations. :contentReference[oaicite:1]{index=1}
+
+
+====================================================================
+2. EASY DEFINITION
+====================================================================
+
+CloudFront
+    =
+AWS CDN service
+
+
+CDN
+    =
+Content Delivery Network
+
+
+Simple meaning:
+
+    CloudFront brings content closer to users.
+
+Instead of every user going directly to the origin:
+
+    User
+      |
+      v
+    Origin
+
+
+we can have:
+
+    User
+      |
+      v
+    CloudFront Edge
+      |
+      v
+    Origin
+
+
+====================================================================
+3. WHAT IS CDN?
+====================================================================
+
+CDN stands for:
+
+    Content Delivery Network
+
+
+A CDN is a distributed network of servers located
+in different geographical locations.
+
+Its purpose is to deliver content to users from a
+location that is geographically closer to them.
+
+
+Example:
+
+    Origin Server
+        |
+        v
+    USA
+
+
+Users:
+
+    India
+    UK
+    USA
+    Australia
+    Singapore
+
+
+Without CDN:
+
+    India User
+        |
+        v
+    USA Origin
+
+
+    Australia User
+        |
+        v
+    USA Origin
+
+
+    UK User
+        |
+        v
+    USA Origin
+
+
+With CDN:
+
+    India User
+        |
+        v
+    Nearby CloudFront Edge
+
+
+    UK User
+        |
+        v
+    Nearby CloudFront Edge
+
+
+    Australia User
+        |
+        v
+    Nearby CloudFront Edge
+
+
+This can reduce latency and reduce repeated requests
+to the origin.
+
+
+====================================================================
+4. WHY DO WE NEED A CDN?
+====================================================================
+
+Imagine an application hosted in one AWS Region.
+
+Example:
+
+    Application
+        |
+        v
+    EC2 / ALB
+        |
+        v
+    ap-south-1
+
+
+Users are located in:
+
+    India
+    USA
+    UK
+    Australia
+
+
+Every request going directly to the origin can involve
+longer network paths.
+
+A CDN can serve cacheable content from CloudFront's
+distributed edge infrastructure.
+
+
+Benefits:
+
+    - Lower latency
+    - Faster content delivery
+    - Reduced origin load
+    - Better global user experience
+    - Edge caching
+    - HTTPS termination
+    - WAF integration
+    - DDoS protection through AWS infrastructure
+    - Global distribution
+
+
+====================================================================
+5. WHAT IS A POINT OF PRESENCE?
+====================================================================
+
+POP stands for:
+
+    Point of Presence
+
+
+A Point of Presence is a physical location where
+CloudFront has infrastructure used to receive and
+serve viewer requests.
+
+
+CloudFront documentation also refers to Points of Presence
+as POPs or edge locations. :contentReference[oaicite:2]{index=2}
+
+
+Simple meaning:
+
+    POP
+      =
+    CloudFront physical network location
+
+
+Think:
+
+    AWS Global Network
+           |
+           +---- POP
+           |
+           +---- POP
+           |
+           +---- POP
+           |
+           +---- POP
+
+
+====================================================================
+6. WHAT IS AN EDGE LOCATION?
+====================================================================
+
+An Edge Location is a CloudFront location close to
+users where CloudFront can cache and serve content.
+
+
+Example:
+
+    User
+      |
+      v
+    Nearest CloudFront Edge
+      |
+      v
+    Cached Content
+
+
+If the content is already cached:
+
+    User
+      |
+      v
+    Edge Location
+      |
+      v
+    Content
+
+
+The origin may not need to be contacted.
+
+
+AWS describes edge locations as geographically distributed
+data-center locations where CloudFront caches copies of
+content. :contentReference[oaicite:3]{index=3}
+
+
+====================================================================
+7. POP VS EDGE LOCATION
+====================================================================
+
+For beginner/interview purposes, you can think of:
+
+    POP
+      =
+    Point of Presence
+
+
+    Edge Location
+      =
+    CloudFront location used to serve/cache content
+
+
+AWS documentation commonly uses the terms POPs and edge
+locations together when describing CloudFront's distributed
+locations. :contentReference[oaicite:4]{index=4}
+
+
+Easy memory:
+
+    POP
+      =
+    LOCATION
+
+
+    EDGE
+      =
+    CONTENT DELIVERY LOCATION
+
+
+====================================================================
+8. WHAT IS REGIONAL EDGE CACHE?
+====================================================================
+
+CloudFront also uses Regional Edge Caches.
+
+These provide another caching layer between the CloudFront
+edge locations and the origin.
+
+
+Simplified flow:
+
+    USER
+      |
+      v
+    EDGE LOCATION
+      |
+      v
+    REGIONAL EDGE CACHE
+      |
+      v
+    ORIGIN
+
+
+Regional edge caches help retain content closer to viewers
+even when the content isn't popular enough to remain in a
+particular POP/edge location. :contentReference[oaicite:5]{index=5}
+
+
+====================================================================
+9. EDGE LOCATION VS REGIONAL EDGE CACHE
+====================================================================
+
+EDGE LOCATION:
+
+    Very close to viewers.
+
+    Handles viewer requests.
+
+    Caches content.
+
+
+REGIONAL EDGE CACHE:
+
+    Larger regional caching layer.
+
+    Helps keep content closer to viewers before requests
+    need to reach the origin.
+
+
+Simplified:
+
+    User
+      |
+      v
+    Edge
+      |
+      v
+    Regional Edge Cache
+      |
+      v
+    Origin
+
+
+====================================================================
+10. WHAT IS AN ORIGIN?
+====================================================================
+
+Origin is the source from which CloudFront gets
+the original content.
+
+
+Examples:
+
+    S3
+    ALB
+    EC2
+    API Gateway
+    HTTP server
+
+
+In our AWS architecture:
+
+    Origin
+       =
+    Application Load Balancer
+
+
+Example:
+
+    CloudFront
+        |
+        v
+    ALB
+        |
+        v
+    EC2
+        |
+        v
+    Apache
+
+
+AWS supports Application Load Balancers as CloudFront origins. :contentReference[oaicite:6]{index=6}
+
+
+====================================================================
+11. WHAT IS A CLOUDfront DISTRIBUTION?
+====================================================================
+
+A CloudFront Distribution is the configuration that tells
+CloudFront:
+
+    - Where content comes from
+    - How users access it
+    - How requests are cached
+    - Which protocols are allowed
+    - Which HTTP methods are allowed
+    - Which cache behavior applies
+    - Which domain name is used
+    - Which SSL certificate is used
+    - Security configuration
+    - Logging configuration
+
+
+Simple meaning:
+
+    Distribution
+        =
+    CloudFront configuration
+
+
+When you create a distribution, CloudFront provides a
+domain name such as:
+
+    d123456abcdef.cloudfront.net
+
+
+AWS describes the distribution as the configuration that
+specifies the origin and the details of content delivery. :contentReference[oaicite:7]{index=7}
+
+
+====================================================================
+12. CLOUDFRONT BASIC ARCHITECTURE
+====================================================================
+
+                         USERS
+                           |
+                           v
+                    CLOUDFRONT
+                           |
+                +----------+----------+
+                |                     |
+                v                     v
+          EDGE LOCATION        EDGE LOCATION
+                |                     |
+                +----------+----------+
+                           |
+                           v
+                    REGIONAL CACHE
+                           |
+                           v
+                         ORIGIN
+                           |
+                           v
+                          ALB
+                           |
+                           v
+                         EC2
+
+
+====================================================================
+13. CLOUDFRONT + ALB
+====================================================================
+
+This is especially important for your previous project.
+
+Your previous architecture:
+
+    Internet
+       |
+       v
+      ALB
+       |
+       v
+    Private EC2
+       |
+       v
+    Apache
+
+
+Now add CloudFront:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+      |
+      v
+    Private EC2
+      |
+      v
+    Apache
+
+
+CloudFront becomes the public entry point.
+
+ALB becomes the origin.
+
+
+====================================================================
+14. WHY CLOUDFRONT + ALB?
+====================================================================
+
+Without CloudFront:
+
+    User
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+
+
+With CloudFront:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+
+
+Benefits:
+
+    - Global content delivery
+    - Edge caching
+    - Reduced repeated requests to ALB
+    - Lower latency for cacheable content
+    - HTTPS at CloudFront
+    - WAF integration
+    - Better global architecture
+    - Reduced origin load
+
+
+====================================================================
+15. YOUR PREVIOUS PROJECT + CLOUDFRONT
+====================================================================
+
+Your previous project:
+
+    VPC:
+        prod-vpc
+
+    CIDR:
+        10.81.0.0/16
+
+    Public:
+        ALB
+        NAT Gateway
+
+    Private:
+        Amazon Linux EC2
+
+    EC2:
+        Apache
+
+    Application:
+        Mind Circuit Facebook page
+
+
+With CloudFront:
+
+                     INTERNET
+                         |
+                         v
+                    CLOUDFRONT
+                         |
+                         v
+                         ALB
+                         |
+                         v
+                  PRIVATE EC2
+                         |
+                         v
+                       APACHE
+                         |
+                         v
+                    index.html
+
+
+====================================================================
+16. CLOUDFRONT REQUEST FLOW
+====================================================================
+
+User requests:
+
+    https://example.com/index.html
+
+
+STEP 1
+
+DNS directs the request to CloudFront.
+
+
+STEP 2
+
+CloudFront receives the viewer request.
+
+
+STEP 3
+
+CloudFront determines the appropriate edge location.
+
+
+STEP 4
+
+CloudFront checks its cache.
+
+
+If content exists:
+
+    CACHE HIT
+
+
+If content does not exist:
+
+    CACHE MISS
+
+
+STEP 5
+
+For a cache miss, CloudFront requests the content
+from the origin.
+
+
+STEP 6
+
+Origin returns the response.
+
+
+STEP 7
+
+CloudFront returns the response to the user.
+
+
+STEP 8
+
+CloudFront may cache the response according to the
+cache behavior/policy.
+
+
+AWS describes this cache-miss flow: CloudFront requests the
+object from the origin, receives it at the edge, forwards it
+to the viewer, and adds it to cache for subsequent requests. :contentReference[oaicite:8]{index=8}
+
+
+====================================================================
+17. WHAT IS CACHING?
+====================================================================
+
+Caching means temporarily storing content so that it
+can be served faster when requested again.
+
+
+Example:
+
+First request:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+      |
+      v
+    index.html
+
+
+CloudFront stores the cacheable response.
+
+
+Second request:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    Cached index.html
+
+
+The request may not need to go all the way to:
+
+    ALB
+      |
+      v
+    EC2
+
+
+====================================================================
+18. CACHE HIT
+====================================================================
+
+Cache Hit means:
+
+    Requested content is already available
+    in the CloudFront cache.
+
+
+Flow:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      | Found in cache
+      v
+    Cached Object
+      |
+      v
+    User
+
+
+Advantages:
+
+    - Faster response
+    - Lower origin load
+    - Lower latency
+    - Better scalability
+
+
+====================================================================
+19. CACHE MISS
+====================================================================
+
+Cache Miss means:
+
+    Requested content is not currently available
+    as a valid cached object for that request.
+
+
+Flow:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      | Cache Miss
+      v
+    Origin
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+
+
+Then:
+
+    Origin response
+        |
+        v
+    CloudFront
+        |
+        +---- Return to user
+        |
+        +---- Cache object
+
+
+====================================================================
+20. CACHE HIT RATIO
+====================================================================
+
+Cache Hit Ratio tells us how many requests are
+served from cache compared with total requests.
+
+
+Concept:
+
+    Cache Hit Ratio
+        =
+    Cache Hits / Total Requests
+
+
+Example:
+
+    Total requests:
+        1000
+
+    Cache hits:
+        800
+
+
+    Cache Hit Ratio:
+        80%
+
+
+Higher cache hit ratio generally means more requests
+are served from cache rather than reaching the origin.
+
+
+====================================================================
+21. WHAT CAN BE CACHED?
+====================================================================
+
+Good candidates:
+
+    - CSS
+    - JavaScript
+    - Images
+    - Fonts
+    - Videos
+    - Static HTML
+    - Public API responses where appropriate
+
+
+Examples:
+
+    /css/style.css
+    /js/app.js
+    /images/logo.png
+    /images/product.jpg
+
+
+Be careful with:
+
+    - Personalized pages
+    - Login pages
+    - User-specific content
+    - Shopping carts
+    - Dynamic authenticated API responses
+    - Frequently changing data
+
+
+====================================================================
+22. CACHE KEY
+====================================================================
+
+CloudFront uses a cache key to determine whether
+a requested object matches an existing cached object.
+
+
+Cache key can include:
+
+    - URL path
+    - Query strings
+    - Headers
+    - Cookies
+    - Other configured values
+
+
+Example:
+
+    /product?id=100
+
+
+and:
+
+    /product?id=200
+
+
+If the query string is included in the cache key,
+these can be treated as different cached objects.
+
+
+AWS cache policies control which headers, cookies and
+query strings are included in the cache key. :contentReference[oaicite:9]{index=9}
+
+
+====================================================================
+23. CACHE POLICY
+====================================================================
+
+Cache Policy controls:
+
+    - Cache key
+    - TTL
+    - Headers included in cache key
+    - Cookies included in cache key
+    - Query strings included in cache key
+    - Compression settings
+
+
+A cache policy is attached to a cache behavior.
+
+
+AWS recommends using cache policies for current CloudFront
+cache configuration. :contentReference[oaicite:10]{index=10}
+
+
+====================================================================
+24. CACHE POLICY - SIMPLE EXAMPLE
+====================================================================
+
+Suppose:
+
+    URL:
+
+    /images/logo.png
+
+
+We don't need:
+
+    Cookies
+    Query strings
+    Authorization headers
+
+
+A simple cache policy can keep the cache key small.
+
+Result:
+
+    Many users
+        |
+        v
+    Same cache object
+        |
+        v
+    /images/logo.png
+
+
+This increases cache reuse.
+
+
+====================================================================
+25. ORIGIN REQUEST POLICY
+====================================================================
+
+Origin Request Policy controls what CloudFront sends
+to the origin.
+
+
+It can include:
+
+    - Headers
+    - Cookies
+    - Query strings
+
+
+Important difference:
+
+    Cache Policy
+        =
+    What identifies a cached object?
+
+
+    Origin Request Policy
+        =
+    What should be sent to the origin?
+
+
+AWS specifically separates these two concepts so you can
+send information to the origin without necessarily making
+that information part of the cache key. :contentReference[oaicite:11]{index=11}
+
+
+====================================================================
+26. CACHE POLICY VS ORIGIN REQUEST POLICY
+====================================================================
+
+CACHE POLICY:
+
+    Controls cache key.
+
+    Example:
+
+        Query string:
+            language
+
+        Cookie:
+            none
+
+        Header:
+            none
+
+
+ORIGIN REQUEST POLICY:
+
+    Controls what is forwarded to the origin.
+
+
+Easy memory:
+
+    CACHE POLICY
+        =
+    CACHE DECISION
+
+
+    ORIGIN REQUEST POLICY
+        =
+    ORIGIN REQUEST
+
+
+====================================================================
+27. TTL
+====================================================================
+
+TTL means:
+
+    Time To Live
+
+
+TTL controls how long CloudFront considers an
+object valid in its cache before it needs to
+check the origin again.
+
+
+CloudFront cache policies use:
+
+    Minimum TTL
+    Default TTL
+    Maximum TTL
+
+
+AWS documents these three TTL values as part of
+cache policy configuration. :contentReference[oaicite:12]{index=12}
+
+
+====================================================================
+28. MINIMUM TTL
+====================================================================
+
+Minimum TTL defines the minimum amount of time
+CloudFront keeps an object in cache before checking
+the origin again.
+
+
+Example:
+
+    Minimum TTL:
+        60 seconds
+
+
+The object is not normally revalidated before the
+minimum TTL has elapsed.
+
+
+IMPORTANT:
+
+If Minimum TTL is greater than 0, CloudFront can cache
+content for at least that duration even when origin
+headers contain no-cache/no-store/private directives.
+
+
+AWS explicitly warns about this behavior. :contentReference[oaicite:13]{index=13}
+
+
+====================================================================
+29. DEFAULT TTL
+====================================================================
+
+Default TTL is used when the origin does not provide
+Cache-Control or Expires headers.
+
+
+Example:
+
+    Default TTL:
+        86400 seconds
+
+
+86400 seconds:
+
+    24 hours
+
+
+====================================================================
+30. MAXIMUM TTL
+====================================================================
+
+Maximum TTL defines the maximum amount of time an object
+can remain cached under the cache policy.
+
+
+Example:
+
+    Maximum TTL:
+        31536000
+
+
+Approximately:
+
+    1 year
+
+
+The actual values should be selected based on
+application requirements.
+
+
+====================================================================
+31. CACHE-CONTROL HEADER
+====================================================================
+
+The origin can return:
+
+    Cache-Control
+
+
+Example:
+
+    Cache-Control: max-age=3600
+
+
+This tells caching systems how long the response
+can be considered fresh.
+
+
+CloudFront uses origin Cache-Control/Expires headers
+together with the cache policy TTL settings. :contentReference[oaicite:14]{index=14}
+
+
+====================================================================
+32. EXAMPLE OF CACHING
+====================================================================
+
+Suppose:
+
+    /images/logo.png
+
+
+Cache policy:
+
+    Minimum TTL:
+        0
+
+    Default TTL:
+        86400
+
+    Maximum TTL:
+        31536000
+
+
+If the origin does not specify Cache-Control:
+
+    CloudFront can use:
+
+        Default TTL = 24 hours
+
+
+The image can be served from cache during that period,
+subject to the cache policy and other CloudFront behavior.
+
+
+====================================================================
+33. HOW TO CONFIGURE CACHING
+====================================================================
+
+CloudFront Console
+
+    |
+    v
+Distributions
+    |
+    v
+Select Distribution
+    |
+    v
+Behaviors
+    |
+    v
+Select Behavior
+    |
+    v
+Edit
+    |
+    v
+Cache key and origin requests
+    |
+    v
+Cache Policy
+
+
+You can choose a managed cache policy or create
+a custom cache policy.
+
+
+AWS provides managed cache policies for common use cases. :contentReference[oaicite:15]{index=15}
+
+
+====================================================================
+34. CACHE BEHAVIOR
+====================================================================
+
+Cache Behavior tells CloudFront:
+
+    "For requests matching this path,
+     use these rules."
+
+
+Example:
+
+    Path Pattern:
+
+        /images/*
+
+
+CloudFront can use:
+
+    Origin:
+        ALB
+
+    Cache Policy:
+        Static content policy
+
+    Viewer Protocol:
+        Redirect HTTP to HTTPS
+
+
+Another behavior:
+
+    /api/*
+
+    Could have:
+
+        Different cache policy
+        Different origin request policy
+        Different allowed methods
+        Different caching behavior
+
+
+====================================================================
+35. DEFAULT CACHE BEHAVIOR
+====================================================================
+
+Default path pattern:
+
+    *
+
+
+This matches requests that don't match a more specific
+cache behavior.
+
+
+Example:
+
+    *
+
+
+means:
+
+    All requests by default.
+
+
+====================================================================
+36. CUSTOM CACHE BEHAVIOR
+====================================================================
+
+Example:
+
+    /images/*
+
+
+    /static/*
+
+
+    /api/*
+
+
+CloudFront can route these paths differently.
+
+
+Example:
+
+    /images/*
+        |
+        v
+    Static Origin
+
+
+    /api/*
+        |
+        v
+    Application ALB
+
+
+CloudFront supports multiple origins and cache behaviors,
+with each behavior selecting the origin for matching requests. :contentReference[oaicite:16]{index=16}
+
+
+====================================================================
+37. EXAMPLE CACHE BEHAVIOR DESIGN
+====================================================================
+
+Distribution:
+
+    CloudFront
+
+
+Behavior 1:
+
+    Path:
+        /images/*
+
+    Cache:
+        HIGH
+
+
+Behavior 2:
+
+    Path:
+        /static/*
+
+    Cache:
+        HIGH
+
+
+Behavior 3:
+
+    Path:
+        /api/*
+
+    Cache:
+        LOW / CUSTOM
+
+
+Default:
+
+    *
+
+
+This allows different content types to have different
+caching strategies.
+
+
+====================================================================
+38. VIEWER PROTOCOL POLICY
+====================================================================
+
+Viewer Protocol Policy controls how users connect
+to CloudFront.
+
+
+Options include:
+
+    HTTP and HTTPS
+
+    Redirect HTTP to HTTPS
+
+    HTTPS Only
+
+
+For production websites, a common configuration is:
+
+    Redirect HTTP to HTTPS
+
+
+Flow:
+
+    http://example.com
+            |
+            v
+       CloudFront
+            |
+            v
+    Redirect to HTTPS
+            |
+            v
+    https://example.com
+
+
+AWS documents these viewer protocol policy options. :contentReference[oaicite:17]{index=17}
+
+
+====================================================================
+39. ORIGIN PROTOCOL POLICY
+====================================================================
+
+Origin Protocol Policy controls how CloudFront
+connects to the origin.
+
+
+For a custom origin such as ALB, options include:
+
+    HTTP Only
+
+    HTTPS Only
+
+    Match Viewer
+
+
+Examples:
+
+    Viewer -> HTTPS
+    CloudFront -> HTTPS
+    ALB
+
+
+or:
+
+    Viewer -> HTTPS
+    CloudFront -> HTTP
+    ALB
+
+
+For secure production architecture, HTTPS between
+CloudFront and ALB is generally preferred when the
+origin is configured for HTTPS.
+
+
+AWS documents these origin protocol options for custom
+origins. :contentReference[oaicite:18]{index=18}
+
+
+====================================================================
+40. ALLOWED HTTP METHODS
+====================================================================
+
+CloudFront can control which HTTP methods it accepts
+and forwards to the origin.
+
+
+Common methods:
+
+    GET
+    HEAD
+    OPTIONS
+    PUT
+    POST
+    PATCH
+    DELETE
+
+
+For a static website:
+
+    GET
+    HEAD
+
+
+may be enough.
+
+
+For an API:
+
+    GET
+    HEAD
+    OPTIONS
+    PUT
+    POST
+    PATCH
+    DELETE
+
+
+may be required depending on the application.
+
+
+AWS exposes Allowed HTTP Methods as a cache behavior
+configuration. :contentReference[oaicite:19]{index=19}
+
+
+====================================================================
+41. CLOUDFRONT COMPRESSION
+====================================================================
+
+CloudFront can compress eligible content.
+
+Common compression:
+
+    Gzip
+    Brotli
+
+
+Compression reduces the amount of data transferred
+to the viewer.
+
+
+Example:
+
+    Large CSS
+        |
+        v
+    Compress
+        |
+        v
+    Smaller response
+        |
+        v
+    User
+
+
+Benefits:
+
+    - Faster downloads
+    - Lower bandwidth
+    - Better page performance
+
+
+====================================================================
+42. CLOUDFRONT HTTPS
+====================================================================
+
+CloudFront supports HTTPS for viewer connections.
+
+
+Example:
+
+    User
+      |
+      | HTTPS
+      v
+    CloudFront
+      |
+      | HTTPS
+      v
+    ALB
+
+
+For your own domain, you can associate an SSL/TLS
+certificate with CloudFront.
+
+
+====================================================================
+43. ACM CERTIFICATE
+====================================================================
+
+For a custom domain:
+
+    example.com
+
+
+You need a trusted TLS certificate that covers
+the domain.
+
+
+For CloudFront, AWS requires the ACM certificate
+to be requested/imported in:
+
+    US East (N. Virginia)
+
+    Region:
+        us-east-1
+
+
+This is an important interview point.
+
+AWS explicitly documents the us-east-1 requirement for
+CloudFront ACM certificates. :contentReference[oaicite:20]{index=20}
+
+
+====================================================================
+44. CUSTOM DOMAIN
+====================================================================
+
+Default CloudFront domain:
+
+    d123456abcdef.cloudfront.net
+
+
+Custom domain:
+
+    www.example.com
+
+
+Flow:
+
+    User
+      |
+      v
+    www.example.com
+      |
+      v
+    DNS
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+
+
+For a custom domain, CloudFront requires an appropriate
+TLS certificate and DNS configuration. :contentReference[oaicite:21]{index=21}
+
+
+====================================================================
+45. ROUTE 53 + CLOUDFRONT
+====================================================================
+
+If using Route 53:
+
+    Route 53
+       |
+       v
+    CloudFront
+
+
+For a subdomain:
+
+    www.example.com
+          |
+          v
+    CloudFront distribution
+
+
+For an apex/root domain:
+
+    example.com
+
+
+Route 53 can use an Alias record to point the domain
+to CloudFront.
+
+
+Standard DNS CNAME records cannot be used at the
+zone apex, while Route 53 Alias records can be used
+for that purpose. :contentReference[oaicite:22]{index=22}
+
+
+====================================================================
+46. HOW TO CREATE CLOUDFRONT DISTRIBUTION
+====================================================================
+
+STEP 1
+
+Open AWS Console.
+
+
+STEP 2
+
+Search:
+
+    CloudFront
+
+
+STEP 3
+
+Open:
+
+    Amazon CloudFront
+
+
+STEP 4
+
+Choose:
+
+    Create distribution
+
+
+====================================================================
+47. CHOOSE ORIGIN
+====================================================================
+
+For your project:
+
+    Origin Type:
+
+        Application Load Balancer
+
+
+Enter/select the ALB origin.
+
+
+Example:
+
+    ALB DNS:
+
+    my-alb-123456.ap-south-1.elb.amazonaws.com
+
+
+CloudFront uses this ALB as the origin.
+
+
+AWS explicitly supports an Application Load Balancer
+as a CloudFront origin. :contentReference[oaicite:23]{index=23}
+
+
+====================================================================
+48. ORIGIN NAME
+====================================================================
+
+CloudFront gives the origin a name/identifier.
+
+Example:
+
+    prod-alb-origin
+
+
+Think:
+
+    CloudFront
+        |
+        v
+    prod-alb-origin
+        |
+        v
+    ALB
+
+
+====================================================================
+49. ORIGIN PATH
+====================================================================
+
+Origin Path is optional.
+
+
+Example:
+
+    Origin:
+
+        ALB
+
+
+    Origin Path:
+
+        /app
+
+
+Then CloudFront can request:
+
+    /app/...
+
+
+from the origin depending on the viewer path.
+
+
+For a normal ALB setup:
+
+    Origin Path:
+        Leave empty
+
+
+unless your application specifically requires
+a path prefix.
+
+
+====================================================================
+50. ORIGIN CONNECTION
+====================================================================
+
+Configure how CloudFront connects to ALB.
+
+
+Example:
+
+    HTTPS Only
+
+
+Then:
+
+    CloudFront
+        |
+        | HTTPS
+        v
+       ALB
+
+
+If using HTTPS:
+
+    ALB must have an HTTPS listener
+    and a valid certificate/configuration.
+
+
+====================================================================
+51. DEFAULT CACHE BEHAVIOR
+====================================================================
+
+After configuring the origin, configure the
+default cache behavior.
+
+
+Typical settings:
+
+    Path pattern:
+        *
+
+    Viewer Protocol Policy:
+        Redirect HTTP to HTTPS
+
+    Allowed HTTP Methods:
+        GET, HEAD
+
+
+For APIs, choose methods required by the application.
+
+
+====================================================================
+52. CACHE POLICY SELECTION
+====================================================================
+
+Choose:
+
+    Cache Policy
+
+
+For a static website:
+
+    A managed caching policy may be appropriate.
+
+
+For dynamic content:
+
+    Use a cache policy designed for the application's
+    caching requirements.
+
+
+For APIs:
+
+    Carefully consider:
+
+        Query strings
+        Headers
+        Cookies
+        Authorization
+        Cacheability
+
+
+====================================================================
+53. ORIGIN REQUEST POLICY
+====================================================================
+
+If the origin needs additional viewer information:
+
+    Headers
+    Cookies
+    Query strings
+
+
+configure an:
+
+    Origin Request Policy
+
+
+Example:
+
+    Application needs:
+
+        Host
+        Authorization
+        Selected query strings
+
+
+Then configure the appropriate policy.
+
+
+Remember:
+
+    Cache Policy
+        =
+    Cache key
+
+
+    Origin Request Policy
+        =
+    Data sent to origin
+
+
+====================================================================
+54. CLOUDFRONT DISTRIBUTION SETTINGS
+====================================================================
+
+Important distribution-level settings can include:
+
+    - Distribution type
+    - Alternate domain names
+    - SSL/TLS certificate
+    - IPv6
+    - AWS WAF
+    - Default root object
+    - Price class
+    - Logging
+    - HTTP versions
+    - Comment
+    - Enabled/disabled status
+
+
+AWS documents these as distribution configuration areas. :contentReference[oaicite:24]{index=24}
+
+
+====================================================================
+55. DEFAULT ROOT OBJECT
+====================================================================
+
+Default Root Object is the file CloudFront serves
+when the viewer requests the distribution root.
+
+
+Example:
+
+    User requests:
+
+        https://example.com/
+
+
+Default Root Object:
+
+    index.html
+
+
+CloudFront can request:
+
+    /index.html
+
+
+This is useful for websites.
+
+
+====================================================================
+56. PRICE CLASS
+====================================================================
+
+CloudFront provides Price Class options that control
+the set of CloudFront edge locations used for content
+delivery and therefore can affect cost and geographic
+coverage.
+
+
+Concept:
+
+    More geographic coverage
+        =
+    potentially higher cost
+
+
+    Limited geographic coverage
+        =
+    potentially lower cost
+
+
+Choose based on:
+
+    - User geography
+    - Performance requirements
+    - Cost requirements
+
+
+Always check current AWS pricing and current Price Class
+availability before making a production decision.
+
+
+====================================================================
+57. AWS WAF + CLOUDFRONT
+====================================================================
+
+AWS WAF can be associated with CloudFront.
+
+
+Architecture:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    AWS WAF
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+
+
+WAF can help protect applications from unwanted
+or malicious HTTP requests.
+
+
+Examples of WAF use cases:
+
+    - IP filtering
+    - Rate limiting
+    - Managed rule groups
+    - SQL injection protection
+    - Cross-site scripting protection
+    - Bot-related controls
+
+
+AWS allows AWS WAF to be enabled for CloudFront
+distributions. :contentReference[oaicite:25]{index=25}
+
+
+====================================================================
+58. CLOUDFRONT + ALB SECURITY GROUP
+====================================================================
+
+This is VERY IMPORTANT.
+
+Architecture:
+
+    Internet
+       |
+       v
+    CloudFront
+       |
+       v
+    ALB
+       |
+       v
+    EC2
+
+
+The ALB Security Group should not necessarily allow
+unrestricted access just because CloudFront is being used.
+
+
+AWS provides a managed prefix list for CloudFront
+origin-facing servers:
+
+    com.amazonaws.global.cloudfront.origin-facing
+
+
+This can be used in VPC Security Group rules to allow
+traffic from CloudFront origin-facing servers.
+
+
+AWS maintains the prefix list as CloudFront's IP ranges
+change. :contentReference[oaicite:26]{index=26}
+
+
+====================================================================
+59. CLOUDFRONT MANAGED PREFIX LIST
+====================================================================
+
+Prefix List:
+
+    com.amazonaws.global.cloudfront.origin-facing
+
+
+IPv6:
+
+    com.amazonaws.global.ipv6.cloudfront.origin-facing
+
+
+Example concept:
+
+    ALB Security Group
+
+        Inbound HTTPS
+        Port 443
+
+        Source:
+        CloudFront managed prefix list
+
+
+Then:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+
+
+This can help prevent direct non-CloudFront access
+to the origin when the security architecture is designed
+accordingly.
+
+
+====================================================================
+60. IMPORTANT SECURITY ARCHITECTURE
+====================================================================
+
+Recommended pattern:
+
+    INTERNET
+       |
+       v
+    CLOUDFRONT
+       |
+       v
+    ALB
+       |
+       v
+    PRIVATE EC2
+       |
+       v
+    RDS
+
+
+Security Groups:
+
+    CloudFront
+        |
+        v
+    ALB-SG
+
+
+    ALB
+        |
+        v
+    EC2-SG
+
+
+    EC2
+        |
+        v
+    RDS-SG
+
+
+Example:
+
+    ALB-SG
+       |
+       +---- Allow HTTPS from CloudFront
+             origin-facing prefix list
+
+
+    EC2-SG
+       |
+       +---- Allow application port from ALB-SG
+
+
+    RDS-SG
+       |
+       +---- Allow TCP 3306 from EC2-SG
+
+
+====================================================================
+61. CLOUDFRONT LOGGING
+====================================================================
+
+CloudFront can provide request logging.
+
+Logging helps answer:
+
+    - Who accessed the application?
+    - Which URL was requested?
+    - When was it requested?
+    - What response was returned?
+    - Which requests are generating traffic?
+
+
+Useful for:
+
+    - Troubleshooting
+    - Security analysis
+    - Traffic analysis
+    - Auditing
+
+
+CloudFront supports logging configuration as part of
+distribution settings. :contentReference[oaicite:27]{index=27}
+
+
+====================================================================
+62. CLOUDFRONT MONITORING
+====================================================================
+
+CloudFront integrates with AWS monitoring capabilities.
+
+Useful metrics/concepts include:
+
+    - Requests
+    - Bytes downloaded
+    - Error rates
+    - Cache behavior
+    - Origin response behavior
+
+
+Important troubleshooting indicators:
+
+    4xx errors
+    5xx errors
+    Cache hit/miss behavior
+    Origin latency
+
+
+====================================================================
+63. CLOUDFRONT INVALIDATION
+====================================================================
+
+Suppose we have:
+
+    /index.html
+
+
+CloudFront cached an old version.
+
+You update:
+
+    index.html
+
+
+But users still receive the old cached version.
+
+
+You can create an:
+
+    INVALIDATION
+
+
+Example:
+
+    /index.html
+
+
+or:
+
+    /*
+
+
+Invalidation tells CloudFront to remove specified
+objects from edge caches so subsequent requests
+retrieve fresh content.
+
+
+====================================================================
+64. INVALIDATION EXAMPLE
+====================================================================
+
+Old:
+
+    Welcome to Mind Circuit Facebook page
+
+
+New:
+
+    Welcome to Mind Circuit CloudFront page
+
+
+CloudFront may still have:
+
+    old index.html
+
+
+Create invalidation:
+
+    /index.html
+
+
+Then:
+
+    New request
+        |
+        v
+    CloudFront
+        |
+        v
+    Origin
+        |
+        v
+    New index.html
+
+
+IMPORTANT:
+
+Invalidation is different from TTL expiration.
+
+
+TTL:
+
+    Object naturally becomes stale/expired
+    according to caching rules.
+
+
+Invalidation:
+
+    You explicitly request removal of cached objects.
+
+
+====================================================================
+65. INVALIDATION COMMAND CONCEPT
+====================================================================
+
+AWS CLI example:
+
+aws cloudfront create-invalidation \
+    --distribution-id DISTRIBUTION_ID \
+    --paths "/index.html"
+
+
+For all objects:
+
+aws cloudfront create-invalidation \
+    --distribution-id DISTRIBUTION_ID \
+    --paths "/*"
+
+
+Use "/*" carefully because it invalidates a large
+set of cached objects.
+
+
+====================================================================
+66. CLOUDFRONT CACHE FLOW
+====================================================================
+
+First user:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      | MISS
+      v
+    ALB
+      |
+      v
+    EC2
+      |
+      v
+    Response
+      |
+      v
+    CloudFront Cache
+      |
+      v
+    User
+
+
+Second user:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      | HIT
+      v
+    Cache
+      |
+      v
+    User
+
+
+Origin may not be contacted on the cache hit.
+
+
+====================================================================
+67. STATIC CONTENT EXAMPLE
+====================================================================
+
+Application:
+
+    Mind Circuit website
+
+
+Files:
+
+    /index.html
+    /css/style.css
+    /js/app.js
+    /images/logo.png
+
+
+CloudFront:
+
+    /index.html
+        -> Cache
+
+
+    /css/*
+        -> Cache
+
+
+    /js/*
+        -> Cache
+
+
+    /images/*
+        -> Cache
+
+
+This can significantly reduce repeated requests
+to the ALB/EC2 origin.
+
+
+====================================================================
+68. DYNAMIC CONTENT EXAMPLE
+====================================================================
+
+Example:
+
+    /api/user/profile
+
+
+Response may depend on:
+
+    - User
+    - Cookies
+    - Authorization
+    - Query parameters
+
+
+Do NOT blindly cache this content.
+
+Possible approach:
+
+    /api/*
+        |
+        v
+    Carefully designed cache behavior
+        |
+        v
+    Origin Request Policy
+        |
+        v
+    ALB
+
+
+For personalized data, caching must be designed carefully
+to avoid serving one user's data to another user.
+
+
+====================================================================
+69. CACHE KEY AND PERSONALIZED CONTENT
+====================================================================
+
+Suppose:
+
+    /profile
+
+
+User A:
+
+    Cookie:
+        user=A
+
+
+User B:
+
+    Cookie:
+        user=B
+
+
+If user-specific information is part of the cache decision,
+the cache configuration must distinguish the requests correctly.
+
+
+Otherwise, incorrect caching can create a serious
+application/security problem.
+
+
+Therefore:
+
+    Personalized content
+        =
+    Carefully design cache policy
+
+
+====================================================================
+70. API + CLOUDFRONT
+====================================================================
+
+CloudFront can also sit in front of APIs.
+
+
+Example:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+      |
+      v
+    Application
+      |
+      v
+    RDS
+
+
+Path:
+
+    /api/*
+
+
+For API requests:
+
+    - Configure HTTP methods correctly
+    - Configure query strings
+    - Configure headers
+    - Configure cookies
+    - Configure authorization behavior
+    - Decide whether responses should be cached
+
+
+====================================================================
+71. CLOUDFRONT + ALB + RDS
+====================================================================
+
+Complete architecture:
+
+                         INTERNET
+                             |
+                             v
+                        CLOUDFRONT
+                             |
+                             v
+                            ALB
+                             |
+                             v
+                     PRIVATE EC2 / ASG
+                             |
+                    +--------+--------+
+                    |                 |
+                    v                 v
+                  Apache          Application
+                    |
+                    +-----------------+
+                             |
+                             v
+                       PRIVATE RDS
+                           MySQL
+
+
+Outbound EC2 traffic:
+
+    EC2
+      |
+      v
+    NAT Gateway
+      |
+      v
+    Internet Gateway
+      |
+      v
+    Internet
+
+
+====================================================================
+72. COMPLETE AWS PROJECT FLOW
+====================================================================
+
+USER
+ |
+ v
+DNS
+ |
+ v
+CLOUDFRONT
+ |
+ +---- Cache Hit
+ |       |
+ |       v
+ |    Cached Content
+ |
+ |
+ +---- Cache Miss
+         |
+         v
+       ALB
+         |
+         v
+    Target Group
+         |
+         v
+    Private EC2
+         |
+         v
+      Apache
+         |
+         v
+     Application
+         |
+         v
+      RDS MySQL
+
+
+This is a strong production-style architecture.
+
+
+====================================================================
+73. HOW TO CREATE CLOUDFRONT FOR YOUR ALB
+====================================================================
+
+PROJECT EXAMPLE:
+
+    VPC:
+        prod-vpc
+
+    CIDR:
+        10.81.0.0/16
+
+    Application:
+        Mind Circuit
+
+    ALB:
+        Existing Application Load Balancer
+
+    Backend:
+        Private Amazon Linux EC2
+
+    Web Server:
+        Apache
+
+
+STEP 1:
+
+Open:
+
+    AWS Console
+        |
+        v
+    CloudFront
+
+
+STEP 2:
+
+Choose:
+
+    Create distribution
+
+
+STEP 3:
+
+For Origin:
+
+    Select / enter
+    Application Load Balancer
+
+
+STEP 4:
+
+Configure origin connection.
+
+Recommended production pattern:
+
+    HTTPS to ALB
+
+if the ALB has a suitable HTTPS listener/certificate.
+
+
+STEP 5:
+
+Configure default cache behavior.
+
+
+Example:
+
+    Path:
+        *
+
+
+    Viewer Protocol:
+        Redirect HTTP to HTTPS
+
+
+STEP 6:
+
+Select appropriate Cache Policy.
+
+
+STEP 7:
+
+Configure Origin Request Policy if the application
+requires additional headers/cookies/query strings.
+
+
+STEP 8:
+
+Configure allowed HTTP methods.
+
+
+STEP 9:
+
+Configure compression.
+
+
+STEP 10:
+
+Configure Web Application Firewall if required.
+
+
+STEP 11:
+
+Configure custom domain + certificate if required.
+
+
+STEP 12:
+
+Create distribution.
+
+
+STEP 13:
+
+Wait for status:
+
+    Deployed
+
+
+STEP 14:
+
+Test:
+
+    CloudFront domain
+
+
+Example:
+
+    https://d123456abcdef.cloudfront.net
+
+
+====================================================================
+74. HOW TO TEST CLOUDFRONT
+====================================================================
+
+CloudFront gives a domain:
+
+    d123456abcdef.cloudfront.net
+
+
+Open:
+
+    https://d123456abcdef.cloudfront.net
+
+
+Expected flow:
+
+    Browser
+       |
+       v
+    CloudFront
+       |
+       v
+    ALB
+       |
+       v
+    EC2
+       |
+       v
+    Apache
+       |
+       v
+    index.html
+
+
+Expected page:
+
+    Welcome to Mind Circuit Facebook page
+
+
+====================================================================
+75. TEST CACHE BEHAVIOR
+====================================================================
+
+First request:
+
+    CloudFront
+       |
+       v
+    Cache Miss
+       |
+       v
+    ALB
+       |
+       v
+    EC2
+
+
+Second request:
+
+    CloudFront
+       |
+       v
+    Cache Hit
+
+
+This demonstrates the purpose of caching.
+
+
+====================================================================
+76. USEFUL CURL TEST
+====================================================================
+
+Test CloudFront:
+
+curl -I https://d123456abcdef.cloudfront.net/
+
+
+Look at response headers.
+
+CloudFront responses can include headers that help
+identify CloudFront behavior and caching.
+
+
+For example, inspect:
+
+    Age
+    X-Cache
+
+
+Exact response headers depend on the request and
+CloudFront configuration.
+
+
+====================================================================
+77. COMMON CLOUDFRONT ERRORS
+====================================================================
+
+ERROR:
+
+    403 Forbidden
+
+
+Possible reasons:
+
+    - Origin access/security configuration
+    - ALB Security Group
+    - WAF rule
+    - Application authorization
+    - Incorrect behavior
+    - Origin response
+
+
+--------------------------------------------------------------------
+
+ERROR:
+
+    502 Bad Gateway
+
+
+Possible reasons:
+
+    - CloudFront cannot successfully communicate
+      with origin
+    - ALB/origin connectivity
+    - TLS problem between CloudFront and origin
+    - Origin unavailable
+
+
+--------------------------------------------------------------------
+
+ERROR:
+
+    504 Gateway Timeout
+
+
+Possible reasons:
+
+    - Origin response taking too long
+    - Network/connectivity issue
+    - Application problem
+
+
+====================================================================
+78. CLOUDFRONT + ALB TROUBLESHOOTING
+====================================================================
+
+Problem:
+
+    CloudFront is working but website does not open.
+
+
+Check:
+
+    1. CloudFront status
+
+       Deployed
+
+
+    2. Origin
+
+       Correct ALB
+
+
+    3. ALB listener
+
+       HTTP/HTTPS configured
+
+
+    4. Target Group
+
+       Targets healthy
+
+
+    5. EC2
+
+       Apache running
+
+
+    6. EC2 Security Group
+
+       Allows traffic from ALB
+
+
+    7. ALB Security Group
+
+       Allows CloudFront origin-facing traffic
+       as required
+
+
+    8. CloudFront origin protocol
+
+       HTTP / HTTPS configuration correct
+
+
+    9. SSL certificate
+
+       Valid and correctly configured
+
+
+    10. WAF
+
+        Check whether a WAF rule is blocking traffic
+
+
+====================================================================
+79. CLOUDFRONT VS ALB
+====================================================================
+
+CLOUDFRONT:
+
+    Global content delivery
+
+    Edge caching
+
+    CDN
+
+    Viewer-facing layer
+
+
+ALB:
+
+    Regional load balancing
+
+    Sends traffic to backend targets
+
+    Application load balancing
+
+
+Architecture:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+      |
+      v
+    EC2
+
+
+Easy memory:
+
+    CloudFront
+        =
+    GLOBAL
+
+
+    ALB
+        =
+    REGIONAL LOAD BALANCER
+
+
+====================================================================
+80. CLOUDFRONT VS NAT GATEWAY
+====================================================================
+
+CloudFront:
+
+    Handles application/content delivery.
+
+
+NAT Gateway:
+
+    Provides outbound Internet connectivity
+    for private resources.
+
+
+Example:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    ALB
+
+
+Private EC2 outbound:
+
+    EC2
+      |
+      v
+    NAT
+      |
+      v
+    Internet
+
+
+Easy memory:
+
+    CloudFront
+        =
+    INBOUND CONTENT DELIVERY
+
+
+    NAT
+        =
+    OUTBOUND INTERNET ACCESS
+
+
+====================================================================
+81. CLOUDFRONT VS S3
+====================================================================
+
+S3:
+
+    Object storage.
+
+
+CloudFront:
+
+    Content delivery / CDN.
+
+
+Common architecture:
+
+    User
+      |
+      v
+    CloudFront
+      |
+      v
+    S3
+
+
+S3 stores the files.
+
+CloudFront delivers them globally.
+
+
+====================================================================
+82. CLOUDFRONT VS ELASTIC LOAD BALANCING
+====================================================================
+
+CloudFront:
+
+    Global edge delivery.
+
+
+ALB:
+
+    Regional application load balancing.
+
+
+CloudFront can use ALB as an origin.
+
+
+Architecture:
+
+    Global
+       |
+       v
+    CloudFront
+       |
+       v
+    Regional
+       |
+       v
+    ALB
+       |
+       v
+    EC2
+
+
+====================================================================
+83. IMPORTANT CLOUDFRONT CONFIGURATION CHECKLIST
+====================================================================
+
+When creating a distribution, think about:
+
+    [ ] Origin
+    [ ] Origin protocol
+    [ ] Origin path
+    [ ] Default behavior
+    [ ] Path patterns
+    [ ] Cache policy
+    [ ] Origin request policy
+    [ ] TTL
+    [ ] Viewer protocol policy
+    [ ] Allowed methods
+    [ ] Compression
+    [ ] HTTPS
+    [ ] Custom domain
+    [ ] ACM certificate
+    [ ] WAF
+    [ ] Price class
+    [ ] Logging
+    [ ] Monitoring
+    [ ] Default root object
+    [ ] Invalidation
+    [ ] Origin security
+
+
+====================================================================
+84. IMPORTANT TERMS
+====================================================================
+
+CloudFront:
+
+    AWS CDN service.
+
+
+CDN:
+
+    Content Delivery Network.
+
+
+POP:
+
+    Point of Presence.
+
+
+Edge Location:
+
+    Location where CloudFront can serve/cache content.
+
+
+Regional Edge Cache:
+
+    Regional caching layer between edge locations
+    and origin.
+
+
+Origin:
+
+    Source of the content.
+
+
+Distribution:
+
+    CloudFront configuration.
+
+
+Cache:
+
+    Temporary stored content.
+
+
+Cache Hit:
+
+    Content found in cache.
+
+
+Cache Miss:
+
+    Content not found/valid in cache.
+
+
+Cache Policy:
+
+    Controls cache key and TTL behavior.
+
+
+Origin Request Policy:
+
+    Controls information sent to origin.
+
+
+TTL:
+
+    Time To Live.
+
+
+Invalidation:
+
+    Explicitly remove cached objects.
+
+
+ALB:
+
+    Application Load Balancer used as an origin.
+
+
+====================================================================
+85. INTERVIEW QUESTIONS
+====================================================================
+
+Q1. What is Amazon CloudFront?
+
+A:
+
+Amazon CloudFront is AWS's CDN service that delivers
+static and dynamic content through a global network
+of edge locations.
+
+
+--------------------------------------------------------------------
+
+Q2. What is a CDN?
+
+A:
+
+A CDN is a distributed network that delivers content
+from locations closer to users to reduce latency
+and improve performance.
+
+
+--------------------------------------------------------------------
+
+Q3. What is an Edge Location?
+
+A:
+
+An Edge Location is a CloudFront location where content
+can be cached and served close to viewers.
+
+
+--------------------------------------------------------------------
+
+Q4. What is a Point of Presence?
+
+A:
+
+A Point of Presence, or POP, is a CloudFront network
+location used to receive and serve viewer traffic.
+
+
+--------------------------------------------------------------------
+
+Q5. What is a Regional Edge Cache?
+
+A:
+
+It is an additional regional caching layer that helps
+keep content closer to viewers before requests need
+to reach the origin.
+
+
+--------------------------------------------------------------------
+
+Q6. What is an Origin?
+
+A:
+
+An origin is the source from which CloudFront retrieves
+content, such as S3, ALB or an HTTP server.
+
+
+--------------------------------------------------------------------
+
+Q7. Can CloudFront use an ALB as an origin?
+
+A:
+
+Yes. An Application Load Balancer can be configured
+as a CloudFront origin.
+
+
+--------------------------------------------------------------------
+
+Q8. What is a CloudFront Distribution?
+
+A:
+
+A distribution is the configuration that defines the
+origin and how CloudFront delivers content.
+
+
+--------------------------------------------------------------------
+
+Q9. What is caching?
+
+A:
+
+Caching is storing content temporarily at CloudFront
+edge locations so future requests can be served faster.
+
+
+--------------------------------------------------------------------
+
+Q10. What is a cache hit?
+
+A:
+
+A cache hit occurs when the requested object is available
+in the CloudFront cache.
+
+
+--------------------------------------------------------------------
+
+Q11. What is a cache miss?
+
+A:
+
+A cache miss occurs when CloudFront doesn't have a valid
+cached object and must retrieve it from the origin.
+
+
+--------------------------------------------------------------------
+
+Q12. What is TTL?
+
+A:
+
+TTL, or Time To Live, determines how long an object can
+remain valid in the CloudFront cache before it needs
+to be checked against the origin.
+
+
+--------------------------------------------------------------------
+
+Q13. What is a Cache Policy?
+
+A:
+
+A Cache Policy controls the cache key and TTL settings,
+including selected headers, cookies and query strings.
+
+
+--------------------------------------------------------------------
+
+Q14. What is an Origin Request Policy?
+
+A:
+
+It controls which headers, cookies and query strings
+CloudFront sends to the origin.
+
+
+--------------------------------------------------------------------
+
+Q15. Difference between Cache Policy and Origin Request Policy?
+
+A:
+
+Cache Policy controls what identifies a cached object,
+while Origin Request Policy controls what is forwarded
+to the origin.
+
+
+--------------------------------------------------------------------
+
+Q16. What is Cache Invalidation?
+
+A:
+
+It is the process of explicitly removing cached objects
+so CloudFront retrieves fresh content from the origin.
+
+
+--------------------------------------------------------------------
+
+Q17. What is Viewer Protocol Policy?
+
+A:
+
+It controls how viewers connect to CloudFront, such as
+HTTP and HTTPS, Redirect HTTP to HTTPS, or HTTPS Only.
+
+
+--------------------------------------------------------------------
+
+Q18. What is Origin Protocol Policy?
+
+A:
+
+It controls how CloudFront connects to the origin,
+such as HTTP Only, HTTPS Only or Match Viewer.
+
+
+--------------------------------------------------------------------
+
+Q19. How do you connect CloudFront to ALB?
+
+A:
+
+Create a CloudFront distribution and configure the
+Application Load Balancer DNS name as the origin.
+
+
+--------------------------------------------------------------------
+
+Q20. Why use CloudFront in front of ALB?
+
+A:
+
+To provide global edge delivery, caching, lower latency,
+reduced origin load, HTTPS and integration with services
+such as AWS WAF.
+
+
+--------------------------------------------------------------------
+
+Q21. How do you secure ALB when using CloudFront?
+
+A:
+
+Restrict ALB inbound traffic appropriately, including
+using the AWS-managed CloudFront origin-facing prefix list
+where applicable.
+
+
+--------------------------------------------------------------------
+
+Q22. Which AWS service provides WAF protection with CloudFront?
+
+A:
+
+AWS WAF.
+
+
+--------------------------------------------------------------------
+
+Q23. Where should an ACM certificate for CloudFront
+be requested?
+
+A:
+
+US East (N. Virginia), us-east-1.
+
+
+--------------------------------------------------------------------
+
+Q24. What is the difference between CloudFront and ALB?
+
+A:
+
+CloudFront is a global CDN, while ALB is a regional
+application load balancer.
+
+
+--------------------------------------------------------------------
+
+Q25. What is the difference between CloudFront and S3?
+
+A:
+
+S3 stores objects, while CloudFront distributes content
+to users through the CDN.
+
+
+--------------------------------------------------------------------
+
+Q26. What happens during a cache miss?
+
+A:
+
+CloudFront retrieves the object from the origin,
+returns it to the viewer and can cache it for subsequent
+requests according to the configured caching rules.
+
+
+--------------------------------------------------------------------
+
+Q27. Should every API response be cached?
+
+A:
+
+No. Caching depends on the application's data,
+authentication, personalization and freshness requirements.
+
+
+--------------------------------------------------------------------
+
+Q28. What happens if you cache personalized content incorrectly?
+
+A:
+
+A cached response could potentially be served to the
+wrong user, so cache keys and origin request behavior
+must be designed carefully.
+
+
+====================================================================
+86. 60-SECOND INTERVIEW ANSWER
+====================================================================
+
+"I used Amazon CloudFront as a CDN in front of my
+Application Load Balancer. CloudFront receives user
+requests at edge locations and serves cacheable content
+from the edge when available. If the content is not
+cached, CloudFront forwards the request to the ALB,
+which sends it to the healthy EC2 instances in the
+private subnets.
+
+I configure the ALB as the CloudFront origin and define
+cache behaviors, cache policies, origin request policies,
+TTL values, viewer protocol policy, allowed HTTP methods
+and HTTPS settings. For a custom domain, I use an ACM
+certificate in us-east-1. I can also integrate AWS WAF
+and CloudFront logging.
+
+For security, I restrict the ALB so that the origin is
+not unnecessarily exposed directly to the Internet and
+can use the AWS-managed CloudFront origin-facing prefix
+list where appropriate."
+
+
+====================================================================
+87. EASY MEMORY TRICK
+====================================================================
+
+Remember:
+
+    CLOUDFRONT
+        =
+    CDN
+
+
+    CDN
+        =
+    CONTENT DELIVERY
+
+
+    EDGE LOCATION
+        =
+    NEAR USER
+
+
+    POP
+        =
+    POINT OF PRESENCE
+
+
+    ORIGIN
+        =
+    ORIGINAL CONTENT SOURCE
+
+
+    DISTRIBUTION
+        =
+    CLOUDFRONT CONFIGURATION
+
+
+    CACHE
+        =
+    TEMPORARY COPY
+
+
+    CACHE HIT
+        =
+    FOUND IN CACHE
+
+
+    CACHE MISS
+        =
+    GO TO ORIGIN
+
+
+    TTL
+        =
+    HOW LONG TO KEEP CACHE
+
+
+    CACHE POLICY
+        =
+    CACHE DECISION
+
+
+    ORIGIN REQUEST POLICY
+        =
+    WHAT TO SEND TO ORIGIN
+
+
+    INVALIDATION
+        =
+    REMOVE OLD CACHE
+
+
+    ALB
+        =
+    REGIONAL LOAD BALANCER
+
+
+    WAF
+        =
+    WEB APPLICATION FIREWALL
+
+
+====================================================================
+88. FINAL ARCHITECTURE - YOUR PROJECT
+====================================================================
+
+                         USERS
+                           |
+                           v
+                      INTERNET
+                           |
+                           v
+                     CLOUDFRONT
+                           |
+                     Cache Hit?
+                      /       \
+                    YES        NO
+                     |          |
+                     v          v
+                   CACHE       ALB
+                                |
+                                v
+                         TARGET GROUP
+                                |
+                                v
+                       PRIVATE EC2 / ASG
+                                |
+                                v
+                             APACHE
+                                |
+                                v
+                           APPLICATION
+                                |
+                                v
+                           RDS MYSQL
+
+
+PRIVATE EC2 OUTBOUND:
+
+    EC2
+      |
+      v
+    NAT GATEWAY
+      |
+      v
+    INTERNET GATEWAY
+      |
+      v
+    INTERNET
+
+
+====================================================================
+89. FINAL PROJECT FLOW
+====================================================================
+
+USER
+  |
+  v
+CLOUDFRONT
+  |
+  +---- CACHE HIT
+  |       |
+  |       v
+  |    EDGE CACHE
+  |       |
+  |       v
+  |      USER
+  |
+  |
+  +---- CACHE MISS
+          |
+          v
+         ALB
+          |
+          v
+      PRIVATE EC2
+          |
+          v
+        APACHE
+          |
+          v
+       RESPONSE
+          |
+          v
+      CLOUDFRONT
+          |
+          +---- CACHE
+          |
+          v
+         USER
+
+
+====================================================================
+90. FINAL MEMORY LINE
+====================================================================
+
+USER
+  ->
+CLOUDFRONT
+  ->
+CACHE
+  ->
+ALB
+  ->
+PRIVATE EC2
+  ->
+APACHE
+  ->
+APPLICATION
+  ->
+RDS
+
+
+CLOUDFRONT
+    =
+GLOBAL CONTENT DELIVERY
+
+
+ALB
+    =
+REGIONAL TRAFFIC DISTRIBUTION
+
+
+EC2
+    =
+APPLICATION SERVER
+
+
+RDS
+    =
+DATABASE
+
+
+NAT
+    =
+PRIVATE EC2 OUTBOUND INTERNET
+
+
+====================================================================
+
+
+
+The most important concept to remember
+
+For your AWS project, the architecture evolves like this:
+
+BEFORE CLOUDFRONT
+
+Internet
+   |
+   v
+  ALB
+   |
+   v
+Private EC2
+   |
+   v
+Apache
+
+
+en:
+
+AFTER CLOUDFRONT
+
+Internet
+   |
+   v
+CloudFront
+   |
+   +---- Cache Hit ---> Response from Edge
+   |
+   +---- Cache Miss
+             |
+             v
+            ALB
+             |
+             v
+        Private EC2
+             |
+             v
+           Apache
+		   
+
+===
+hen you combine everything you've studied:
+
+                         INTERNET
+                             |
+                             v
+                        CLOUDFRONT
+                             |
+                             v
+                            ALB
+                             |
+                             v
+                       PRIVATE EC2
+                       AMAZON LINUX
+                         APACHE
+                             |
+                             v
+                         RDS MYSQL
+
+
+PRIVATE EC2
+     |
+     v
+NAT GATEWAY
+     |
+     v
+INTERNET GATEWAY
+     |
+     v
+INTERNET
 
