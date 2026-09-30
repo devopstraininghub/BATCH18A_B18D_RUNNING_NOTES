@@ -16951,3 +16951,1834 @@ INTERNET GATEWAY
      v
 INTERNET
 
+======
+
+====================================================================
+CLOUD MODELS — ON-PREMISES, IaaS, PaaS, SaaS
+============================================
+
+1. WHAT ARE CLOUD MODELS?
+   ====================================================================
+
+Cloud models explain:
+
+```
+Who owns the infrastructure?
+
+Who manages the infrastructure?
+
+How much control does the customer have?
+
+How much responsibility does the customer have?
+```
+
+The main models we need to understand are:
+
+```
+1. On-Premises
+
+2. IaaS
+   Infrastructure as a Service
+
+3. PaaS
+   Platform as a Service
+
+4. SaaS
+   Software as a Service
+```
+
+Easy memory:
+
+```
+On-Premises = Own everything
+
+IaaS        = Rent infrastructure
+
+PaaS        = Rent platform
+
+SaaS        = Use software
+```
+
+====================================================================
+2. ON-PREMISES
+==============
+
+On-Premises means the company owns and manages its own IT
+infrastructure in its own data center or facility.
+
+Example:
+
+```
+Company has its own:
+
+- Servers
+- Storage
+- Network switches
+- Routers
+- Firewalls
+- Data center
+- Operating systems
+- Applications
+```
+
+Architecture:
+
+```
+                 COMPANY
+                    |
+                    v
+             +-------------+
+             | Data Center |
+             +------+------+
+                    |
+         +----------+----------+
+         |          |          |
+         v          v          v
+       Server     Storage    Network
+         |
+         v
+    Application
+```
+
+The company is responsible for almost everything.
+
+====================================================================
+3. ON-PREMISES REAL-TIME EXAMPLE
+================================
+
+Suppose a bank has its own data center.
+
+The bank owns:
+
+```
+Physical servers
+
+Storage systems
+
+Network equipment
+
+Firewalls
+
+Load balancers
+
+Databases
+
+Operating systems
+```
+
+The bank's IT team manages:
+
+```
+- Hardware
+- Operating systems
+- Network
+- Security
+- Patching
+- Backups
+- Monitoring
+- Power
+- Cooling
+- Physical security
+- Applications
+```
+
+Example:
+
+```
+Physical Server
+      |
+      v
+   Linux OS
+      |
+      v
+   Database
+      |
+      v
+  Application
+```
+
+Everything is controlled by the organization.
+
+====================================================================
+4. ON-PREMISES ADVANTAGES
+=========================
+
+Advantages:
+
+```
+1. Maximum control
+
+2. Full hardware control
+
+3. Full network control
+
+4. Custom infrastructure
+
+5. Can support special regulatory requirements
+
+6. Can be useful for legacy applications
+
+7. Data remains within company-controlled facilities
+```
+
+====================================================================
+5. ON-PREMISES DISADVANTAGES
+============================
+
+Disadvantages:
+
+```
+1. High initial cost
+
+2. Hardware must be purchased
+
+3. Data center must be maintained
+
+4. Hardware failures must be handled
+
+5. Power and cooling are required
+
+6. Physical security is required
+
+7. Scaling takes time
+
+8. Hardware procurement can take weeks/months
+
+9. IT team must manage infrastructure
+
+10. Disaster recovery can be expensive
+```
+
+Easy memory:
+
+```
+On-Premises:
+
+BUY + BUILD + MANAGE
+```
+
+====================================================================
+6. ON-PREMISES EXAMPLE — DEVOPS
+===============================
+
+Suppose a company wants Jenkins.
+
+On-premises approach:
+
+```
+Buy physical server
+      |
+      v
+Install operating system
+      |
+      v
+Install Java
+      |
+      v
+Install Jenkins
+      |
+      v
+Configure Jenkins
+      |
+      v
+Configure backup
+      |
+      v
+Monitor server
+```
+
+The company owns the complete infrastructure.
+
+====================================================================
+7. WHAT IS IaaS?
+================
+
+IaaS = Infrastructure as a Service
+
+Instead of purchasing physical servers, we rent virtual infrastructure
+from a cloud provider.
+
+Cloud provider provides:
+
+```
+- Compute
+- Storage
+- Networking
+- Virtual machines
+- Physical infrastructure
+```
+
+Customer manages:
+
+```
+- Operating system
+- Runtime
+- Middleware
+- Application
+- Application configuration
+- Data
+```
+
+Simple definition:
+
+```
+IaaS = Cloud infrastructure that you manage at the OS/application
+       level.
+```
+
+====================================================================
+8. IaaS EXAMPLE
+===============
+
+AWS EC2 is a common example.
+
+Instead of:
+
+```
+Buying physical server
+```
+
+We create:
+
+```
+EC2 instance
+```
+
+Example:
+
+```
+AWS
+ |
+ v
+EC2
+ |
+ v
+Linux
+ |
+ v
+Java
+ |
+ v
+Jenkins
+ |
+ v
+Application
+```
+
+AWS manages the underlying physical infrastructure.
+
+We manage the operating system and software running on the instance.
+
+====================================================================
+9. WHEN TO USE IaaS?
+====================
+
+Use IaaS when you need:
+
+```
+- High control
+- OS access
+- Custom software
+- Custom networking
+- Custom security configuration
+- Custom runtime
+- Legacy application support
+```
+
+Example:
+
+```
+"I need a Linux server where I can install specific packages
+ and configure the operating system."
+```
+
+IaaS is suitable.
+
+====================================================================
+10. IaaS ADVANTAGES
+===================
+
+```
+- High control
+- Flexible
+- OS-level access
+- Custom configuration
+- Fast infrastructure provisioning
+- Easy to scale compared with physical infrastructure
+- No need to purchase physical servers
+```
+
+====================================================================
+11. IaaS DISADVANTAGES
+======================
+
+We still need to manage:
+
+```
+- OS
+- Patching
+- Runtime
+- Application
+- Configuration
+- Security
+- Monitoring
+- Backups
+```
+
+Easy concept:
+
+```
+IaaS gives infrastructure,
+
+but you still manage the operating system.
+```
+
+====================================================================
+12. WHAT IS PaaS?
+=================
+
+PaaS = Platform as a Service
+
+PaaS provides a managed platform for deploying applications.
+
+The cloud provider manages much of:
+
+```
+- Infrastructure
+- Operating system
+- Runtime
+- Platform
+```
+
+Customer mainly manages:
+
+```
+- Application code
+- Application configuration
+- Data
+```
+
+Simple definition:
+
+```
+PaaS = Deploy your application without managing the underlying
+       servers directly.
+```
+
+====================================================================
+13. PaaS EXAMPLE
+================
+
+Example:
+
+```
+AWS Elastic Beanstalk
+```
+
+Developer provides:
+
+```
+Application code
+```
+
+Platform manages much of:
+
+```
+Infrastructure
+Operating system
+Runtime
+Deployment environment
+Scaling
+```
+
+Conceptually:
+
+```
+Developer
+    |
+    | Code
+    v
+   PaaS
+    |
+    v
+Application
+```
+
+====================================================================
+14. WHEN TO USE PaaS?
+=====================
+
+Use PaaS when:
+
+```
+- Developers should focus on application code
+- Infrastructure management should be reduced
+- Fast deployment is important
+- Application uses a supported runtime
+- You don't need OS-level control
+```
+
+Example:
+
+```
+"I have a Python application and I don't want to manage
+ Linux servers."
+```
+
+PaaS may be a good choice.
+
+====================================================================
+15. PaaS ADVANTAGES
+===================
+
+```
+- Less infrastructure management
+- Faster deployment
+- Developers focus on code
+- Platform handles much of the infrastructure
+- Scaling can be simpler
+- Less OS maintenance
+```
+
+====================================================================
+16. PaaS DISADVANTAGES
+======================
+
+```
+- Less control than IaaS
+- Platform restrictions
+- Runtime limitations
+- Possible vendor lock-in
+- Not suitable for every application
+- Limited OS-level customization
+```
+
+====================================================================
+17. WHAT IS SaaS?
+=================
+
+SaaS = Software as a Service
+
+SaaS provides ready-to-use software over the Internet.
+
+The customer does not manage:
+
+```
+- Servers
+- Operating systems
+- Runtime
+- Application infrastructure
+- Application deployment
+```
+
+The customer mainly manages:
+
+```
+- Account
+- Users
+- Configuration
+- Data
+- Access
+```
+
+Simple definition:
+
+```
+SaaS = Ready-to-use software.
+```
+
+====================================================================
+18. SaaS EXAMPLES
+=================
+
+Examples:
+
+```
+Gmail
+
+Microsoft 365
+
+Salesforce
+
+Slack
+
+Zoom
+
+Dropbox
+```
+
+Example:
+
+```
+Gmail
+```
+
+We simply use:
+
+```
+Gmail
+```
+
+We don't manage:
+
+```
+Mail servers
+Operating systems
+Storage infrastructure
+Application servers
+```
+
+Google manages the underlying service.
+
+====================================================================
+19. WHEN TO USE SaaS?
+=====================
+
+Use SaaS when the software you need already exists.
+
+Examples:
+
+```
+Need email?
+
+    Gmail / Microsoft 365
+
+
+Need CRM?
+
+    Salesforce
+
+
+Need collaboration?
+
+    Slack
+
+
+Need video meetings?
+
+    Zoom
+```
+
+You simply use the software.
+
+====================================================================
+20. SaaS ADVANTAGES
+===================
+
+```
+- Ready to use
+- No server management
+- No OS management
+- No application deployment management
+- Fast adoption
+- Provider handles maintenance
+- Provider handles upgrades
+```
+
+====================================================================
+21. SaaS DISADVANTAGES
+======================
+
+```
+- Less customization
+- Less infrastructure control
+- Vendor dependency
+- Subscription cost
+- Integration limitations
+- Data/privacy considerations
+```
+
+====================================================================
+22. ON-PREMISES VS IaaS VS PaaS VS SaaS
+=======================================
+
+Think about a company running an application.
+
+ON-PREMISES:
+
+```
+Company owns:
+
+Hardware
+Data Center
+Network
+Storage
+OS
+Application
+```
+
+IaaS:
+
+```
+Cloud provider owns:
+
+Physical infrastructure
+
+Customer manages:
+
+OS
+Runtime
+Application
+```
+
+PaaS:
+
+```
+Cloud provider manages:
+
+Infrastructure
+OS
+Runtime/platform
+
+Customer manages:
+
+Application
+Data
+```
+
+SaaS:
+
+```
+Cloud provider manages:
+
+Infrastructure
+OS
+Runtime
+Application
+
+Customer:
+
+Uses/configures the software
+```
+
+====================================================================
+23. RESPONSIBILITY COMPARISON
+=============================
+
+Layers:
+
+```
+Application
+Data
+Runtime
+Middleware
+Operating System
+Virtualization
+Servers
+Storage
+Networking
+Physical Facility
+```
+
+ON-PREMISES:
+
+```
+Customer manages almost everything.
+```
+
+IaaS:
+
+```
+Provider manages physical infrastructure.
+
+Customer manages OS and above.
+```
+
+PaaS:
+
+```
+Provider manages infrastructure and platform.
+
+Customer mainly manages application and data.
+```
+
+SaaS:
+
+```
+Provider manages almost everything.
+
+Customer mainly uses/configures the application.
+```
+
+====================================================================
+24. RESPONSIBILITY DIAGRAM
+==========================
+
+```
+                CUSTOMER RESPONSIBILITY
+                        |
+                        v
+                MORE RESPONSIBILITY
+                        |
+                        v
+
+ON-PREMISES
+IaaS
+PaaS
+SaaS
+
+                        |
+                        v
+                LESS RESPONSIBILITY
+```
+
+Reverse:
+
+```
+ON-PREMISES
+     |
+     v
+   IaaS
+     |
+     v
+   PaaS
+     |
+     v
+   SaaS
+
+Customer control decreases
+Provider management increases
+```
+
+====================================================================
+25. SIMPLE TABLE
+================
+
++----------------+------------------+---------------------------+
+| Model          | Customer manages | Example                   |
++----------------+------------------+---------------------------+
+| On-Premises    | Almost everything| Company Data Center       |
+| IaaS           | OS + Application | AWS EC2                   |
+| PaaS           | Application      | Elastic Beanstalk         |
+| SaaS           | Usage/config     | Gmail / Salesforce        |
++----------------+------------------+---------------------------+
+
+====================================================================
+26. EASY REAL-LIFE EXAMPLE
+==========================
+
+Imagine you want a place to run a business.
+
+ON-PREMISES:
+
+```
+You build the entire building.
+
+You manage:
+
+- Building
+- Electricity
+- Security
+- Equipment
+- Everything
+```
+
+IaaS:
+
+```
+You rent an empty building.
+
+You manage what you install inside.
+```
+
+PaaS:
+
+```
+You rent a ready workspace.
+
+Infrastructure is already managed.
+```
+
+SaaS:
+
+```
+You simply use a ready business service.
+```
+
+Easy memory:
+
+```
+On-Premises = Build everything
+
+IaaS        = Manage infrastructure
+
+PaaS        = Deploy application
+
+SaaS        = Use application
+```
+
+====================================================================
+27. DEVOPS EXAMPLE — JENKINS
+============================
+
+Suppose we need Jenkins.
+
+ON-PREMISES:
+
+```
+Physical Server
+      |
+      v
+Install Linux
+      |
+      v
+Install Java
+      |
+      v
+Install Jenkins
+```
+
+IaaS:
+
+```
+EC2
+ |
+ v
+Linux
+ |
+ v
+Java
+ |
+ v
+Jenkins
+```
+
+PaaS:
+
+```
+A suitable managed application platform could host an
+application without requiring us to manage the underlying VM.
+```
+
+SaaS:
+
+```
+Instead of running our own Jenkins infrastructure, we could use
+a hosted CI/CD service.
+```
+
+====================================================================
+28. DEVOPS EXAMPLE — WEB APPLICATION
+====================================
+
+Requirement:
+
+```
+Run a web application.
+```
+
+ON-PREMISES:
+
+```
+Data Center
+    |
+    v
+Physical Servers
+    |
+    v
+Linux
+    |
+    v
+Web Server
+    |
+    v
+Application
+```
+
+IaaS:
+
+```
+AWS EC2
+    |
+    v
+Linux
+    |
+    v
+Web Server
+    |
+    v
+Application
+```
+
+PaaS:
+
+```
+Application Code
+    |
+    v
+Managed Platform
+    |
+    v
+Application
+```
+
+SaaS:
+
+```
+Instead of developing and hosting our own software, use an
+existing application such as Salesforce or another SaaS product.
+```
+
+====================================================================
+29. WHEN SHOULD A COMPANY CHOOSE ON-PREMISES?
+=============================================
+
+On-premises may be appropriate when an organization needs:
+
+```
+- Maximum infrastructure control
+- Specific physical hardware
+- Existing data-center investment
+- Certain legacy systems
+- Specific regulatory or operational requirements
+- Local infrastructure requirements
+```
+
+Example:
+
+```
+A company already has a large data center and specialized
+hardware that must remain under its direct control.
+```
+
+====================================================================
+30. WHEN SHOULD A COMPANY CHOOSE IaaS?
+======================================
+
+Choose IaaS when:
+
+```
+- You need OS-level control
+- You need custom infrastructure
+- You have legacy applications
+- You need custom networking
+- You need custom software
+- You want cloud scalability but still need server control
+```
+
+Example:
+
+```
+EC2
+```
+
+Question to ask:
+
+```
+"Do I need to control the operating system?"
+```
+
+If YES:
+
+```
+IaaS may be appropriate.
+```
+
+====================================================================
+31. WHEN SHOULD A COMPANY CHOOSE PaaS?
+======================================
+
+Choose PaaS when:
+
+```
+- Application development is the priority
+- Server management should be minimized
+- Fast deployment is important
+- Standard runtimes are sufficient
+- OS-level customization is not required
+```
+
+Question:
+
+```
+"Do I mainly want to deploy my code?"
+```
+
+If YES:
+
+```
+PaaS may be appropriate.
+```
+
+====================================================================
+32. WHEN SHOULD A COMPANY CHOOSE SaaS?
+======================================
+
+Choose SaaS when:
+
+```
+- The required software already exists
+- You don't want to build the application
+- You don't want to manage infrastructure
+- Fast adoption is important
+```
+
+Question:
+
+```
+"Do I simply want to use the software?"
+```
+
+If YES:
+
+```
+SaaS may be appropriate.
+```
+
+====================================================================
+33. DECISION TREE
+=================
+
+QUESTION 1:
+
+```
+Do we want to own and manage the infrastructure ourselves?
+
+             |
+        +----+----+
+        |         |
+       YES        NO
+        |         |
+        v         v
+   ON-PREMISES   QUESTION 2
+```
+
+QUESTION 2:
+
+```
+Do we need OS-level control?
+
+             |
+        +----+----+
+        |         |
+       YES        NO
+        |         |
+        v         v
+      IaaS      QUESTION 3
+```
+
+QUESTION 3:
+
+```
+Do we want to deploy our own application?
+
+             |
+        +----+----+
+        |         |
+       YES        NO
+        |         |
+        v         v
+      PaaS       SaaS
+```
+
+Easy:
+
+```
+OWN IT?
+   |
+ON-PREMISES
+
+
+CONTROL OS?
+   |
+  IaaS
+
+
+DEPLOY CODE?
+   |
+  PaaS
+
+
+JUST USE IT?
+   |
+  SaaS
+```
+
+====================================================================
+34. EXAMPLE — COMPANY WITH THREE REQUIREMENTS
+=============================================
+
+Requirement 1:
+
+```
+"We need a custom Linux server."
+
+Choose:
+
+IaaS
+```
+
+Requirement 2:
+
+```
+"We have a Python application and want to deploy it without
+ managing servers."
+
+Choose:
+
+PaaS
+```
+
+Requirement 3:
+
+```
+"We need employee email."
+
+Choose:
+
+SaaS
+```
+
+Requirement 4:
+
+```
+"We have specialized physical hardware that must remain in our
+ facility."
+
+Choose:
+
+On-Premises
+```
+
+====================================================================
+35. CLOUD MIGRATION EXAMPLE
+===========================
+
+Suppose a company currently has:
+
+```
+ON-PREMISES DATA CENTER
+
+      |
+      v
+Physical Servers
+      |
+      v
+Applications
+```
+
+Company wants to move to AWS.
+
+One possible migration path:
+
+```
+ON-PREMISES
+     |
+     v
+   IaaS
+     |
+     v
+   PaaS
+     |
+     v
+   SaaS
+```
+
+But this is NOT a mandatory migration sequence.
+
+A company may choose different models for different applications.
+
+Example:
+
+```
+Legacy application
+      |
+      v
+    IaaS
+```
+
+Modern web application
+|
+v
+PaaS
+
+Email
+|
+v
+SaaS
+
+Specialized hardware application
+|
+v
+On-Premises
+
+====================================================================
+36. HYBRID ENVIRONMENT
+======================
+
+A company does not have to choose only one model.
+
+It can use:
+
+```
+On-Premises
+      +
+IaaS
+      +
+PaaS
+      +
+SaaS
+```
+
+Example:
+
+```
+On-Premises
+   |
+   | Legacy Database
+   |
+   +----------------+
+                    |
+                    v
+                   AWS
+                    |
+            +-------+-------+
+            |               |
+           IaaS            PaaS
+            |               |
+          EC2          Application
+                            |
+                            v
+                          SaaS
+                       Collaboration
+```
+
+This is common in enterprise environments.
+
+====================================================================
+37. IMPORTANT: SERVICE MODEL VS DEPLOYMENT MODEL
+================================================
+
+Do not confuse:
+
+```
+Service Models
+```
+
+with:
+
+```
+Deployment Models.
+```
+
+SERVICE MODELS:
+
+```
+IaaS
+PaaS
+SaaS
+```
+
+DEPLOYMENT MODELS:
+
+```
+Public Cloud
+Private Cloud
+Hybrid Cloud
+```
+
+On-Premises is primarily an infrastructure ownership/deployment
+concept, while IaaS/PaaS/SaaS describe service delivery models.
+
+====================================================================
+38. PUBLIC CLOUD VS ON-PREMISES
+===============================
+
+ON-PREMISES:
+
+```
+Company owns infrastructure.
+```
+
+PUBLIC CLOUD:
+
+```
+Cloud provider owns the underlying cloud infrastructure.
+```
+
+Example:
+
+```
+On-Premises:
+
+Company Data Center
+    |
+    v
+Physical Server
+
+
+Public Cloud:
+
+AWS
+  |
+  v
+EC2
+```
+
+====================================================================
+39. ON-PREMISES VS IaaS
+=======================
+
+ON-PREMISES:
+
+```
+Buy physical server.
+```
+
+IaaS:
+
+```
+Rent virtual server.
+```
+
+Example:
+
+```
+On-Premises:
+
+    Dell/HP/Lenovo physical server
+
+
+IaaS:
+
+    AWS EC2
+```
+
+Main difference:
+
+```
+Ownership and infrastructure management.
+```
+
+====================================================================
+40. IaaS VS PaaS
+================
+
+IaaS:
+
+```
+"Give me infrastructure.
+ I will manage the OS and application."
+```
+
+PaaS:
+
+```
+"Give me a platform.
+ I mainly want to deploy my application."
+```
+
+Example:
+
+```
+IaaS:
+    EC2
+
+
+PaaS:
+    Elastic Beanstalk
+```
+
+====================================================================
+41. PaaS VS SaaS
+================
+
+PaaS:
+
+```
+You deploy your own code.
+```
+
+SaaS:
+
+```
+You use someone else's application.
+```
+
+Easy memory:
+
+```
+PaaS = MY CODE
+
+SaaS = THEIR SOFTWARE
+```
+
+====================================================================
+42. COMPLETE COMPARISON
+=======================
+
++--------------+----------------+----------------------+----------------------+
+| Model        | Infrastructure | OS / Platform        | Application          |
++--------------+----------------+----------------------+----------------------+
+| On-Premises  | Customer       | Customer             | Customer             |
+| IaaS         | Provider       | Customer             | Customer             |
+| PaaS         | Provider       | Provider             | Customer             |
+| SaaS         | Provider       | Provider             | Provider             |
++--------------+----------------+----------------------+----------------------+
+
+Customer responsibility generally decreases:
+
+```
+On-Premises
+      |
+      v
+    IaaS
+      |
+      v
+    PaaS
+      |
+      v
+    SaaS
+```
+
+====================================================================
+43. REAL-TIME DEVOPS RESPONSIBILITY
+===================================
+
+ON-PREMISES:
+
+```
+DevOps/IT team may manage:
+
+Hardware
+OS
+Network
+Storage
+Applications
+CI/CD
+Monitoring
+```
+
+IaaS:
+
+```
+DevOps team may manage:
+
+EC2
+OS
+Docker
+Jenkins
+Kubernetes
+Applications
+CI/CD
+```
+
+PaaS:
+
+```
+DevOps team focuses more on:
+
+Application deployment
+CI/CD
+Configuration
+Monitoring
+Security
+```
+
+SaaS:
+
+```
+DevOps team focuses more on:
+
+Integration
+APIs
+Automation
+Authentication
+User access
+Configuration
+```
+
+====================================================================
+44. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+What is the difference between On-Premises and Cloud?
+```
+
+Answer:
+
+```
+"In an on-premises environment, the organization owns and manages
+its physical infrastructure. In cloud computing, the cloud
+provider manages the underlying infrastructure, and the customer
+consumes services according to models such as IaaS, PaaS or SaaS."
+```
+
+====================================================================
+45. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+Explain IaaS, PaaS and SaaS.
+```
+
+Answer:
+
+```
+"IaaS provides infrastructure such as virtual machines, storage
+and networking. PaaS provides a managed platform where developers
+mainly focus on application code. SaaS provides ready-to-use
+software over the Internet."
+```
+
+====================================================================
+46. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+Give examples of each.
+```
+
+Answer:
+
+```
+On-Premises:
+
+    Company-owned data center
+
+
+IaaS:
+
+    AWS EC2
+
+
+PaaS:
+
+    AWS Elastic Beanstalk
+
+
+SaaS:
+
+    Gmail / Salesforce / Microsoft 365
+```
+
+====================================================================
+47. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+Which model gives the customer the most control?
+```
+
+Answer:
+
+```
+"On-premises generally provides the most direct control because
+the organization manages the physical infrastructure itself."
+```
+
+====================================================================
+48. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+Which model requires the least infrastructure management?
+```
+
+Answer:
+
+```
+SaaS.
+```
+
+====================================================================
+49. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+If I need full OS access, which model should I consider?
+```
+
+Answer:
+
+```
+IaaS.
+```
+
+====================================================================
+50. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+If I only want to use an existing business application, which
+model should I consider?
+```
+
+Answer:
+
+```
+SaaS.
+```
+
+====================================================================
+51. INTERVIEW QUESTION
+======================
+
+Q:
+
+```
+If I want to deploy my own application without managing the
+underlying servers, which model should I consider?
+```
+
+Answer:
+
+```
+PaaS.
+```
+
+====================================================================
+52. EASY MEMORY TRICK
+=====================
+
+Think:
+
+```
+ON-PREMISES
+    =
+OWN
+
+
+IaaS
+    =
+SERVER
+
+
+PaaS
+    =
+CODE
+
+
+SaaS
+    =
+SOFTWARE
+```
+
+Another memory trick:
+
+```
+ON-PREMISES = BUILD
+
+IaaS        = MANAGE SERVER
+
+PaaS        = DEPLOY CODE
+
+SaaS        = USE SOFTWARE
+```
+
+====================================================================
+53. FINAL QUICK TABLE
+=====================
+
++--------------+---------------------------+-------------------------+
+| Model        | Think                     | Example                 |
++--------------+---------------------------+-------------------------+
+| On-Premises  | Own everything            | Company Data Center     |
+| IaaS         | Rent infrastructure       | AWS EC2                 |
+| PaaS         | Deploy my application     | Elastic Beanstalk       |
+| SaaS         | Use ready software       | Gmail / Salesforce      |
++--------------+---------------------------+-------------------------+
+
+====================================================================
+54. FINAL CONCEPT
+=================
+
+```
+            MORE CUSTOMER CONTROL
+                     |
+                     v
+              ON-PREMISES
+                     |
+                     v
+                   IaaS
+                     |
+                     v
+                   PaaS
+                     |
+                     v
+                   SaaS
+                     |
+                     v
+            LESS CUSTOMER CONTROL
+
+
+            MORE CUSTOMER RESPONSIBILITY
+                     |
+                     v
+              ON-PREMISES
+                     |
+                     v
+                   IaaS
+                     |
+                     v
+                   PaaS
+                     |
+                     v
+                   SaaS
+                     |
+                     v
+            LESS CUSTOMER RESPONSIBILITY
+```
+
+====================================================================
+55. ONE-MINUTE INTERVIEW ANSWER
+===============================
+
+"Cloud service models describe how infrastructure and software
+responsibilities are divided between the customer and the provider.
+
+In an on-premises environment, the organization owns and manages the
+physical infrastructure, operating systems and applications.
+
+With IaaS, the cloud provider manages the underlying physical
+infrastructure while the customer manages the operating system and
+application. AWS EC2 is a common example.
+
+With PaaS, the provider also manages much of the operating system and
+application platform, allowing developers to focus mainly on their
+application. AWS Elastic Beanstalk is an example.
+
+With SaaS, the provider manages the complete application and
+underlying infrastructure, while the customer simply uses and
+configures the software. Gmail, Salesforce and Microsoft 365 are
+examples."
+
+====================================================================
+56. FINAL MEMORY LINE
+=====================
+
+```
+ON-PREMISES
+= I OWN IT
+
+
+IaaS
+= I MANAGE THE SERVER
+
+
+PaaS
+= I DEPLOY MY CODE
+
+
+SaaS
+= I USE THE SOFTWARE
+```
+
+====================================================================
+END OF CLOUD MODELS NOTES
+=========================
