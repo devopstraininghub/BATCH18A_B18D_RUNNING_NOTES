@@ -282,16 +282,16 @@ Benefits: faster downloads, lower bandwidth usage, better perceived page perform
 ## 16. HTTPS, custom domains, and ACM — tying back to 28–29 September
 
 - CloudFront supports HTTPS for the viewer-facing connection out of the box on its default `*.cloudfront.net` domain.
-- For your **own** domain (e.g. `www.mindcircuit.com`), you need a **trusted ACM certificate** covering that domain — same ACM concepts as `29September_ACM.md`, with one CloudFront-specific rule:
+- For your **own** domain (e.g. `login.b18facebook.store`), you need a **trusted ACM certificate** covering that domain — same ACM concepts as `29September_ACM.md`, with one CloudFront-specific rule:
 
 ⚠️ **For CloudFront specifically, the ACM certificate must be requested/imported in `us-east-1` (US East, N. Virginia) — no exceptions, regardless of which region your ALB or the rest of your infrastructure lives in.** This is one of the most commonly-asked AWS interview questions for exactly this reason — it's easy to forget since CloudFront itself is a global service.
 
 **Custom domain flow, with Route 53:**
 ```
-User → www.mindcircuit.com → Route 53 → CloudFront → ALB
+User → login.b18facebook.store → Route 53 → CloudFront → ALB
 ```
-- For a **subdomain** (`www.mindcircuit.com`), Route 53 points it at the CloudFront distribution.
-- For the **apex/root domain** (`mindcircuit.com`), a plain CNAME can't be used (same DNS-standard rule as `28September_Route53.md` §4) — Route 53's **Alias record** is what makes this work at the apex too.
+- For a **subdomain** (`login.b18facebook.store`), Route 53 points it at the CloudFront distribution.
+- For the **apex/root domain** (`b18facebook.store`), a plain CNAME can't be used (same DNS-standard rule as `28September_Route53.md` §4) — Route 53's **Alias record** is what makes this work at the apex too.
 
 ---
 

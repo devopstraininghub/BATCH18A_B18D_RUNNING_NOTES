@@ -2,7 +2,7 @@
 
 **Topic: AWS Certificate Manager (ACM)**
 
-Friends, on 28 September we got Route 53 pointing `www.mindcircuit.com` at our ALB (`28September_Route53.md`) — but that only gets us `http://`. Today's topic, **ACM (AWS Certificate Manager)**, is the piece that upgrades that to `https://` — the padlock, the encryption, everything a real production site needs before it's safe to put in front of real users.
+Friends, on 28 September we got Route 53 pointing `login.b18facebook.store` at our ALB (`28September_Route53.md`) — but that only gets us `http://`. Today's topic, **ACM (AWS Certificate Manager)**, is the piece that upgrades that to `https://` — the padlock, the encryption, everything a real production site needs before it's safe to put in front of real users.
 
 ---
 
@@ -162,7 +162,7 @@ Instead of you manually tracking expiry dates and re-installing certificates, AC
 
 **Example:**
 ```
-Name:  _abc123.mindcircuit.com
+Name:  _abc123.b18facebook.store
 Type:  CNAME
 Value: _xyz456.acm-validations.aws
 ```
@@ -180,7 +180,7 @@ Value: _xyz456.acm-validations.aws
 | **ACM** | SSL/TLS certificate management |
 | **Route 53** | DNS |
 
-- If Route 53 already manages your domain, the ACM validation CNAME can be created directly inside that Route 53 hosted zone — that's exactly what we did for `mindcircuit.com`.
+- If Route 53 already manages your domain, the ACM validation CNAME can be created directly inside that Route 53 hosted zone — that's exactly what we did for `b18facebook.store`.
 
 **Easy memory trick:** `ACM = Certificate`, `Route 53 = DNS`.
 
@@ -192,7 +192,7 @@ This trips people up constantly, so worth being explicit:
 
 | | ACM validation record | Application DNS record |
 |---|---|---|
-| Example | `_abc123.mindcircuit.com` (CNAME) | `www.mindcircuit.com` (Alias) |
+| Example | `_abc123.b18facebook.store` (CNAME) | `login.b18facebook.store` (Alias) |
 | Purpose | **Proves domain ownership** to ACM | **Sends users** to the application (the ALB) |
 | Points to | `_xyz456.acm-validations.aws` | The ALB |
 
@@ -204,26 +204,26 @@ This trips people up constantly, so worth being explicit:
 
 **Single-domain certificate** — covers exactly one name.
 ```
-Certificate: www.mindcircuit.com
+Certificate: login.b18facebook.store
 ```
 
 **Multi-domain certificate** — one certificate, several domain names, listed as **SANs (Subject Alternative Names)**.
 ```
-mindcircuit.com
-www.mindcircuit.com
-api.mindcircuit.com
-admin.mindcircuit.com
+b18facebook.store
+login.b18facebook.store
+api.b18facebook.store
+admin.b18facebook.store
 ```
 
 **Wildcard certificate** — covers every name at *one* subdomain level.
 ```
-*.mindcircuit.com
+*.b18facebook.store
 ```
-covers: `www.mindcircuit.com`, `api.mindcircuit.com`, `dev.mindcircuit.com`, `test.mindcircuit.com`
+covers: `login.b18facebook.store`, `api.b18facebook.store`, `dev.b18facebook.store`, `test.b18facebook.store`
 
 ⚠️ **Two easy-to-miss gotchas:**
-- `*.mindcircuit.com` does **NOT** cover the bare apex domain `mindcircuit.com` — if you need both, request both explicitly: `mindcircuit.com` **and** `*.mindcircuit.com`.
-- `*.mindcircuit.com` does **NOT** cover `api.dev.mindcircuit.com` — that's a second subdomain level, one level deeper than the wildcard reaches.
+- `*.b18facebook.store` does **NOT** cover the bare apex domain `b18facebook.store` — if you need both, request both explicitly: `b18facebook.store` **and** `*.b18facebook.store`.
+- `*.b18facebook.store` does **NOT** cover `api.dev.b18facebook.store` — that's a second subdomain level, one level deeper than the wildcard reaches.
 
 ---
 
@@ -236,12 +236,12 @@ AWS Console → Certificate Manager → Request → Request a public certificate
 
 **Step 2 — Enter the domain name(s)**
 ```
-www.mindcircuit.com
+login.b18facebook.store
 ```
 or, to cover the apex too:
 ```
-mindcircuit.com
-*.mindcircuit.com
+b18facebook.store
+*.b18facebook.store
 ```
 
 **Step 3 — Choose validation method**
@@ -302,7 +302,7 @@ ALB HTTPS Listener (port 443)
 ```
 HTTP :80 → (redirect) → HTTPS :443 → Application
 ```
-So `http://www.mindcircuit.com` automatically forwards the user to `https://www.mindcircuit.com`.
+So `http://login.b18facebook.store` automatically forwards the user to `https://login.b18facebook.store`.
 
 **TLS termination — the term for what's actually happening here:** the ALB is where the encrypted TLS connection ends ("terminates") — the ALB does the decryption, and typically forwards the request to the backend over plain HTTP within the private network. This is exactly why you don't need a certificate on each EC2 instance: the ALB is the only point that ever needs to speak TLS to the outside world.
 
@@ -340,7 +340,7 @@ arn:aws:acm:ap-south-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
 | Example | `www.example.com` | `internal.company.local` |
 | Typical use | A public website | Internal applications, internal corporate infrastructure |
 
-For our `mindcircuit.com` example: a **public** ACM certificate.
+For our `b18facebook.store` example: a **public** ACM certificate.
 
 ---
 
@@ -353,7 +353,7 @@ http://my-alb-123456.ap-south-1.elb.amazonaws.com
 
 **With Route 53 + ACM**, they get:
 ```
-https://www.mindcircuit.com
+https://login.b18facebook.store
 ```
 
 **Benefits:** a professional domain, HTTPS, a trusted certificate, better user experience, secure communication, easier certificate lifecycle management, and something that's actually production-ready.
@@ -369,7 +369,7 @@ ACM → CNAME → Route 53
 
 **Application access** — actually sends users to the app:
 ```
-User → www.mindcircuit.com → Route 53 Alias → ALB
+User → login.b18facebook.store → Route 53 Alias → ALB
 ```
 Same hosted zone, same domain, but these are two unrelated flows happening for two unrelated reasons — one runs once (and occasionally again for renewal), the other runs on every single user request.
 
@@ -377,10 +377,10 @@ Same hosted zone, same domain, but these are two unrelated flows happening for t
 
 ## 24. Putting it all together — complete real-time flow
 
-**User enters:** `https://www.mindcircuit.com`
+**User enters:** `https://login.b18facebook.store`
 
 1. Browser performs a DNS lookup.
-2. Route 53 resolves `www.mindcircuit.com` to the ALB.
+2. Route 53 resolves `login.b18facebook.store` to the ALB.
 3. Browser connects to `ALB :443`.
 4. ALB presents its ACM certificate.
 5. Browser validates the certificate.
@@ -396,7 +396,7 @@ Same hosted zone, same domain, but these are two unrelated flows happening for t
                        │
                   HTTPS :443
                        ▼
-              www.mindcircuit.com
+              login.b18facebook.store
                        │
                        ▼
                   ROUTE 53  (DNS)
@@ -424,18 +424,18 @@ EC2      = Application
 
 ## 25. Hands-on — full production setup, end to end
 
-**Requirement:** serve `https://www.mindcircuit.com` securely.
+**Requirement:** serve `https://login.b18facebook.store` securely.
 
 1. Create a Route 53 hosted zone (or use the one already set up — see `28September_Route53.md`).
-2. Request a public ACM certificate for `mindcircuit.com` and/or `www.mindcircuit.com`.
+2. Request a public ACM certificate for `b18facebook.store` and/or `login.b18facebook.store`.
 3. Choose **DNS validation**.
 4. Create the ACM validation CNAME in the Route 53 hosted zone.
 5. Wait for the certificate status to become **ISSUED**.
 6. Create/configure the ALB.
 7. Configure an HTTPS listener on port 443.
 8. Attach the ACM certificate to that listener.
-9. Create a Route 53 **Alias** record: `www.mindcircuit.com → ALB`.
-10. Test: open `https://www.mindcircuit.com` and confirm it works.
+9. Create a Route 53 **Alias** record: `login.b18facebook.store → ALB`.
+10. Test: open `https://login.b18facebook.store` and confirm it works.
 
 **Verifying it worked — what to actually check:**
 - The website loads over HTTPS.
@@ -462,12 +462,12 @@ EC2      = Application
 
 | Concept | One-line meaning | Real-time (DevOps) example |
 |---|---|---|
-| ACM | AWS's service for provisioning/managing/renewing SSL/TLS certificates | Enables `https://www.mindcircuit.com` |
+| ACM | AWS's service for provisioning/managing/renewing SSL/TLS certificates | Enables `https://login.b18facebook.store` |
 | HTTP vs HTTPS | Plain-text vs encrypted, port 80 vs port 443 | `http://` silently upgraded via a redirect to `https://` |
 | TLS vs SSL | TLS is the modern protocol; "SSL certificate" is just old habit | Every "SSL cert" issued today is actually a TLS certificate |
 | DNS validation | Proves domain ownership by adding a specific CNAME | ACM's CNAME added to the Route 53 hosted zone |
 | ACM validation CNAME vs app record | Two different DNS records, two different jobs — never delete the first one | `_abc123...` (validation) vs `www` Alias (traffic) |
-| Wildcard certificate | Covers one subdomain level, not the apex, not deeper levels | `*.mindcircuit.com` ≠ `mindcircuit.com`, ≠ `api.dev.mindcircuit.com` |
+| Wildcard certificate | Covers one subdomain level, not the apex, not deeper levels | `*.b18facebook.store` ≠ `b18facebook.store`, ≠ `api.dev.b18facebook.store` |
 | ACM + ALB | Certificate attaches to the ALB's HTTPS listener, not to each EC2 | No per-server certificate installs needed |
 | TLS termination | Where the encrypted connection actually ends | At the ALB — backend traffic can be plain HTTP internally |
 | ACM certificate region | Regional resource — must match where it's used | ALB → same region; CloudFront → always `us-east-1` |
