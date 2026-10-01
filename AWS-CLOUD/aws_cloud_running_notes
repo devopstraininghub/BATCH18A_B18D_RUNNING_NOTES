@@ -18782,3 +18782,2803 @@ SaaS
 ====================================================================
 END OF CLOUD MODELS NOTES
 =========================
+
+DATE: 1 OCT 2026
+
+====================================================================
+                    AWS WAF + AWS SHIELD
+             COMPLETE UPDATED NOTES - 2026
+====================================================================
+
+PURPOSE
+-------
+These notes cover:
+
+1. AWS WAF
+2. AWS WAF Protection Pack (Web ACL)
+3. AWS Shield Standard
+4. AWS Shield Advanced
+5. Creating a Protection Pack
+6. Associating WAF with an ALB
+7. AWS Managed Rules
+8. Custom WAF Rules
+9. IP Sets
+10. Geo Match Rules
+11. Rate-Based Rules
+12. Rule Actions
+13. Rule Priority
+14. WAF Logging
+15. WAF Monitoring
+16. Testing WAF
+17. Understanding HTTP 403
+18. WAF Log Analysis
+19. Shield Advanced Protection
+20. WAF + Shield Architecture
+21. Troubleshooting
+22. Deleting WAF Protection
+23. Useful AWS CLI Commands
+24. Interview Questions
+25. Practical Testing Scenarios
+
+
+====================================================================
+1. WHAT IS AWS WAF?
+====================================================================
+
+AWS WAF = AWS Web Application Firewall.
+
+AWS WAF protects web applications and APIs from unwanted HTTP/HTTPS
+requests.
+
+WAF works mainly at the application layer (Layer 7).
+
+WAF can inspect requests and take actions such as:
+
+    ALLOW
+    BLOCK
+    COUNT
+    CAPTCHA
+    CHALLENGE
+
+
+Examples of traffic WAF can inspect:
+
+    - IP address
+    - Country
+    - URI
+    - HTTP method
+    - Query string
+    - Headers
+    - Cookies
+    - Request body
+    - String patterns
+    - Regular expressions
+    - SQL injection patterns
+    - Cross-site scripting patterns
+    - Request rate
+
+
+====================================================================
+2. WHAT IS AWS SHIELD?
+====================================================================
+
+AWS Shield is AWS's DDoS protection service.
+
+DDoS = Distributed Denial of Service.
+
+A DDoS attack attempts to overwhelm a service with a large amount
+of malicious or unwanted traffic.
+
+AWS Shield provides protection primarily against DDoS attacks.
+
+There are two main levels:
+
+    1. AWS Shield Standard
+    2. AWS Shield Advanced
+
+
+====================================================================
+3. AWS SHIELD STANDARD
+====================================================================
+
+Shield Standard is automatically available for AWS customers.
+
+It provides automatic protection against common network and
+transport-layer DDoS attacks.
+
+You do not normally create a separate Shield Standard protection
+for every resource.
+
+Shield Standard is designed to provide baseline DDoS protection.
+
+
+====================================================================
+4. AWS SHIELD ADVANCED
+====================================================================
+
+Shield Advanced provides additional DDoS protection, visibility,
+monitoring and response capabilities.
+
+Shield Advanced protection must be explicitly configured for the
+resources you want to protect, unless AWS Firewall Manager is
+managing the protection through a Shield Advanced policy.
+
+Shield Advanced can protect supported resources such as:
+
+    - Amazon CloudFront distributions
+    - Amazon Route 53 hosted zones
+    - AWS Global Accelerator standard accelerators
+    - Amazon EC2 Elastic IP addresses
+    - Amazon EC2 instances through Elastic IP associations
+    - Application Load Balancers
+    - Classic Load Balancers
+    - Network Load Balancers through Elastic IP associations
+
+IMPORTANT:
+
+Shield Advanced does NOT automatically protect every resource in
+your AWS account.
+
+You must explicitly add the resource to Shield Advanced or use
+Firewall Manager policy management.
+
+
+====================================================================
+5. AWS WAF NEW CONSOLE EXPERIENCE
+====================================================================
+
+AWS now provides an updated WAF console experience.
+
+The new console introduces:
+
+    Protection pack (web ACL)
+
+A Protection pack is NOT a completely different WAF technology.
+
+At the API level, it is still implemented as an AWS WAFv2 Web ACL.
+
+The new console provides:
+
+    - Simplified configuration
+    - Guided workflows
+    - Protection templates
+    - Improved security visibility
+    - Unified dashboards
+
+
+IMPORTANT:
+
+Protection Pack = Web ACL
+
+New console terminology:
+
+    Protection pack (web ACL)
+
+
+====================================================================
+6. AWS WAF CONSOLE OPTIONS
+====================================================================
+
+AWS provides two console experiences:
+
+    1. Updated/New console experience
+    2. Standard console experience
+
+
+UPDATED CONSOLE
+---------------
+
+Designed for simplified configuration and guided protection setup.
+
+Main area:
+
+    Resources & protection packs (web ACLs)
+
+
+STANDARD CONSOLE
+----------------
+
+Provides the traditional Web ACL workflow with granular rule
+configuration.
+
+The underlying WAF functionality remains available.
+
+
+====================================================================
+7. AWS WAF BASIC ARCHITECTURE
+====================================================================
+
+Example using Application Load Balancer:
+
+
+                         INTERNET
+                            |
+                            |
+                            v
+                     +-------------+
+                     |   CLIENT    |
+                     +-------------+
+                            |
+                            | HTTP/HTTPS
+                            v
+                     +-------------+
+                     |  AWS WAF    |
+                     | Protection  |
+                     | Pack (Web   |
+                     | ACL)        |
+                     +-------------+
+                            |
+                +-----------+-----------+
+                |                       |
+              BLOCK                   ALLOW
+                |                       |
+                v                       v
+             HTTP 403                 ALB
+                                        |
+                                        v
+                                   APPLICATION
+
+
+WAF examines the request before the request reaches the protected
+application resource.
+
+
+====================================================================
+8. WHAT IS A WEB ACL?
+====================================================================
+
+Web ACL = Web Access Control List.
+
+In the new console, it is presented as:
+
+    Protection pack (web ACL)
+
+A Web ACL contains rules that determine what AWS WAF should do with
+incoming web requests.
+
+
+Example:
+
+    Web ACL
+       |
+       +-- Rule 1: Block Bad IPs
+       |
+       +-- Rule 2: AWS Common Rules
+       |
+       +-- Rule 3: SQL Injection
+       |
+       +-- Rule 4: Rate Limit
+       |
+       +-- Rule 5: Country Restriction
+       |
+       +-- Default Action
+
+
+====================================================================
+9. AWS WAF PROTECTED RESOURCES
+====================================================================
+
+AWS WAF can protect supported AWS resources.
+
+Examples include:
+
+    - Application Load Balancer
+    - Amazon CloudFront
+    - Amazon API Gateway
+    - AWS AppSync
+    - Amazon Cognito
+    - AWS App Runner
+    - AWS Amplify
+    - Amazon Bedrock AgentCore Gateway
+    - AWS Verified Access
+
+
+IMPORTANT:
+
+WAF Protection Pack and its WAF resources must be in the appropriate
+scope/Region for the resource.
+
+For Regional resources:
+
+    WAF Region = Resource Region
+
+
+Example:
+
+    ALB Region = us-east-1
+
+    WAF Protection Pack = us-east-1
+
+
+For CloudFront:
+
+    CloudFront WAF scope = Global/CloudFront
+    AWS WAF uses US East (N. Virginia) for CloudFront scope.
+
+
+====================================================================
+10. STEP 1 - OPEN AWS WAF
+====================================================================
+
+1. Login to AWS Management Console.
+
+2. Search:
+
+       WAF & Shield
+
+3. Open AWS WAF.
+
+4. Select the required Region.
+
+5. Open:
+
+       Resources & protection packs (web ACLs)
+
+
+For an ALB:
+
+    Select the same AWS Region as the ALB.
+
+
+====================================================================
+11. STEP 2 - CREATE PROTECTION PACK (WEB ACL)
+====================================================================
+
+NEW AWS CONSOLE WORKFLOW:
+
+    AWS WAF
+       |
+       v
+    Resources & protection packs (web ACLs)
+       |
+       v
+    Add protection pack (web ACL)
+       |
+       v
+    Tell us about your app
+       |
+       v
+    Resources to protect
+       |
+       v
+    Choose initial protections
+       |
+       v
+    Configure protection
+       |
+       v
+    Review
+       |
+       v
+    Add protection pack
+
+
+====================================================================
+12. TELL AWS ABOUT YOUR APP
+====================================================================
+
+AWS asks for information about the application.
+
+APP CATEGORY
+------------
+
+Select the category that best describes your application.
+
+TRAFFIC SOURCE
+--------------
+
+Possible choices include:
+
+    API
+    Web
+    Both API and Web
+
+
+API
+---
+
+Use when your application is primarily API-based.
+
+
+WEB
+---
+
+Use when your application serves web traffic.
+
+
+BOTH API AND WEB
+----------------
+
+Use when the application handles both API and normal web traffic.
+
+
+Example:
+
+    Website + REST APIs
+
+    Traffic Source:
+
+        Both API and Web
+
+
+====================================================================
+13. STEP 3 - ADD RESOURCES TO PROTECT
+====================================================================
+
+Under:
+
+    Resources to protect
+
+Choose:
+
+    Add resources
+
+
+AWS provides resource categories such as:
+
+    - Amazon CloudFront distributions
+    - Regional resources
+
+
+For an ALB:
+
+    Regional resources
+          |
+          v
+    Application Load Balancer
+          |
+          v
+    Select ALB
+          |
+          v
+    Add
+
+
+Example:
+
+    ALB:
+        mc-prod-alb
+
+
+The Protection Pack is then associated with the selected ALB.
+
+
+====================================================================
+14. STEP 4 - CHOOSE INITIAL PROTECTIONS
+====================================================================
+
+AWS provides guided protection choices.
+
+Typical choices include:
+
+    1. Recommended
+    2. Essentials
+    3. You build it
+
+
+RECOMMENDED
+-----------
+
+AWS recommends a protection configuration based on the application
+information supplied during setup.
+
+Useful for:
+
+    - Beginners
+    - Testing
+    - Initial deployment
+
+
+ESSENTIALS
+----------
+
+Provides a more basic protection configuration.
+
+
+YOU BUILD IT
+------------
+
+Allows you to configure protection rules yourself.
+
+Useful for learning:
+
+    - IP rules
+    - Rate rules
+    - Managed rule groups
+    - Geo rules
+    - String matching
+    - Custom rules
+
+
+====================================================================
+15. PROTECTION PACK NAME
+====================================================================
+
+Example:
+
+    Name:
+
+        mc-prod-waf-test
+
+
+Description:
+
+        AWS WAF protection pack for ALB testing
+
+
+IMPORTANT:
+
+Choose the name carefully.
+
+The Protection Pack name has restrictions and should be treated as
+a permanent identifier for the configuration.
+
+
+====================================================================
+16. DEFAULT ACTION
+====================================================================
+
+The Web ACL has a default action.
+
+Common configuration:
+
+    DEFAULT ACTION = ALLOW
+
+
+Meaning:
+
+    If no terminating rule blocks/challenges the request,
+    the request can continue.
+
+
+Example:
+
+    Client
+       |
+       v
+    AWS WAF
+       |
+       +-- Rule 1
+       |
+       +-- Rule 2
+       |
+       +-- Rule 3
+       |
+       v
+    No blocking match
+       |
+       v
+    ALLOW
+       |
+       v
+    ALB
+
+
+====================================================================
+17. AWS WAF RULE
+====================================================================
+
+A WAF rule contains:
+
+    1. Statement / condition
+    2. Action
+    3. Priority
+
+
+Example:
+
+    Rule Name:
+
+        Block-Bad-IP
+
+
+    Condition:
+
+        Source IP exists in IP Set
+
+
+    Action:
+
+        BLOCK
+
+
+====================================================================
+18. WAF RULE ACTIONS
+====================================================================
+
+ALLOW
+-----
+
+Allows the request.
+
+Example:
+
+    Trusted IP
+       |
+       v
+    ALLOW
+       |
+       v
+    Application
+
+
+BLOCK
+-----
+
+Blocks the request.
+
+Typically the client receives:
+
+    HTTP 403 Forbidden
+
+
+COUNT
+-----
+
+Counts the request but does not block it.
+
+Useful for:
+
+    - Testing
+    - Monitoring
+    - Rule tuning
+
+
+CAPTCHA
+-------
+
+Requests the client to complete a CAPTCHA challenge when applicable.
+
+
+CHALLENGE
+---------
+
+AWS WAF challenges the client to verify that the request is coming
+from a legitimate client.
+
+
+====================================================================
+19. RULE PRIORITY
+====================================================================
+
+AWS WAF evaluates rules according to their priority.
+
+Example:
+
+    Priority 1
+        |
+        v
+    Block-Bad-IP
+
+    Priority 2
+        |
+        v
+    Rate-Limit
+
+    Priority 3
+        |
+        v
+    AWS-Managed-Rules
+
+
+A terminating action can stop further rule evaluation.
+
+Examples:
+
+    ALLOW
+    BLOCK
+    CAPTCHA
+    CHALLENGE
+
+The exact evaluation behavior depends on the rule and statement
+configuration.
+
+
+====================================================================
+20. AWS MANAGED RULE GROUPS
+====================================================================
+
+AWS provides managed rule groups.
+
+Examples include:
+
+    AWSManagedRulesCommonRuleSet
+
+    AWSManagedRulesKnownBadInputsRuleSet
+
+    AWSManagedRulesSQLiRuleSet
+
+    AWSManagedRulesAmazonIpReputationList
+
+    AWSManagedRulesAnonymousIpList
+
+
+These provide pre-built protections against common attack patterns.
+
+Managed rules reduce the need to create every detection rule
+manually.
+
+
+====================================================================
+21. AWS MANAGED RULE EXAMPLE
+====================================================================
+
+Example:
+
+    AWSManagedRulesCommonRuleSet
+
+
+Purpose:
+
+    Helps protect against common web application attack patterns.
+
+
+Request:
+
+    Client
+       |
+       v
+    AWS WAF
+       |
+       v
+    Common Rule Set
+       |
+       +---- Match ----> BLOCK
+       |
+       +---- No Match -> Continue
+
+
+====================================================================
+22. IP SET
+====================================================================
+
+An IP Set is a collection of IP addresses or address ranges.
+
+Example:
+
+    IP Set:
+
+        test-block-ip
+
+
+    Addresses:
+
+        203.0.113.25/32
+        10.10.10.0/24
+
+
+A WAF rule can reference this IP Set.
+
+
+Example:
+
+    IP Set
+       |
+       v
+    test-block-ip
+       |
+       v
+    WAF Rule
+       |
+       v
+    BLOCK
+
+
+====================================================================
+23. CUSTOM IP BLOCK RULE
+====================================================================
+
+Example:
+
+    Rule Name:
+
+        Block-Madhu-IP
+
+
+    Statement:
+
+        IP Set match
+
+
+    IP Set:
+
+        test-block-ip
+
+
+    Action:
+
+        BLOCK
+
+
+If the client's IP is contained in the IP Set:
+
+    Client IP
+        |
+        v
+    IP Set MATCH
+        |
+        v
+    Rule MATCH
+        |
+        v
+    BLOCK
+        |
+        v
+    HTTP 403
+
+
+====================================================================
+24. GEO MATCH RULE
+====================================================================
+
+WAF can inspect the geographic origin of a request.
+
+Example:
+
+    Rule:
+
+        Block-Country
+
+
+    Condition:
+
+        Country = XX
+
+
+    Action:
+
+        BLOCK
+
+
+Example:
+
+    Client
+       |
+       v
+    Country Detection
+       |
+       v
+    Country = XX ?
+       |
+       +---- YES ---> BLOCK
+       |
+       +---- NO ----> Continue
+
+
+IMPORTANT:
+
+Geo-location is based on IP address geolocation and is not a
+guarantee of the user's physical location.
+
+
+====================================================================
+25. RATE-BASED RULE
+====================================================================
+
+A rate-based rule helps control excessive request rates.
+
+Example:
+
+    Limit:
+
+        1000 requests
+
+
+    Evaluation:
+
+        5 minutes
+
+
+    Action:
+
+        BLOCK
+
+
+Concept:
+
+    Client
+       |
+       v
+    Requests
+       |
+       v
+    Rate evaluation
+       |
+       +---- Below limit ---> Continue
+       |
+       +---- Above limit ---> Action
+
+
+Rate-based rules are useful for:
+
+    - HTTP flood mitigation
+    - Login abuse
+    - API abuse
+    - Scraping
+    - Excessive requests
+
+
+====================================================================
+26. SQL INJECTION PROTECTION
+====================================================================
+
+AWS WAF provides SQL injection detection through suitable managed
+rules and SQL injection rule statements.
+
+Example:
+
+    Request
+       |
+       v
+    SQL Injection Detection
+       |
+       +---- Malicious pattern ---> BLOCK
+       |
+       +---- Normal request ------> Continue
+
+
+Example malicious concept:
+
+    SQL injection payload
+
+
+DO NOT use real attack payloads against systems you do not own or
+have authorization to test.
+
+
+====================================================================
+27. XSS PROTECTION
+====================================================================
+
+XSS = Cross-Site Scripting.
+
+AWS WAF can inspect requests for XSS patterns through supported
+managed rules/statements.
+
+Example:
+
+    Client Request
+         |
+         v
+    WAF XSS Detection
+         |
+         +---- Match ---> BLOCK
+         |
+         +---- No Match -> Continue
+
+
+====================================================================
+28. WAF LOGGING
+====================================================================
+
+Enable WAF logging when troubleshooting or monitoring WAF behavior.
+
+WAF logs can provide information such as:
+
+    - Client IP
+    - Country
+    - HTTP method
+    - URI
+    - Query arguments
+    - Headers
+    - Rule that terminated evaluation
+    - Action
+    - Request ID
+    - JA3 fingerprint
+    - JA4 fingerprint
+    - WAF labels
+
+
+====================================================================
+29. IMPORTANT WAF LOG FIELDS
+====================================================================
+
+Example:
+
+    terminatingRuleId:
+
+        test-block-ip
+
+
+    action:
+
+        BLOCK
+
+
+    clientIp:
+
+        203.0.113.25
+
+
+    uri:
+
+        /
+
+
+    httpMethod:
+
+        GET
+
+
+Interpretation:
+
+    Client IP
+        |
+        v
+    203.0.113.25
+        |
+        v
+    WAF
+        |
+        v
+    test-block-ip MATCH
+        |
+        v
+    BLOCK
+        |
+        v
+    HTTP 403
+
+
+====================================================================
+30. UNDERSTANDING HTTP 403
+====================================================================
+
+HTTP 403 = Forbidden.
+
+Meaning:
+
+    The server understood the request but refused to authorize it.
+
+
+In AWS WAF:
+
+    WAF BLOCK
+        |
+        v
+    HTTP 403 Forbidden
+
+
+IMPORTANT:
+
+A 403 does not always mean AWS WAF caused it.
+
+A 403 can also be generated by:
+
+    - Application
+    - ALB
+    - Authentication layer
+    - Reverse proxy
+    - API Gateway
+    - CloudFront
+    - Other security controls
+
+
+Always check the logs to identify the source.
+
+
+====================================================================
+31. WAF 403 TROUBLESHOOTING
+====================================================================
+
+If you receive HTTP 403:
+
+STEP 1:
+
+Check WAF logs.
+
+
+STEP 2:
+
+Find:
+
+    terminatingRuleId
+
+
+STEP 3:
+
+Check:
+
+    action
+
+
+STEP 4:
+
+Check:
+
+    clientIp
+
+
+STEP 5:
+
+Check:
+
+    uri
+
+
+STEP 6:
+
+Check:
+
+    rule configuration
+
+
+Example:
+
+    terminatingRuleId = test-block-ip
+    action = BLOCK
+
+
+Conclusion:
+
+    test-block-ip blocked the request.
+
+
+====================================================================
+32. EXAMPLE WAF LOG ANALYSIS
+====================================================================
+
+Example:
+
+    terminatingRuleId:
+        test-block-ip
+
+    terminatingRuleType:
+        REGULAR
+
+    action:
+        BLOCK
+
+    clientIp:
+        203.0.113.25
+
+    country:
+        IN
+
+    httpMethod:
+        GET
+
+    uri:
+        /
+
+
+Analysis:
+
+    1. Client sent GET /
+    2. WAF received the request
+    3. Source IP was 203.0.113.25
+    4. test-block-ip matched
+    5. WAF executed BLOCK
+    6. Request was denied
+    7. Client received HTTP 403
+
+
+IMPORTANT:
+
+If the terminating rule is:
+
+    test-block-ip
+
+then that rule is the direct reason for the WAF block.
+
+
+====================================================================
+33. WAF VS SHIELD
+====================================================================
+
+AWS WAF
+-------
+
+Main purpose:
+
+    Web application / HTTP(S) request filtering
+
+
+Examples:
+
+    - IP blocking
+    - SQL injection protection
+    - XSS protection
+    - Rate limiting
+    - Geo restrictions
+    - Request filtering
+
+
+AWS SHIELD
+----------
+
+Main purpose:
+
+    DDoS protection
+
+
+Main focus:
+
+    - Network/transport DDoS
+    - Application-layer DDoS capabilities
+    - Detection and mitigation
+    - Advanced monitoring with Shield Advanced
+
+
+====================================================================
+34. WAF + SHIELD TOGETHER
+====================================================================
+
+A common architecture:
+
+                         INTERNET
+                            |
+                            v
+                     AWS SHIELD
+                     DDoS Protection
+                            |
+                            v
+                     AWS WAF
+                  Protection Pack
+                     (Web ACL)
+                            |
+                            v
+                           ALB
+                            |
+                            v
+                       Application
+
+
+WAF and Shield solve related but different security problems.
+
+
+====================================================================
+35. SHIELD ADVANCED - ADD PROTECTION
+====================================================================
+
+To add Shield Advanced protection:
+
+1. Open AWS WAF & Shield console.
+
+2. Under AWS Shield select:
+
+       Protected resources
+
+3. Choose:
+
+       Add resources to protect
+
+4. Specify:
+
+       Region
+
+       Resource type
+
+5. Choose:
+
+       Load resources
+
+6. Select the resource.
+
+7. Add tags if required.
+
+8. Choose:
+
+       Protect with Shield Advanced
+
+
+Example:
+
+    Region:
+
+        us-east-1
+
+
+    Resource:
+
+        Application Load Balancer
+
+
+    Resource:
+
+        mc-prod-alb
+
+
+Shield Advanced protection is then added to the resource.
+
+
+====================================================================
+36. SHIELD ADVANCED + WAF
+====================================================================
+
+Shield Advanced can work with AWS WAF for application-layer
+protection.
+
+For supported resources such as CloudFront and ALB, Shield Advanced
+can be configured with AWS WAF protections and rate-based rules.
+
+Architecture:
+
+    Internet
+       |
+       v
+    Shield Advanced
+       |
+       v
+    AWS WAF
+       |
+       v
+    ALB
+       |
+       v
+    Application
+
+
+====================================================================
+37. SHIELD ADVANCED DOES NOT AUTOMATICALLY PROTECT EVERYTHING
+====================================================================
+
+IMPORTANT:
+
+Shield Advanced protects only resources that you explicitly specify
+for protection or resources covered by an AWS Firewall Manager
+Shield Advanced policy.
+
+It does NOT automatically protect every resource in the account.
+
+
+====================================================================
+38. AWS FIREWALL MANAGER
+====================================================================
+
+AWS Firewall Manager helps centrally manage security policies across
+AWS accounts/resources.
+
+It can be used to manage:
+
+    - AWS WAF policies
+    - Shield Advanced policies
+    - Other supported security policies
+
+
+Example:
+
+    AWS Organizations
+           |
+           v
+    Firewall Manager
+           |
+       +---+---+
+       |       |
+      Account Account
+       |       |
+       v       v
+      WAF     WAF
+
+
+If a WAF/Shield configuration is controlled by Firewall Manager,
+do not assume that you can independently modify or delete it from
+the member account.
+
+
+====================================================================
+39. TESTING AWS WAF
+====================================================================
+
+Recommended testing approach:
+
+    TEST ENVIRONMENT
+          |
+          v
+       WAF Rule
+          |
+          v
+        COUNT
+          |
+          v
+      Check Logs
+          |
+          v
+      Tune Rule
+          |
+          v
+       BLOCK
+
+
+For production:
+
+    Test
+      |
+      v
+    Count
+      |
+      v
+    Monitor
+      |
+      v
+    Tune
+      |
+      v
+    Block
+
+
+Avoid immediately deploying an aggressive BLOCK rule in production
+without testing its effect.
+
+
+====================================================================
+40. COUNT MODE
+====================================================================
+
+COUNT is very useful for testing.
+
+Example:
+
+    Rule:
+
+        Block-Bad-IP
+
+
+    Temporary action:
+
+        COUNT
+
+
+WAF will count matching requests without blocking them.
+
+Check:
+
+    - WAF metrics
+    - Logs
+    - Sample requests
+
+
+Then, after validating:
+
+    COUNT
+      |
+      v
+    Test
+      |
+      v
+    Confirm
+      |
+      v
+    BLOCK
+
+
+====================================================================
+41. SAMPLE TEST CASE - BLOCK AN IP
+====================================================================
+
+TEST OBJECTIVE:
+
+Block a test IP using an IP Set.
+
+
+STEP 1:
+
+Create IP Set.
+
+Example:
+
+    Name:
+
+        test-block-ip
+
+
+STEP 2:
+
+Add test IP.
+
+Example:
+
+    X.X.X.X/32
+
+
+STEP 3:
+
+Create WAF rule.
+
+Example:
+
+    Rule:
+
+        Block-Test-IP
+
+
+STEP 4:
+
+Statement:
+
+    IP Set Match
+
+
+STEP 5:
+
+Action:
+
+    BLOCK
+
+
+STEP 6:
+
+Associate Protection Pack with ALB.
+
+
+STEP 7:
+
+Send request from matching IP.
+
+
+Expected:
+
+    HTTP 403
+
+
+WAF Log:
+
+    terminatingRuleId = Block-Test-IP
+
+    action = BLOCK
+
+
+====================================================================
+42. SAMPLE TEST CASE - COUNT IP
+====================================================================
+
+Same configuration as above.
+
+Change:
+
+    BLOCK
+
+to:
+
+    COUNT
+
+
+Send request.
+
+
+Expected:
+
+    Request reaches application.
+
+WAF log:
+
+    Rule matches
+
+    Action = COUNT
+
+
+This is safer for initial testing.
+
+
+====================================================================
+43. SAMPLE TEST CASE - RATE LIMIT
+====================================================================
+
+Create:
+
+    Rate-based rule
+
+
+Configure a suitable test threshold.
+
+Example concept:
+
+    Rate limit:
+        Test threshold
+
+
+Action:
+
+    BLOCK
+
+
+Send repeated requests from the authorized test client.
+
+
+Observe:
+
+    WAF metrics
+    WAF logs
+    Application behavior
+
+
+Use conservative limits during testing.
+
+
+====================================================================
+44. WAF METRICS
+====================================================================
+
+Monitor WAF metrics through AWS monitoring services.
+
+Useful metrics include:
+
+    - Allowed requests
+    - Blocked requests
+    - Counted requests
+    - Rule matches
+    - Rate-based rule activity
+
+
+Use metrics together with logs.
+
+Metrics provide the overall picture.
+
+Logs provide request-level details.
+
+
+====================================================================
+45. WAF LABELS
+====================================================================
+
+AWS WAF can attach labels to requests during rule evaluation.
+
+Labels can help:
+
+    - Identify request classifications
+    - Pass information between rules
+    - Build more complex rule logic
+
+
+Example concept:
+
+    Rule A
+       |
+       v
+    Add Label
+       |
+       v
+    Rule B
+       |
+       v
+    Match Label
+       |
+       v
+    BLOCK
+
+
+====================================================================
+46. JA3 AND JA4 FINGERPRINTS
+====================================================================
+
+WAF logs may contain TLS client fingerprints.
+
+Examples:
+
+    JA3
+    JA4
+
+
+These can help identify patterns in TLS client behavior.
+
+They should not be treated as a perfect identity mechanism.
+
+A fingerprint can change and multiple clients can potentially share
+similar characteristics.
+
+
+====================================================================
+47. WAF LOGGING - TROUBLESHOOTING FLOW
+====================================================================
+
+Problem:
+
+    User receives 403.
+
+
+Check:
+
+    1. WAF logs
+          |
+          v
+    2. terminatingRuleId
+          |
+          v
+    3. action
+          |
+          v
+    4. clientIp
+          |
+          v
+    5. URI
+          |
+          v
+    6. Rule configuration
+          |
+          v
+    7. IP Set / Managed Rule / Rate Rule
+          |
+          v
+    8. Confirm reason
+
+
+====================================================================
+48. DELETE WAF PROTECTION PACK
+====================================================================
+
+IMPORTANT:
+
+If Delete is disabled/greyed out, check resource associations.
+
+
+First:
+
+    Open Protection Pack
+
+
+Then:
+
+    Resources to protect
+
+
+Check whether an ALB/other resource is associated.
+
+
+Remove/disassociate the resource.
+
+
+Then attempt deletion again.
+
+
+General flow:
+
+    Protection Pack
+         |
+         v
+    Associated Resources
+         |
+         v
+    Remove association
+         |
+         v
+    No resources
+         |
+         v
+    Delete Protection Pack
+
+
+If Shield Advanced is separately protecting the resource,
+remove the Shield Advanced protection separately.
+
+
+====================================================================
+49. REMOVE SHIELD ADVANCED PROTECTION
+====================================================================
+
+Go to:
+
+    AWS WAF & Shield
+         |
+         v
+    AWS Shield
+         |
+         v
+    Protected resources
+
+
+Select the resource.
+
+
+Choose the option to remove/delete the Shield Advanced
+protection according to the current console workflow.
+
+
+IMPORTANT:
+
+Removing Shield Advanced protection is separate from removing an
+AWS WAF Protection Pack.
+
+
+====================================================================
+50. WAF RESOURCE ASSOCIATION
+====================================================================
+
+NEW CONSOLE:
+
+Open the Protection Pack.
+
+In the Protection Pack details:
+
+    Resources
+         |
+         v
+    Edit
+         |
+         v
+    Manage resources
+
+
+You can add:
+
+    Regional resources
+
+or:
+
+    Global resources
+
+
+Then select:
+
+    Add
+
+
+====================================================================
+51. IMPORTANT REGION RULE
+====================================================================
+
+For Regional AWS resources:
+
+    Resource Region
+          =
+    WAF Region
+
+
+Example:
+
+    ALB:
+        us-east-1
+
+
+    Protection Pack:
+        us-east-1
+
+
+For CloudFront:
+
+    Use the CloudFront/global WAF scope.
+
+
+Always verify Region before troubleshooting.
+
+
+====================================================================
+52. COMMON WAF MISTAKES
+====================================================================
+
+MISTAKE 1
+---------
+
+Creating WAF in the wrong Region.
+
+
+MISTAKE 2
+---------
+
+Blocking your own IP accidentally.
+
+
+MISTAKE 3
+---------
+
+Using BLOCK immediately without testing.
+
+
+MISTAKE 4
+---------
+
+Forgetting an IP Set rule is active.
+
+
+MISTAKE 5
+---------
+
+Ignoring rule priority.
+
+
+MISTAKE 6
+---------
+
+Not checking WAF logs.
+
+
+MISTAKE 7
+---------
+
+Assuming every 403 comes from WAF.
+
+
+MISTAKE 8
+---------
+
+Forgetting that Shield Advanced protection is separate from WAF.
+
+
+MISTAKE 9
+---------
+
+Trying to delete a Protection Pack while resources are still
+associated.
+
+
+MISTAKE 10
+----------
+
+Changing production WAF rules without testing.
+
+
+====================================================================
+53. COMMON 403 TROUBLESHOOTING
+====================================================================
+
+SYMPTOM:
+
+    Website returns:
+
+        403 Forbidden
+
+
+CHECK 1:
+
+    Is AWS WAF associated with the resource?
+
+
+CHECK 2:
+
+    Check WAF logs.
+
+
+CHECK 3:
+
+    Find:
+
+        terminatingRuleId
+
+
+CHECK 4:
+
+    Find:
+
+        action
+
+
+CHECK 5:
+
+    Check:
+
+        clientIp
+
+
+CHECK 6:
+
+    Check IP Set.
+
+
+CHECK 7:
+
+    Check AWS Managed Rule Groups.
+
+
+CHECK 8:
+
+    Check Rate-Based Rules.
+
+
+CHECK 9:
+
+    Check application/ALB logs.
+
+
+CHECK 10:
+
+    Determine whether WAF or the application generated the 403.
+
+
+====================================================================
+54. EXAMPLE - YOUR PREVIOUS WAF ERROR
+====================================================================
+
+Example log:
+
+    clientIp:
+
+        203.0.113.25
+
+
+    terminatingRuleId:
+
+        test-block-ip
+
+
+    action:
+
+        BLOCK
+
+
+    uri:
+
+        /
+
+
+Interpretation:
+
+    203.0.113.25
+           |
+           v
+       AWS WAF
+           |
+           v
+      test-block-ip
+           |
+           | MATCH
+           v
+         BLOCK
+           |
+           v
+       HTTP 403
+
+
+The request was blocked by WAF before normal application processing.
+
+
+====================================================================
+55. WAF VS SECURITY GROUP
+====================================================================
+
+SECURITY GROUP
+--------------
+
+Works mainly at network/connection level.
+
+Examples:
+
+    - TCP 80
+    - TCP 443
+    - TCP 22
+
+
+WAF
+---
+
+Works at web application/request level.
+
+Examples:
+
+    - HTTP headers
+    - URI
+    - Query string
+    - IP
+    - Country
+    - SQL injection patterns
+    - XSS patterns
+    - Request rate
+
+
+Example:
+
+    Security Group:
+
+        Allow TCP 443
+
+
+    WAF:
+
+        Block malicious HTTP request
+
+
+Both can be used together.
+
+
+====================================================================
+56. WAF VS NACL
+====================================================================
+
+NACL:
+
+    Network-level filtering at subnet boundary.
+
+
+WAF:
+
+    HTTP/HTTPS application-level filtering.
+
+
+Security architecture:
+
+    Internet
+       |
+       v
+    Shield
+       |
+       v
+    WAF
+       |
+       v
+    ALB
+       |
+       v
+    Security Group
+       |
+       v
+    Targets
+
+
+NACL operates at the subnet/network boundary.
+
+
+====================================================================
+57. WAF + ALB ARCHITECTURE
+====================================================================
+
+                     INTERNET
+                         |
+                         v
+                  AWS SHIELD
+                         |
+                         v
+                   AWS WAF
+                Protection Pack
+                    (Web ACL)
+                         |
+                         v
+                       ALB
+                         |
+              +----------+----------+
+              |                     |
+              v                     v
+          Target 1              Target 2
+              |                     |
+              +----------+----------+
+                         |
+                         v
+                    Application
+
+
+====================================================================
+58. AWS WAF REQUEST DECISION
+====================================================================
+
+Request arrives:
+
+       |
+       v
+    AWS WAF
+       |
+       v
+    Rule 1
+       |
+       +---- MATCH + BLOCK ----> 403
+       |
+       v
+    Rule 2
+       |
+       +---- MATCH + COUNT ----> Continue
+       |
+       v
+    Rule 3
+       |
+       +---- MATCH + ALLOW ----> Allow
+       |
+       v
+    Default Action
+       |
+       v
+    ALLOW
+
+
+Actual behavior depends on the configured rule statements,
+actions and evaluation order.
+
+
+====================================================================
+59. IMPORTANT TERMS
+====================================================================
+
+WAF
+    Web Application Firewall
+
+
+Web ACL
+    Web Access Control List
+
+
+Protection Pack
+    New AWS WAF console presentation of a Web ACL
+
+
+IP Set
+    Collection of IP addresses/ranges
+
+
+Rule
+    Condition + Action
+
+
+Rule Group
+    Collection of WAF rules
+
+
+Managed Rule Group
+    Pre-built rules maintained by AWS or a supported provider
+
+
+WCU
+    Web ACL Capacity Unit
+
+
+DDoS
+    Distributed Denial of Service
+
+
+Shield
+    AWS DDoS protection service
+
+
+ALB
+    Application Load Balancer
+
+
+CAPTCHA
+    Client verification mechanism
+
+
+CHALLENGE
+    Client verification mechanism
+
+
+COUNT
+    Count matching requests without blocking
+
+
+BLOCK
+    Reject matching requests
+
+
+ALLOW
+    Explicitly allow matching requests
+
+
+====================================================================
+60. WCU
+====================================================================
+
+WCU = Web ACL Capacity Unit.
+
+AWS WAF uses WCU to measure the capacity required by rules and
+rule groups.
+
+Different rules consume different amounts of WCU.
+
+Before adding many rules, monitor the Web ACL capacity.
+
+
+IMPORTANT:
+
+AWS documentation notes that using more than 1,500 WCUs in a
+Protection Pack can incur additional costs beyond the basic
+Protection Pack price.
+
+
+====================================================================
+61. PRACTICAL LAB - COMPLETE WAF TEST
+====================================================================
+
+LAB OBJECTIVE:
+
+Protect an ALB using AWS WAF.
+
+
+STEP 1:
+
+Create or identify an ALB.
+
+
+STEP 2:
+
+Open:
+
+    WAF & Shield
+
+
+STEP 3:
+
+Select correct Region.
+
+
+STEP 4:
+
+Open:
+
+    Resources & protection packs (web ACLs)
+
+
+STEP 5:
+
+Choose:
+
+    Add protection pack (web ACL)
+
+
+STEP 6:
+
+Configure:
+
+    App Category
+    Traffic Source
+
+
+STEP 7:
+
+Add:
+
+    ALB
+
+
+STEP 8:
+
+Choose:
+
+    You build it
+
+
+STEP 9:
+
+Set default:
+
+    ALLOW
+
+
+STEP 10:
+
+Create IP Set.
+
+
+Example:
+
+    test-block-ip
+
+
+STEP 11:
+
+Add your authorized test IP.
+
+
+STEP 12:
+
+Create rule:
+
+    Block-Test-IP
+
+
+STEP 13:
+
+Set action:
+
+    COUNT
+
+
+STEP 14:
+
+Test request.
+
+
+STEP 15:
+
+Check logs.
+
+
+STEP 16:
+
+After confirming behavior, change:
+
+    COUNT
+
+to:
+
+    BLOCK
+
+
+STEP 17:
+
+Test again.
+
+
+Expected:
+
+    HTTP 403
+
+
+STEP 18:
+
+Check WAF log.
+
+
+Expected:
+
+    terminatingRuleId = Block-Test-IP
+
+    action = BLOCK
+
+
+====================================================================
+62. PRODUCTION BEST PRACTICE
+====================================================================
+
+For production:
+
+    1. Create rules in staging/test.
+    2. Test rules.
+    3. Start with COUNT where appropriate.
+    4. Review WAF logs.
+    5. Monitor false positives.
+    6. Tune rules.
+    7. Deploy carefully.
+    8. Monitor after deployment.
+
+
+Do not blindly enable aggressive blocking rules in production.
+
+
+====================================================================
+63. AWS CLI - LIST WEB ACLS
+====================================================================
+
+AWS CLI example:
+
+    aws wafv2 list-web-acls \
+      --scope REGIONAL \
+      --region us-east-1
+
+
+For CloudFront scope:
+
+    aws wafv2 list-web-acls \
+      --scope CLOUDFRONT \
+      --region us-east-1
+
+
+IMPORTANT:
+
+CloudFront WAF operations use us-east-1 for the CloudFront scope.
+
+
+====================================================================
+64. AWS CLI - LIST IP SETS
+====================================================================
+
+    aws wafv2 list-ip-sets \
+      --scope REGIONAL \
+      --region us-east-1
+
+
+====================================================================
+65. AWS CLI - GET WEB ACL
+====================================================================
+
+    aws wafv2 get-web-acl \
+      --name <WEB-ACL-NAME> \
+      --scope REGIONAL \
+      --id <WEB-ACL-ID> \
+      --region us-east-1
+
+
+====================================================================
+66. AWS CLI - LIST SHIELD PROTECTIONS
+====================================================================
+
+    aws shield list-protections
+
+
+This can be used to identify resources protected by Shield Advanced.
+
+
+====================================================================
+67. AWS CLI - DESCRIBE SHIELD SUBSCRIPTION
+====================================================================
+
+    aws shield describe-subscription
+
+
+Use this to inspect Shield Advanced subscription information.
+
+
+====================================================================
+68. INTERVIEW QUESTIONS
+====================================================================
+
+Q1. What is AWS WAF?
+
+Answer:
+
+AWS WAF is a web application firewall that allows you to inspect
+and control HTTP/HTTPS requests to supported AWS resources.
+
+
+Q2. What is a Web ACL?
+
+Answer:
+
+A Web ACL is a collection of rules that defines how AWS WAF handles
+web requests.
+
+
+Q3. What is a Protection Pack?
+
+Answer:
+
+Protection Pack (web ACL) is the terminology and guided management
+experience used by the updated AWS WAF console. Underlying WAFv2
+functionality remains the same.
+
+
+Q4. What is AWS Shield?
+
+Answer:
+
+AWS Shield is an AWS service that provides DDoS protection.
+
+
+Q5. Difference between WAF and Shield?
+
+Answer:
+
+WAF focuses on web/application request filtering.
+
+Shield focuses on DDoS protection.
+
+
+Q6. What is an IP Set?
+
+Answer:
+
+An IP Set is a collection of IP addresses or CIDR ranges that can
+be referenced by WAF rules.
+
+
+Q7. What does BLOCK do?
+
+Answer:
+
+It prevents the matching request from proceeding through the
+protected resource and commonly results in HTTP 403.
+
+
+Q8. What does COUNT do?
+
+Answer:
+
+COUNT records/counts matching requests without blocking them.
+
+
+Q9. What is a rate-based rule?
+
+Answer:
+
+A rate-based rule detects requests that exceed a configured request
+rate and can apply an action such as BLOCK.
+
+
+Q10. What is a managed rule group?
+
+Answer:
+
+A managed rule group contains pre-built security rules maintained by
+AWS or an approved rule-group provider.
+
+
+Q11. Why would WAF return 403?
+
+Answer:
+
+A WAF rule may have matched the request and used the BLOCK action.
+
+
+Q12. How do you identify which WAF rule blocked a request?
+
+Answer:
+
+Check the WAF log and inspect:
+
+    terminatingRuleId
+
+and:
+
+    action
+
+
+Q13. Can WAF protect an ALB?
+
+Answer:
+
+Yes. AWS WAF can be associated with supported Application Load
+Balancers.
+
+
+Q14. Does Shield Advanced automatically protect all resources?
+
+Answer:
+
+No. Shield Advanced protects resources that are explicitly specified
+or covered by a Firewall Manager Shield Advanced policy.
+
+
+Q15. Why can't I delete my Protection Pack?
+
+Answer:
+
+Check whether resources are still associated with it and whether
+management is controlled by Firewall Manager or another dependency.
+
+
+====================================================================
+69. IMPORTANT INTERVIEW DIFFERENCES
+====================================================================
+
+                    WAF             SHIELD
+                    ----            ------
+
+Purpose             Web security   DDoS protection
+
+Main focus          HTTP(S)        DDoS
+
+Layer               Mainly L7      L3/L4 + L7 capabilities
+
+Rules               Yes            Not traditional WAF rules
+
+IP filtering        Yes            Not primary purpose
+
+SQLi protection     Yes            No
+
+XSS protection      Yes            No
+
+Rate rules          Yes            WAF feature
+
+DDoS protection     Limited        Main purpose
+
+
+====================================================================
+70. FINAL ARCHITECTURE
+====================================================================
+
+                         USERS
+                           |
+                           v
+                    INTERNET TRAFFIC
+                           |
+                           v
+                  +------------------+
+                  |  AWS SHIELD      |
+                  |  DDoS PROTECTION |
+                  +------------------+
+                           |
+                           v
+                  +------------------+
+                  |     AWS WAF      |
+                  | Protection Pack  |
+                  |    (Web ACL)     |
+                  +------------------+
+                           |
+                           v
+                  +------------------+
+                  |       ALB        |
+                  +------------------+
+                           |
+                           v
+                  +------------------+
+                  |  Security Group  |
+                  +------------------+
+                           |
+                           v
+                  +------------------+
+                  |   EC2 / Targets  |
+                  +------------------+
+                           |
+                           v
+                     APPLICATION
+
+
+====================================================================
+71. QUICK TROUBLESHOOTING CHEAT SHEET
+====================================================================
+
+403 Forbidden
+    |
+    +-- Check WAF logs
+    |
+    +-- terminatingRuleId?
+    |
+    +-- action = BLOCK?
+    |
+    +-- Check IP Set
+    |
+    +-- Check Managed Rules
+    |
+    +-- Check Rate-Based Rules
+    |
+    +-- Check rule priority
+    |
+    +-- Check ALB/Application logs
+
+
+DELETE DISABLED
+    |
+    +-- Check Protection Pack resources
+    |
+    +-- Remove/disassociate resources
+    |
+    +-- Check Shield Advanced
+    |
+    +-- Check Firewall Manager
+    |
+    +-- Retry deletion
+
+
+WAF NOT WORKING
+    |
+    +-- Correct Region?
+    |
+    +-- Correct scope?
+    |
+    +-- Correct resource?
+    |
+    +-- Protection Pack associated?
+    |
+    +-- Rule enabled?
+    |
+    +-- Rule action?
+    |
+    +-- Check logs?
+
+
+====================================================================
+72. FINAL AWS WAF STUDY FLOW
+====================================================================
+
+Learn in this order:
+
+    1. AWS WAF
+          |
+          v
+    2. Web ACL / Protection Pack
+          |
+          v
+    3. WAF Scope
+          |
+          v
+    4. ALB Association
+          |
+          v
+    5. Rules
+          |
+          v
+    6. IP Sets
+          |
+          v
+    7. Managed Rule Groups
+          |
+          v
+    8. Rate-Based Rules
+          |
+          v
+    9. Rule Actions
+          |
+          v
+   10. Rule Priority
+          |
+          v
+   11. Logging
+          |
+          v
+   12. Metrics
+          |
+          v
+   13. Testing
+          |
+          v
+   14. Troubleshooting 403
+          |
+          v
+   15. AWS Shield Standard
+          |
+          v
+   16. AWS Shield Advanced
+          |
+          v
+   17. WAF + Shield Architecture
+          |
+          v
+   18. Production Best Practices
+
+
+====================================================================
+                    END OF AWS WAF + SHIELD NOTES
+====================================================================
