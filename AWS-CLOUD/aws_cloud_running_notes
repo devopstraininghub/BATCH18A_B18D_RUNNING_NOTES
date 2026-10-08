@@ -21582,3 +21582,228 @@ Learn in this order:
 ====================================================================
                     END OF AWS WAF + SHIELD NOTES
 ====================================================================
+
+
+8 OCT 2026
+
+QUIZ 2:
+
+
+AWS QUIZ-2
+Vpc,S3,IAM
+devopstraininghub@gmail.com Switch account
+ 
+Draft saved
+* Indicates required question
+Email
+*
+Record devopstraininghub@gmail.com as the email to be included with my response
+FULL NAME:
+*
+devopstraininghub@gmail.com 
+Email:
+*
+devopstraininghub@gmail.com 
+1.      Which of the following statements accurately describes the purpose and function of a NAT Gateway in an AWS VPC?
+
+*
+1 point
+NAT Gateway allows inbound traffic from the internet to reach private instances in a VPC.
+NAT Gateway translates private IP addresses of instances in a private subnet to public IP addresses for outbound internet access.
+NAT Gateway is used for direct communication between instances in different VPCs.
+NAT Gateway provides a direct and public-facing IP address to instances in a public subnet.
+2.      What is the maximum size of an object in an S3 bucket?
+
+*
+1 point
+10 million
+Unlimited
+5 TB
+1 B
+3.      Which storage classes are available in Amazon S3 for storing objects with low-latency access?
+
+*
+1 point
+STANDARD
+INTELLIGENT_TIERING
+GLACIER
+ONEZONE_IA
+4.      You have uploaded a file to S3. What HTTP code would indicate that the upload was successful? 
+
+*
+1 point
+HTTP 404
+HTTP 501
+HTTP 307
+HTTP 200
+5.      Which port number is commonly used for the Hypertext Transfer Protocol (HTTP) and Hypertext Transfer Protocol Secure (HTTPS)?
+
+*
+1 point
+80 & 22
+443 & 80
+80 & 443
+443 & 22
+6.      You want to explicitly "deny" certain traffic to the instance running in your VPC. How do you achieve this?
+
+*
+1 point
+Using a security group
+Adding an entry in the route table
+By putting the instance in a private subnet
+Using a Network ACL
+7.      What is the range of CIDR blocks that can be used inside a VPC?
+
+1 point
+Between /18 to /24
+Between /18 to /28
+Between /16 to /28
+Between /00 to /24
+8.      Which AWS service is used to store and retrieve objects, such as images, videos, and documents?
+
+*
+1 point
+ec2
+s3
+elb
+none
+9.      What is the difference between a user and a role in I AM?
+
+*
+1 point
+A user is a person who uses a system, while a role is a collection of permissions that can be granted to a user.
+A user is a temporary identity that is used to access a system, while a role is a permanent identity that is assigned to a user.
+A user is a person who is authorized to access a system, while a role is a way of granting that authorization.
+All of the above
+10.      Which of the following is used to control access to AWS resources?
+
+*
+1 point
+IAM users
+IAM roles
+IAM policies
+IAM groups
+11.      What are the different types of storage classes in S3?
+
+*
+1 point
+Standard, Standard-IA, One Zone-IA, and Glacier
+Instance, Block, and Object
+General Purpose, Compute Optimized, and Memory Optimized
+Other:
+12.      What is the purpose of versioning in S3?
+
+*
+1 point
+To enable access to previous versions of objects, even after they have been overwritten
+To protect objects from accidental deletion
+To encrypt objects at rest
+To replicate objects across multiple Availability Zones
+13.      What is the purpose of a static website hosting configuration in an S3 bucket?
+
+*
+1 point
+To store website files and serve them directly from the S3 bucket
+To host a database instance for a web application
+To provide a load balancing service for web traffic
+To enable access to S3 objects through a secure HTTPS connection
+14.      Which of the following options allows you to control access to S3 buckets and objects using AWS Identity and Access Management (IAM) policies?
+
+*
+1 point
+Bucket Policies
+Access Control Lists (ACLs)
+Both A and B
+Neither A nor B
+15.      What AWS service can be used to automate the process of moving objects between different storage classes in S3?
+
+*
+1 point
+AWS S3 Transfer Acceleration
+AWS S3 Select
+AWS S3 Lifecycle
+AWS S3 Transfer Manager
+16.      What is the maximum size of an S3 bucket?
+
+*
+1 point
+5 GB
+5 TB
+none
+Unlimited
+17. What AWS CLI command is used to delete an S3 bucket?
+
+*
+1 point
+aws s3 delete-bucket bucket_name
+aws s3 rm-bucket bucket_name
+aws s3 remove-bucket bucket_name
+aws s3 rb bucket_name
+18.  How can you grant public read access to all objects in an S3 bucket using a bucket policy?
+
+*
+1 point
+Set the Effect to Allow and Principal to * for the specified actions.
+Add a condition to the policy allowing access from any IP address.
+Use the aws s3 cp command to set public read permissions on each object.
+Configure the bucket ACL to grant public access.
+19.      What does the "Effect" attribute in an S3 bucket policy specify?
+
+*
+1 point
+The type of encryption used for objects in the bucket.
+Whether the policy allows or denies the specified actions.
+The storage class for objects in the bucket.
+The versioning status of the bucket.
+20.      What command is used to create an EC2 instance in AWS?
+
+*
+1 point
+aws ec2 create-instance
+aws ec2 launch-instance
+aws ec2 run-instance
+aws ec2 start-instance
+21.      How can you delete an EC2 instance using AWS CLI?
+
+*
+1 point
+aws ec2 terminate-instances
+aws ec2 remove-instances
+aws ec2 delete-instances
+aws ec2 stop-instances
+22.How do you attach an IAM role to an EC2 instance?
+
+*
+1 point
+By configuring it in the EC2 instance's user data
+By associating it with a specific IAM user
+By attaching it during the EC2 instance creation process or  later by modifying the instance settings.
+IAM roles cannot be attached to EC2 instances
+23. Which command would you use to delete an object named file.txt from an S3 bucket called mcdevopsbucket1?
+*
+1 point
+A) aws s3 rm s3://mcdevopsbucket1/file.txt
+B) aws s3 delete s3://mcdevopsbucket1/file.txt
+C) aws s3api delete-object --bucket mcdevopsbucket1 --key file.txt
+D) Both A and C
+24. How would you copy a file named file.txt from your local machine to an S3 bucket named mcdevopsbucket1 using AWS CLI?
+*
+1 point
+A) aws s3 cp mcdevopsbucket1 file.txt
+B) aws s3 mv file.txt s3://mcdevopsbucket1
+C) aws s3 cp file.txt s3://mcdevopsbucket1
+D) aws s3 upload file.txt mcdevopsbucket1
+Both B & C
+Other:
+25. Which command can be used to create a new S3 bucket named mcdevopsbucket1 in the us-west-1 region?
+*
+1 point
+A) aws s3 mb s3://mcdevopsbucket1  --region us-west-1
+B) aws s3 mb s3://mcdevopsbucket1
+C) aws s3 mb s3://mcdevopsbucket1  us-west-1
+D) none
+Never submit passwords through Google Forms.
+This content is neither created nor endorsed by Google. - Contact form owner - Terms of Service - Privacy Policy
+Does this form look suspicious? Report
+
+Google Forms
