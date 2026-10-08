@@ -21807,3 +21807,341 @@ This content is neither created nor endorsed by Google. - Contact form owner - T
 Does this form look suspicious? Report
 
 Google Forms
+
+
+===================
+
+QUIZ 3 : 8 OCT 2026
+
+mindcircuit technology
+AWS QUIZ - 3
+devopstraininghub@gmail.com Switch account
+ 
+* Indicates required question
+Email
+*
+Record devopstraininghub@gmail.com as the email to be included with my response
+FULL NAME:
+*
+1.      What is the MYSQL default port for connecting to an Amazon RDS instance?
+
+*
+1 point
+1521
+5432
+3306
+1433
+2.     What is the primary purpose of Amazon Route 53?
+
+*
+1 point
+Cloud storage for objects.
+Domain name system (DNS) web service.
+Object storage for media files.
+Compute resources on-demand.
+3.      In AWS, what is the primary purpose of an Elastic Network Interface (ENI)?
+
+*
+1 point
+A. Managing security groups
+B. Providing a unique identifier for instances
+C. Facilitating communication between instances and the VPC
+D. Configuring Amazon S3 storage
+4.      In AWS, can you move an Elastic IP address from one ENI to another?
+
+*
+1 point
+A. Yes, anytime without restrictions.
+B. No, once associated, an Elastic IP is tied to a specific ENI.
+C. Yes, but only during instance launch.
+D. No, Elastic IPs can only be associated with the primary ENI.
+5.      Can you move an Elastic Network Interface (ENI) from one EC2 instance to another in AWS?
+
+*
+1 point
+A. Yes, at any time without restrictions.
+B. No, ENIs are permanently attached to specific instances.
+C. Yes, but only when the instances are in the same subnet. With restrictions
+D. No, only the primary ENI can be moved.
+ 6.  What is Amazon CloudFront primarily designed for in AWS?
+
+*
+1 point
+A. Database storage
+B. Content delivery
+C. Virtual private networking
+D. DNS management
+7.      What is the primary benefit of using Amazon CloudFront for content delivery?
+
+*
+1 point
+A. Low-level network configuration
+B. Improved security features
+C. Low latency and high performance
+D. Advanced machine learning analytics
+8.What is the purpose of CloudFront behaviors in a CloudFront distribution?
+*
+1 point
+A. Configuring network security groups
+B. Specifying caching behavior and origin settings
+C. Defining Lambda@Edge functions
+D. Managing SSL/TLS certificates
+9.   Which HTTP status code does CloudFront return when it cannot establish a connection to the origin server?
+
+*
+1 point
+A. 404 Not Found
+B. 502 Bad Gateway
+C. 503 Service Unavailable
+D. 200 OK
+10.   What is the key pair used for when launching an EC2 instance?
+
+*
+1 point
+A. Authentication to the EC2 instance
+B. Specifying the instance type
+C. Configuring security groups
+D.Defining IAM roles
+11.      What is a hosted zone in Amazon Route 53?
+
+*
+1 point
+A. A geographic region where DNS records are replicated
+B. A virtual private network for routing traffic
+C. A collection of DNS records for a domain and its subdomains
+D. A security group for controlling network access
+12.      What is the purpose of a CNAME record in Amazon Route 53?
+
+*
+1 point
+A. Redirecting HTTP to HTTPS
+B. Associating an alias with another domain name
+C. Mapping a domain name to an IP address
+D. Configuring mail server information
+13.      Which record type in Route 53 is used to map a domain name to an IPv4 address?
+
+*
+1 point
+A. CNAME
+B. A
+C. MX
+D. PTR
+14.      What is the life time of an SSL/TLS certificate issued by AWS Certificate Manager (ACM)?
+
+*
+1 point
+A. 1 day
+B. 1 month
+C. 13 months
+D. 2 years
+15.      What is the maximum number of SSL/TLS certificates that can be provisioned per AWS account in AWS Certificate Manager (ACM)?
+
+*
+1 point
+A. 5
+B. 10
+C. 50
+D. Unlimited
+16.      Can AWS Certificate Manager (ACM) be used to manage SSL/TLS certificates for services outside of AWS, such as on-premises servers or other cloud providers?
+
+*
+1 point
+A. Yes, ACM supports all external services.
+B. No, ACM is limited to AWS services and domains.
+C. Yes, but with limited functionality.
+D. None
+17.   In which cloud service model does the provider manage the underlying infrastructure,runtime, and users are responsible for managing applications and data?
+
+*
+1 point
+A. IaaS
+B. PaaS
+C. SaaS
+D. XaaS
+18.      What is an example of Infrastructure as a Service (IaaS) in cloud computing?
+
+*
+1 point
+A. Amazon EC2
+B. Microsoft Office 365
+C. Salesforce
+D. Google App Engine
+19.      Which cloud service model provides complete software applications over the internet without requiring users to manage any underlying infrastructure?
+
+*
+1 point
+A. IaaS
+B. PaaS
+C. SaaS
+D. FaaS
+20.      What type of SSL/TLS certificates can be used with CloudFront to enable secure connections?
+
+*
+1 point
+A. Self-signed certificates
+B. Certificates issued by any Certificate Authority (CA)
+C. Only certificates issued by AWS Certificate Manager (ACM)
+D. Wildcard certificates only
+21.      What is the purpose of an Elastic Load Balancer (ELB) in conjunction with EC2 instances?
+
+*
+1 point
+A. It provides additional storage for EC2 instances.
+B. It distributes incoming traffic across multiple EC2 instances.
+C. It manages security groups for EC2 instances.
+D. It stores and retrieves data for EC2 instances.
+22.  What is the key benefit of using Auto Scaling Groups with EC2 instances?
+
+*
+1 point
+A. Ensures that EC2 instances run in isolation.
+B. Allows manual scaling of instances based on demand.
+C. Automatically adjusts the number of running instances based on demand.
+D. Provides additional security features for EC2 instances.
+23. Can an Elastic Load Balancer (ELB) distribute traffic to instances in different Availability Zones?
+
+*
+1 point
+A. No, ELB can only distribute traffic to instances in different regions.
+B. No, ELB can only distribute traffic to instances in the same Availability Zone.
+C. Yes, ELB automatically distributes traffic across instances in multiple Availability Zones.
+D. none
+24. What is an IAM policy statement used for?
+
+*
+1 point
+A. Creating IAM users
+B. Defining password policies
+C. Specifying the permissions for a resource or a set of resources
+D. Configuring multi-factor authentication
+25.      In Elastic Load Balancer (ELB), what is the purpose of the health check mechanism?
+
+*
+1 point
+A. To encrypt traffic between the load balancer and the targets.
+B. To determine whether the targets are responding to requests.
+C. To set the expiration date for SSL/TLS certificates.
+D. To enforce access control policies for incoming traffic.
+26.  Can you modify the size of an Amazon EBS volume after it is created and attached to an EC2 instance?
+
+*
+1 point
+A. Yes, but only for Provisioned IOPS (PIOPS) volumes.
+B. No, the size of an EBS volume is fixed at creation.
+C. Yes, for all types of EBS volumes.
+D. Yes, but only for Magnetic volumes.
+27.      Which AWS service can be integrated with Amazon EC2 Auto Scaling to automatically add or remove instances based on demand?
+
+*
+1 point
+A. AWS Lambda
+B. AWS Elastic Beanstalk
+C. AWS CloudWatch
+D. AWS S3
+28.      What is the minimum and maximum number of instances that you can configure for an Auto Scaling Group (ASG)?
+
+*
+1 point
+A. Minimum: 1, Maximum: 10
+A. Minimum: 1, Maximum: unlimited
+min:Equal or less than desired capacity max:Equal or greater than desired capacity
+min:greater than desired capacity max:less desired capacity
+29.What is the default limit for the number of VPCs per AWS region?
+
+*
+1 point
+A. 5
+B. 10
+C. 20
+D. 50
+30. What is the largest region in the Amazon Web Services (AWS) global infrastructure?
+
+*
+1 point
+A.    US West (Oregon)
+B.     Asia Pacific (Mumbai)
+C.     EU (Ireland)
+D.    US East (N. Virginia)
+31.      What does Multi-AZ deployment in Amazon RDS provide?
+
+*
+1 point
+Multiple Availability Zones for redundancy
+Multiple Authentication Zones for security
+Multi-Architecture support
+Multi-Account deployment
+32.      Which of the following database engines is not supported by Amazon RDS?
+
+*
+1 point
+MySQL
+PostgreSQL
+MongoDB
+Oracle
+33.      What are some of the benefits of using Amazon RDS?
+
+*
+1 point
+Automatic setup and configuration of databases.
+Scalability to meet changing workloads.
+High availability and disaster recovery.
+Reduced operational overhead.
+All of the above.
+34.      What is Amazon RDS used for in AWS?
+
+*
+1 point
+Radient Database Service
+Relational Database Service
+Virtual Private Network (VPN)
+Internet of Things (IoT)
+35.      What pricing model is used for Amazon RDS?
+
+*
+1 point
+Data transfer based
+Annual subscription
+Pay-as-you-go
+Fixed monthly fee
+36.      What is the purpose of an RDS database snapshot?
+
+*
+1 point
+To create a backup of an RDS database.
+To restore an RDS database to a previous point in time.
+To clone an RDS database to another region.
+All of the above.
+37. Which MySQL command is used to view all the databases?
+*
+1 point
+A) SHOW DATABASES;
+B) SELECT DATABASES;
+C) LIST DATABASES;
+D) VIEW DATABASES;
+38. What is the correct syntax to delete a record where employee_id = 10 from the employees table?
+*
+1 point
+A) DELETE FROM employees WHERE employee_id = 10;
+B) REMOVE FROM employees WHERE employee_id = 10;
+C) DELETE employee_id FROM employees;
+D) DELETE RECORD FROM employees WHERE employee_id = 10;
+39. Which of the following statements will delete all records in a table?
+*
+1 point
+A) DELETE FROM table_name;
+B) DROP TABLE table_name;
+C) CLEAR TABLE table_name;
+D) DELETE ALL FROM table_name;
+40. Which MySQL command is used to delete an entire table from a database?
+*
+1 point
+A) REMOVE TABLE
+B) DELETE TABLE
+C) DROP TABLE
+D) CLEAR TABLE
+A copy of your responses will be emailed to devopstraininghub@gmail.com.
+Never submit passwords through Google Forms.
+This content is neither created nor endorsed by Google. - Contact form owner - Terms of Service - Privacy Policy
+Does this form look suspicious? Report
+
+Google Forms
