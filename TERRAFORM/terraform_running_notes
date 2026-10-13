@@ -1,0 +1,388 @@
+DATEl 13 OCT 2026
+
+Terraform is an open-source Infrastructure as Code (IaC) tool developed by HashiCorp. 
+
+It allows you to define, provision, and manage infrastructure (like servers, databases, networks, etc.) using declarative configuration files, usually written in HashiCorp Configuration Language (HCL) or JSON.
+
+  - setup and maintenance of infrastructure across many cloud providers 
+
+  - Automation: No need to manually configure infrastructure.
+
+  - Version Control: Code can be stored in Git like app code.
+
+  - Repeatable: Run the same config in different environments.
+
+  - Multi-Cloud: Works across different cloud providers.
+  
+  
+ =======================
+Core Architecture Components
+Terraform Core (CLI)
+
+      Written in Go.      
+      Parses HCL configuration files (.tf)    
+
+
+Providers:
+       Plugins that allow Terraform to interact with APIs (e.g. AWS, Azure, GCP, Kubernetes).
+       
+       Define the types of resources available for management.
+       
+State File (terraform.tfstate)
+       
+       JSON file that stores metadata of managed resources.       
+
+       Used to track current infrastructure state.       
+
+       Can be stored locally or remotely (e.g. S3, Azure Blob).      
+
+       Ensures consistency and supports collaboration (with locking).
+
+ ==========
+
+ Terraform Workflow
+ 
+Write:Create configuration in .tf files.
+
+
+terraform init: Run terraform init to initialize the working directory and download providers.
+
+terraform  Plan: Run terraform plan to preview changes.
+
+terraform  Apply: Run terraform apply to provision/update resources.
+
+terraform  Destroy : Run terraform destroy to tear down infrastructure.
+
+
+INSTALL:
+
+https://developer.hashicorp.com/terraform/install
+
+env :
+
+path : C:\Users\Madhukiran\Desktop\BATCH17\TERRAFORM\terraform_1.14.7_windows_amd64
+
+
+
+aws cli 
+
+aws configure
+    accesskey
+	secet accesskey
+
+	AKIAIOSFODNN7EXAMPLE
+	wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+================================
+
+terraform install 
+vis studio code install 
+
+aws configure -- 
+
+=======
+
+
+DATE: 13 MAR 2026
+
+
+
+====================================================================
+TERRAFORM LIFECYCLE 
+====================================================================
+
+--------------------------------------------------
+WHAT IS TERRAFORM?
+--------------------------------------------------
+
+    Terraform is an Infrastructure as Code (IaC) tool.
+
+    It allows you to create, modify, and destroy
+    cloud infrastructure using configuration files.
+
+    Example:
+        EC2
+        VPC
+        S3
+        Load Balancer
+
+
+--------------------------------------------------
+TERRAFORM LIFECYCLE (WORKFLOW)
+--------------------------------------------------
+
+    Terraform follows a standard workflow
+    for managing infrastructure.
+
+    The lifecycle has these main stages:
+
+        1) Write
+        2) Init
+        3) Plan 
+        4) Apply
+        5) Destroy
+
+
+--------------------------------------------------
+1) WRITE (DEFINE INFRASTRUCTURE)
+--------------------------------------------------
+
+    First step is writing Terraform configuration files.
+
+    File extension:
+        .tf
+
+    Example:
+        provider.tf
+        main.tf
+        variables.tf
+
+    These files define the infrastructure
+    you want to create.
+
+
+--------------------------------------------------
+2) TERRAFORM INIT
+--------------------------------------------------
+
+Command:
+
+    terraform init
+
+Purpose:
+
+    • Initializes Terraform working directory
+    • Downloads required providers
+    • Creates .terraform folder
+    • Prepares environment
+
+Example:
+
+    terraform init
+
+5
+--------------------------------------------------
+3) TERRAFORM PLAN
+--------------------------------------------------
+
+Command:
+
+    terraform plan
+
+Purpose:
+
+    • Shows what Terraform will create/change/delete
+    • No changes happen yet
+    • Just a preview
+	- Dry Run 
+
+Example output:
+
+    + create EC2 instance
+    ~ modify security group
+    - delete resource
+
+This step helps verify infrastructure changes.
+
+
+--------------------------------------------------
+4) TERRAFORM APPLY
+--------------------------------------------------
+
+Command:
+
+    terraform apply
+
+Purpose:
+
+    • Actually creates or modifies infrastructure
+    • Executes the plan generated earlier
+
+Example:
+
+    terraform apply
+
+After confirmation:
+
+    Resources will be created in AWS.
+
+
+--------------------------------------------------
+5) TERRAFORM DESTROY
+--------------------------------------------------
+
+Command:
+
+    terraform destroy
+
+Purpose:
+
+    • Deletes all infrastructure created by Terraform
+    • Used for cleanup
+
+Example:
+
+    terraform destroy
+
+
+--------------------------------------------------
+STATE FILE 
+--------------------------------------------------
+
+    Terraform maintains a state file: it stores provisioned infra of cloud in a file called 
+        terraform.tfstate
+
+    It stores:
+
+        • Resource IDs
+        • Infrastructure mapping
+        • Current state of resources
+
+    Without state file Terraform cannot track resources.
+
+
+--------------------------------------------------
+SIMPLE TERRAFORM WORKFLOW
+--------------------------------------------------
+
+    Write code
+        ↓
+    terraform init
+        ↓
+    terraform plan
+        ↓
+    terraform apply
+        ↓
+    Infrastructure created
+
+
+--------------------------------------------------
+REAL DEVOPS WORKFLOW
+--------------------------------------------------
+
+    Developer writes Terraform code
+        ↓
+    Code stored in Git
+        ↓
+    CI/CD pipeline runs Terraform
+        ↓
+    Infrastructure created automatically
+
+
+-------------------------------------------------
+
+
+====================================================================
+TERRAFORM PROVIDERS & TERRAFORM INIT – SHORT NOTES
+====================================================================
+
+--------------------------------------------------
+WHAT IS A TERRAFORM PROVIDER?  ( a logical abstration of api ) 
+--------------------------------------------------
+
+    A Provider is a plugin that allows Terraform
+    to interact with external platforms.
+
+    Examples of platforms:
+
+        • AWS
+        • Azure
+        • Google Cloud
+        • Kubernetes
+        • Docker
+        • GitHub
+
+    Terraform itself cannot talk to AWS or other
+    services directly.
+
+    Providers act as a bridge between Terraform
+    and the service API.
+
+
+--------------------------------------------------
+EXAMPLE PROVIDER
+--------------------------------------------------
+
+    provider "aws" {
+        region = "ap-south-1"
+    }
+
+    This tells Terraform:
+
+        "Use the AWS provider
+         to create resources in AWS."
+
+
+
+PROVIDERS:
+
+
+--------------------------------------------------
+WHAT DOES A PROVIDER DO?
+--------------------------------------------------
+
+    Provider communicates with the cloud API
+    and performs operations such as:
+
+        • Create resources
+        • Modify resources
+        • Delete resources
+        • Read resource information
+
+    Example resources:
+
+        aws_instance
+        aws_vpc
+        aws_s3_bucket
+============================================================================
+
+DATE:   14MAR 2026
+
+
+===================================================
+
+TERRAFORM IN MULTI REGION : 
+
+provider "aws" {
+  
+  region = "us-east-1"
+  alias = "nv"
+}
+
+provider "aws" {
+  
+  region = "ap-south-1"
+  alias = "mumbai"
+
+}
+
+resource "aws_instance" "sbox_nv" {
+
+    ami = "ami-053a45fff0a704a47"
+    instance_type = "t2.micro"
+    key_name = "madhukey"  
+
+    provider = aws.nv
+
+     tags = {
+    Name = "sbox-nv"
+    }
+
+}
+
+
+resource "aws_instance" "sbox_mumbai" {
+
+    ami = "ami-0ddfba243cbee3768"
+    instance_type = "t2.micro"
+    key_name = "mumbaib15"  
+
+    provider = aws.mumbai
+
+     tags = {
+    Name = "sbox-mumbai"
+    }
+
+}
+
+========================================
