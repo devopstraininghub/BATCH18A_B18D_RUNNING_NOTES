@@ -21,19 +21,20 @@ provider "aws" {
   region = "ap-south-1"
 }
 ```
-This tells Terraform: *"use the AWS provider, and create resources in the `ap-south-1` region."*
+- This tells Terraform: *"use the AWS provider, and create resources in the `ap-south-1` region."*
 
 ---
 
 ## 3. What does a provider actually do?
 
 Once configured, a provider is what performs every real operation against the platform's API:
-- **Create** resources
-- **Modify** resources
-- **Delete** resources
-- **Read** resource information (this is also how Terraform detects **drift** — when real infrastructure no longer matches what your `.tf` files say it should be)
+- **Create** resources.
+- **Modify** resources.
+- **Delete** resources.
+- **Read** resource information — this is also how Terraform detects **drift** (when real infrastructure no longer matches your `.tf` files).
 
-**Each provider also defines which resource types even exist** — e.g. the AWS provider is the reason `aws_instance`, `aws_vpc`, and `aws_s3_bucket` are valid resource types at all. Without declaring the AWS provider, Terraform has no idea what an `aws_instance` even means.
+- **Each provider also defines which resource types even exist.** The AWS provider is the reason `aws_instance`, `aws_vpc`, and `aws_s3_bucket` are valid resource types at all.
+- Without declaring the AWS provider, Terraform has no idea what an `aws_instance` even means.
 
 **Example AWS resource types made available by the AWS provider:**
 ```
@@ -86,9 +87,13 @@ resource "aws_s3_bucket" "prod_bucket" {
 
 **Two new things worth calling out that weren't in yesterday's notes:**
 
-- **`required_providers` block** — pins the exact provider **source** (`hashicorp/aws`) and **version** (`6.68.0`). This matters because `terraform init` (§3 in `13October_Terraform.md`) downloads whatever version satisfies this constraint — pinning it means your team, and your CI/CD pipeline, all download the *same* provider version, instead of silently drifting to whatever's newest on a given day.
-- **`count = 2`** — a **meta-argument** any resource block can use. With `count = 2`, Terraform creates **two** `aws_instance` resources from this one block, instead of you copy-pasting the whole block twice. Terraform refers to them internally as `aws_instance.prod_instance[0]` and `aws_instance.prod_instance[1]`.
-- `aws_s3_bucket` shows the provider creating a resource of a completely different type (storage, not compute) from the exact same provider block — one provider, many resource types.
+- **`required_providers` block** — pins the exact provider **source** (`hashicorp/aws`) and **version** (`6.68.0`).
+- `terraform init` (§3 in `13October_Terraform.md`) downloads whatever version satisfies this constraint.
+- Pinning the version means your team, and your CI/CD pipeline, all download the *same* provider version — no silent drift to whatever's newest on a given day.
+- **`count = 2`** — a **meta-argument** any resource block can use.
+- With `count = 2`, Terraform creates **two** `aws_instance` resources from this one block, instead of you copy-pasting the whole block twice.
+- Terraform refers to them internally as `aws_instance.prod_instance[0]` and `aws_instance.prod_instance[1]`.
+- `aws_s3_bucket` in the same file shows the provider creating a resource of a completely different type (storage, not compute) — one provider, many resource types.
 
 ### Project 2 — a second, independent provider configuration
 
@@ -107,8 +112,10 @@ resource "aws_instance" "test" {
   }
 }
 ```
-- A completely separate project directory, its own provider block, pointed at a **different region** (`ap-south-1` instead of `us-east-1`) — and, because it's a separate project, its own independent state file too.
-- This is the simplest possible lead-in to tomorrow's topic: what happens when you need **both** of these regions **inside one single configuration**, instead of two separate ones? That's exactly what provider *aliasing* solves — see `15October_Terraform.md`.
+- A completely separate project directory, with its own provider block.
+- Pointed at a **different region** (`ap-south-1` instead of `us-east-1`).
+- Being a separate project, it also has its own independent state file.
+- This is the simplest possible lead-in to tomorrow's topic — what happens when you need **both** of these regions **inside one single configuration**, instead of two separate ones? That's exactly what provider *aliasing* solves. See `15October_Terraform.md`.
 
 ---
 
@@ -121,7 +128,11 @@ Running `terraform init` + `terraform apply` locally produces a few things along
 terraform.tfstate         ← your infrastructure's current state
 terraform.tfstate.backup  ← the previous state, kept as a safety copy
 ```
-Only the **`main.tf`** (and any other hand-written `.tf` files) are source code. `.terraform/` is a huge, fully regenerable download (re-created by just running `terraform init` again) — never worth committing. `terraform.tfstate`/`.backup` can contain sensitive resource details (IPs, IDs, sometimes even secrets, depending on what you provision) — also excluded here. (One nuance worth knowing for later: in many real team projects, `.terraform.lock.hcl` *is* deliberately committed, specifically so everyone downloads the exact same provider version — but for this practice folder, the instruction is simply **main.tf only**, so it's excluded too.) See the repo's new root `.gitignore`, added specifically to keep these out of version control from now on.
+- Only the **`main.tf`** (and any other hand-written `.tf` files) are source code.
+- `.terraform/` is a huge, fully regenerable download — re-created by just running `terraform init` again. Never worth committing.
+- `terraform.tfstate`/`.backup` can contain sensitive resource details (IPs, IDs, sometimes even secrets, depending on what you provision) — also excluded here.
+- One nuance for later: in many real team projects, `.terraform.lock.hcl` *is* deliberately committed, so everyone downloads the exact same provider version. For this practice folder the instruction is simply **main.tf only**, so it's excluded too.
+- See the repo's new root `.gitignore`, added specifically to keep all of this out of version control from now on.
 
 ---
 

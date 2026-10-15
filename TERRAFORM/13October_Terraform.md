@@ -49,8 +49,10 @@ Load Balancer
 ### State File (`terraform.tfstate`)
 - A **JSON file** that stores metadata about everything Terraform is currently managing.
 - Used to **track the current state** of your infrastructure — what exists, and how it maps to your configuration.
-- Can be stored **locally** (a file on disk) or **remotely** (e.g. an S3 bucket, Azure Blob Storage) — remote storage is what enables **team collaboration**, especially combined with **state locking** (so two people can't run `apply` at the same time and corrupt the state).
-- ⚠️ **Without the state file, Terraform has no way to track what it's already created** — it's the single most important file in any Terraform project, and losing it is a genuinely painful problem in real projects.
+- Can be stored **locally** (a file on disk) or **remotely** (e.g. an S3 bucket, Azure Blob Storage).
+- Remote storage is what enables **team collaboration** on the same infrastructure.
+- **State locking** (used with remote storage) stops two people running `apply` at the same time and corrupting the state.
+- ⚠️ **Without the state file, Terraform has no way to track what it's already created.** It's the single most important file in any Terraform project — losing it is a genuinely painful problem in real projects.
 
 **Easy memory trick:** `Core = the engine`, `Provider = the translator`, `State = the memory.`
 
@@ -92,7 +94,10 @@ terraform plan
 ~ modify security group
 - delete resource
 ```
-`+` = will be created, `~` = will be modified in place, `-` = will be destroyed. Always read a `plan` output carefully before applying — it's your last chance to catch a mistake before it becomes a real change.
+- `+` = will be created.
+- `~` = will be modified in place.
+- `-` = will be destroyed.
+- Always read a `plan` output carefully before applying — it's your last chance to catch a mistake before it becomes a real change.
 
 ### Stage 4 — `terraform apply`
 ```bash
@@ -133,7 +138,10 @@ CI/CD pipeline runs Terraform
          ▼
 Infrastructure created automatically
 ```
-This is the production version of the lifecycle above — instead of a person typing `terraform apply` on their laptop, a pipeline (Jenkins, GitHub Actions, etc.) runs it automatically after code review/merge, with the state file stored remotely (§3) so the whole team shares one source of truth.
+- This is the production version of the lifecycle in §4 above.
+- Instead of a person typing `terraform apply` on their laptop, a pipeline (Jenkins, GitHub Actions, etc.) runs it automatically.
+- This normally happens right after a code review/merge, not on every single commit.
+- The state file is kept remote (§3) so the whole team shares one source of truth.
 
 ---
 
@@ -143,15 +151,20 @@ This is the production version of the lifecycle above — instead of a person ty
 ```
 Download from: https://developer.hashicorp.com/terraform/install
 ```
-Install it, then confirm it's on your PATH so `terraform` works from any terminal.
+- Install it, then confirm `terraform` works from any terminal (it should be on your PATH).
 
 **AWS CLI** (needed so Terraform's AWS provider can actually authenticate):
 ```bash
 aws configure
 ```
-This prompts for: **Access Key ID**, **Secret Access Key**, **Default region**, and **Default output format** — exactly the same `aws configure` flow already covered in `22September_CLI.md` §3.
+- Prompts for: **Access Key ID**, **Secret Access Key**, **Default region**, **Default output format**.
+- Exactly the same `aws configure` flow already covered in `22September_CLI.md` §3.
 
-⚠️ **Never hardcode your AWS Access Key/Secret Key into a `.tf` file, a script, or any file that goes into Git** — this is the same rule already flagged in `25September_RDS.md` for database passwords, and it applies just as strongly here. Treat your AWS credentials exactly like a password: configure them once via `aws configure` (stored outside your project, in your home directory), and let Terraform's AWS provider pick them up from there automatically — never paste them into a `.tf` file.
+⚠️ **Never hardcode your AWS Access Key/Secret Key into a `.tf` file, a script, or any file that goes into Git.**
+- Same rule already flagged in `25September_RDS.md` for database passwords — it applies just as strongly here.
+- Treat your AWS credentials exactly like a password.
+- Configure them once via `aws configure` (stored outside your project, in your home directory).
+- Let Terraform's AWS provider pick them up from there automatically — never paste them into a `.tf` file.
 
 ---
 
