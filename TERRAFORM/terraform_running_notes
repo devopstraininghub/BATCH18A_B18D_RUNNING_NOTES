@@ -83,7 +83,7 @@ aws configure --
 =======
 
 
-DATE: 13 MAR 2026
+
 
 
 
@@ -271,7 +271,7 @@ REAL DEVOPS WORKFLOW
 
 -------------------------------------------------
 
-
+14 OCT 2026 
 ====================================================================
 TERRAFORM PROVIDERS & TERRAFORM INIT – SHORT NOTES
 ====================================================================
@@ -335,11 +335,39 @@ WHAT DOES A PROVIDER DO?
         aws_vpc
         aws_s3_bucket
 ============================================================================
+15 OCT 2026
 
-DATE:   14MAR 2026
+TERRAFORM PROPERTIES : 
+
+    Terraform properties are key-value pairs that define the configuration of resources.
+
+    Example:
+
+        resource "aws_instance" "example" {
+            ami           = "ami-0c55b159cbfafe1f0"
+            instance_type = "t2.micro"
+            tags = {
+                Name = "example-instance"
+            }
+        }
+
+    In this example:
+        - ami is a property specifying the Amazon Machine Image.
+        - instance_type is a property specifying the type of instance.
+        - tags is a property defining metadata for the instance.
 
 
-===================================================
+ IMMUTABLE & MUTABLE INFRASTRUCTURE : 
+
+    Immutable infrastructure means that once a resource is created, it cannot be modified. If changes are needed, a new resource is created and the old one is destroyed.
+
+    Mutable infrastructure allows resources to be modified after creation.
+
+    Terraform promotes immutable infrastructure by encouraging the use of declarative configurations and version control.
+
+  IDEMPOTENT : 
+
+    Idempotent means that applying the same configuration multiple times will result in the same state. Terraform ensures that the desired state is achieved regardless of how many times the configuration is applied.         
 
 TERRAFORM IN MULTI REGION : 
 
@@ -386,3 +414,110 @@ resource "aws_instance" "sbox_mumbai" {
 }
 
 ========================================
+
+
+terraform on multi cloud providers :
+
+sample code :
+provider "aws" {
+  region = "us-east-1"
+  alias  = "aws"
+}
+
+provider "google" {
+  project = "my-gcp-project"
+  region  = "us-central1"
+  alias   = "gcp"
+}
+
+provider "azurerm" {
+  features {}
+  alias = "azure"
+}
+
+
+create an EC2 instance in AWS
+resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+
+  provider = aws.aws
+
+  tags = {
+    Name = "example-aws-instance"
+  }
+}
+
+
+create a VM in GCP
+resource "google_compute_instance" "example" {
+  name         = "example-gcp-instance"
+  machine_type = "f1-micro"
+  zone         = "us-central1-a"
+
+  provider = google.gcp
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {}
+  }
+}   
+
+create a VM in Azure
+resource "azurerm_virtual_machine" "example" {
+    name                  = "example-azure-vm"
+    location              = "East US"
+    resource_group_name   = azurerm_resource_group.example.name
+    network_interface_ids = [azurerm_network_interface.example.id]
+    vm_size               = "Standard_B1s"
+    
+    provider = azurerm.azure
+    
+    storage_os_disk {
+        name              = "example-os-disk"
+        caching           = "ReadWrite"
+        create_option     = "FromImage"
+        managed_disk_type = "Standard_LRS"
+    }
+    
+    storage_image_reference {
+        publisher = "Canonical"
+        offer     = "UbuntuServer"
+        sku       = "18.04-LTS"
+        version   = "latest"
+    }
+    
+    os_profile {
+        computer_name  = "hostname"
+        admin_username = "adminuser"
+        admin_password = "P@ssw0rd1234!"
+    }
+    
+    os_profile_linux_config {
+        disable_password_authentication = false
+    }
+    }
+
+
+
+MINI REALTIME PROJECT /TASK FOR TOMORROW 16 OCT 2026: 
+
+MINI PROJECT :
+  1. create a VPC  - 10.81.0.0/16
+  2. Create Internet Gateway 
+  3. Create Custom Route Table 
+  4. Create a public Subnet  -- 10.81.3.0/24
+  5. Associate subnet with Route Table 
+  6. Create Security Group to allow port 22,80,443 or all ports , traffic  
+  7. Create a network interface with an ip in the subnet that was created in step 4  
+  8. Assign an elastic IP to the network interface created in step 7 
+  9. Create an ec2  server - LAUNCH APLICATION IN IT 
+
+
+  

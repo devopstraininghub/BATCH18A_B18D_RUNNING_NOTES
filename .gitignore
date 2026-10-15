@@ -1,0 +1,28 @@
+# Terraform — only hand-written .tf source (main.tf etc.) should ever be committed.
+# Everything below is either a huge regenerable download, or can contain
+# sensitive/environment-specific data (IPs, resource IDs, sometimes secrets).
+
+# Local .terraform directories (downloaded provider plugins/binaries)
+**/.terraform/*
+
+# Provider version lock file (kept out per standing instruction: upload main.tf only)
+.terraform.lock.hcl
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Variable files that commonly hold secrets/environment-specific values
+*.tfvars
+*.tfvars.json
+
+# CLI config that can contain credentials
+.terraformrc
+terraform.rc
+
+# Terraform plan output files
+*.tfplan

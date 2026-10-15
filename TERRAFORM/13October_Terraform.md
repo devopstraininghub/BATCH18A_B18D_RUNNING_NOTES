@@ -1,8 +1,8 @@
 # Batch 18 — Terraform Running Notes: 13 October 2026
 
-**Topic: Terraform Fundamentals — IaC, Architecture, Lifecycle, Providers**
+**Topic: Terraform Fundamentals — IaC, Architecture, Lifecycle**
 
-Friends, this is a new folder — **Terraform** — separate from everything we've built so far in `AWS-CLOUD/`. Everything up to now (EC2, VPC, RDS, Route 53, ACM, CloudFront, WAF) was built by clicking through the AWS Console. Terraform is how you build the **exact same infrastructure** from **code** instead — written once, version-controlled, and re-run identically as many times as you need.
+Friends, this is a new folder — **Terraform** — separate from everything we've built so far in `AWS-CLOUD/`. Everything up to now (EC2, VPC, RDS, Route 53, ACM, CloudFront, WAF) was built by clicking through the AWS Console. Terraform is how you build the **exact same infrastructure** from **code** instead — written once, version-controlled, and re-run identically as many times as you need. Today covers the big picture and the core workflow; tomorrow (`14October_Terraform_Providers.md`) goes deeper into Providers specifically.
 
 ---
 
@@ -137,35 +137,7 @@ This is the production version of the lifecycle above — instead of a person ty
 
 ---
 
-## 6. Terraform Providers — a closer look
-
-- A **Provider** is a plugin that lets Terraform interact with an external platform's API — AWS, Azure, Google Cloud, Kubernetes, Docker, GitHub, and more.
-- Think of it as **a logical abstraction of an API** — it translates your `.tf` resource blocks into the actual API calls that platform understands.
-
-**Example provider block:**
-```hcl
-provider "aws" {
-  region = "ap-south-1"
-}
-```
-This tells Terraform: *"use the AWS provider, and create resources in the `ap-south-1` region."*
-
-**What a provider actually does, once configured:**
-- **Create** resources
-- **Modify** resources
-- **Delete** resources
-- **Read** resource information (so Terraform can detect drift — when real infrastructure no longer matches your `.tf` files)
-
-**Example AWS resource types a provider makes available:**
-```
-aws_instance
-aws_vpc
-aws_s3_bucket
-```
-
----
-
-## 7. Installing Terraform and the AWS CLI
+## 6. Installing Terraform and the AWS CLI
 
 **Terraform:**
 ```
