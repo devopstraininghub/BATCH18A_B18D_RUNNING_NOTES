@@ -9,14 +9,6 @@ provider "aws" {
   alias  = "mum"
 }
 
-provider "google" {
-  ### configure the provider to use the service account key file
-}
-
-provider "azurerm" {
-  features {}
-}
-
 
 # Create ec2 instance
 
