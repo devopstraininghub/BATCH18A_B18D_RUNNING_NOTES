@@ -109,7 +109,7 @@ terraform-project/
 
 ## 7. Hands-on — today's actual practice folder
 
-Today's practice code split exactly like §6, across four files:
+Today's practice code split exactly like §6, across four files — and ended with all three environment `.tfvars` files genuinely filled in.
 
 **`provider.tf`:**
 ```hcl
@@ -121,56 +121,71 @@ provider "aws" {
 **`variables.tf`:**
 ```hcl
 variable "ami_id" {
-  description = "The AMI ID to use for the EC2 instance"
+  description = "AWS AMI ID"
   type        = string
-  default     = "ami-0c55b159cbfafe1f0"
+  # default     = "ami-0567589d25e06853e"
 }
 
 variable "instance_type" {
-  description = "The instance type for the EC2 instance"
+  description = "Type of AWS instance"
   type        = string
-  default     = "t2.micro"
+  # default     = "t2.micro"
 }
 
 variable "key_name" {
-  description = "The name of the key pair to use for the EC2 instance"
+  description = "Name of the AWS key pair"
   type        = string
-  default     = "my-key-pair"
+  # default     = "mckey"
 }
 
 variable "instance_count" {
-  description = "Number of EC2 instances to create"
+  description = "Number of instances to create"
   type        = number
-  default     = 1
+  # default     = 2
+}
+
+variable "instance_env" {
+  description = "Environment for the instance"
+  type        = string
+  # default     = "Lab-Instance"
 }
 ```
+- ⚠️ **Every `default` line is commented out.** A variable with **no default is a required variable** — Terraform **must** get its value from somewhere else (a `.tfvars` file, a `-var` flag, or it will stop and interactively prompt you for it). This is the opposite of yesterday's first draft, which had real defaults for everything.
+- A fifth variable, **`instance_env`**, was added — used purely for tagging, so each environment's instances are labeled by their own name.
 
 **`main.tf`:**
 ```hcl
-resource "aws_instance" "my_instance" {
+resource "aws_instance" "server" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
   count         = var.instance_count
 
   tags = {
-    Name = "MyInstance"
+    Name = var.instance_env
   }
 }
 ```
+- `tags.Name` is now `var.instance_env` instead of a fixed string — so the exact same `main.tf` labels its instances `"lab"`, `"Sandbox"`, or `"test"`, purely depending on which `.tfvars` file you hand it.
 
-- Notice `main.tf` now has **zero hardcoded values** — every single argument is a `var.*` reference back to `variables.tf`.
-- Each variable also has a **`default`** — so even without any `.tfvars` file at all, `terraform apply` still works, using these defaults (`t2.micro`, 1 instance, etc.).
-- Three `.tfvars` files were also created for this exercise — `terraform.tfvars`, `sbox.tfvars`, `lab.tfvars` — set up as the environment-specific override files from §4, ready to be filled in with different values per environment (e.g. a bigger `instance_type` and higher `instance_count` for `prod`, smaller for `sbox`/`lab`). **A `.tfvars` file only needs to list the variables you actually want to override** — any variable left out just falls back to its `default` from `variables.tf`.
+**The four environment files, actually filled in:**
 
-**Example of what a filled-in `sbox.tfvars` would look like, following §4's pattern:**
-```hcl
-instance_type  = "t2.micro"
-instance_count = 1
-```
+| File | `instance_env` | `key_name` | `instance_type` | `ami_id` | `instance_count` |
+|---|---|---|---|---|---|
+| `lab.tfvars` | `lab` | `test` | `t2.micro` | `ami-0567589d25e06853e` | `1` |
+| `sbox.tfvars` | `Sandbox` | `jenkinskeys` | `t2.micro` | `ami-0567589d25e06853e` | `1` |
+| `terraform.tfvars` | `test` | `madhu` | `t2.micro` | `ami-0567589d25e06853e` | `1` |
+| `prod.tfvars` | `prod` | `ramanikey` | `t3.micro` | `ami-0b6d9d3d33ba97d99` | `1` |
+
 ```bash
-terraform apply -var-file="sbox.tfvars"
+terraform apply -var-file="lab.tfvars"     # creates an instance tagged "lab"
+terraform apply -var-file="sbox.tfvars"    # creates an instance tagged "Sandbox"
+terraform apply -var-file="prod.tfvars"    # creates a bigger t3.micro instance tagged "prod"
+terraform apply                             # terraform.tfvars loads automatically — tagged "test"
 ```
+- Notice `prod.tfvars` deliberately uses a **bigger instance type** (`t3.micro` vs `t2.micro` everywhere else) and its own AMI — exactly the kind of per-environment difference variables exist to make easy.
+- Since every variable is required (no defaults), every single one of these files **must** supply all five values — leaving one out means Terraform stops and asks for it interactively, which is exactly the safety net a required variable is for.
+- **Easy memory trick:** `default` set = optional, falls back quietly. `default` commented out/missing = required, Terraform will *always* ask — one way or another.
 
 ---
 
@@ -199,5 +214,7 @@ terraform apply -var-file="sbox.tfvars"
 | Custom `.tfvars` (e.g. `sbox.tfvars`) | A per-environment values file | Must be passed explicitly |
 | `-var-file="..."` | The flag that tells Terraform which custom file to use | `terraform apply -var-file="sbox.tfvars"` |
 | `default` in a variable | Fallback value if no `.tfvars` overrides it | `apply` still works with zero `.tfvars` files |
+| No `default` = required variable | Terraform must get the value from somewhere, or it prompts you | Today's `variables.tf` — every default commented out |
+| Same `main.tf`, different tags | One resource block, environment-specific output | `Name = var.instance_env` → `"lab"`/`"Sandbox"`/`"test"` |
 | File segregation | Splitting one project into `main.tf`/`variables.tf`/`provider.tf` | Keeps resources, variable shapes, and provider config separate |
 | `vars.yaml` / `provider.yaml` | Not native Terraform formats | Only usable via an automation pipeline that converts them first |

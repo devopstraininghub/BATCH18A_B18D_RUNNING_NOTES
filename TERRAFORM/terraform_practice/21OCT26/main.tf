@@ -1,14 +1,13 @@
 
 
 
-resource "aws_instance" "my_instance" {
+resource "aws_instance" "server" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
   count         = var.instance_count
 
   tags = {
-    Name = "MyInstance"
+    Name = var.instance_env
   }
 }
-
