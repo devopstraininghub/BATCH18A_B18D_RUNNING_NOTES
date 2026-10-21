@@ -525,3 +525,230 @@ MINI PROJECT :
   date: 16 OCT 2026
 
   implemented the mini project successfully in AWS using Terraform. The following resources were created:
+
+
+  =======================================
+
+  DATE: 21 OCT 2026 
+
+  TERRAFORM File seggregation & Variable implementation in Terraform
+
+  varaibles.tf :  contains all the variables used in the terraform code.
+
+  terraform.tfvars : contains the values for the variables defined in variables.tf.
+
+    main.tf : contains the main terraform code to create the resources
+
+  sabndbox.tfvars
+
+  prod.tfvars
+
+  uat.tfvars
+
+  terraform apply -var-file="sandbox.tfvars"  (for sandbox environment)
+
+
+
+====================================================================
+TERRAFORM VARIABLES & VARIABLE FILES 
+====================================================================
+
+--------------------------------------------------
+WHAT ARE TERRAFORM VARIABLES?
+--------------------------------------------------
+
+    Terraform variables are used to make infrastructure
+    code reusable and flexible.
+
+    Instead of hardcoding values like region, instance type,
+    environment name, etc., we define variables and pass
+    values from external files.
+
+    This helps use the same Terraform code for multiple
+    environments (dev, staging, production).
+
+
+--------------------------------------------------
+DECLARING A VARIABLE
+--------------------------------------------------
+
+Example:
+
+    variable "region" {
+        description = "AWS region"
+        type        = string
+    }
+
+Using the variable:
+
+    provider "aws" {
+        region = var.region
+    }
+
+Here:
+    var.region means the value will come from
+    a variable file.
+
+
+--------------------------------------------------
+WHAT IS terraform.tfvars ?
+--------------------------------------------------
+
+    terraform.tfvars is the default variable file
+    used by Terraform.
+
+    Terraform automatically loads this file.
+
+Example:
+
+    region        = "ap-south-1"
+    instance_type = "t2.micro"
+    environment   = "dev"
+
+When we run:
+
+    terraform plan
+    terraform apply
+
+Terraform automatically reads terraform.tfvars.
+
+
+--------------------------------------------------
+WHAT IS sbx.tfvars ?
+--------------------------------------------------
+
+    sbx.tfvars is a custom variable file.
+
+    It is often used for specific environments.
+
+Example environments:
+
+    dev.tfvars
+    qa.tfvars
+    prod.tfvars
+    sbx.tfvars (sandbox environment)
+
+Example:
+
+    region        = "ap-south-1"
+    instance_type = "t3.micro"
+    environment   = "sandbox"
+
+
+--------------------------------------------------
+HOW TO USE CUSTOM tfvars FILE
+--------------------------------------------------
+
+Command:
+
+    terraform plan -var-file="sbx.tfvars"
+
+or
+
+    terraform apply -var-file="sbx.tfvars"
+
+Terraform will load values from that file.
+
+
+--------------------------------------------------
+WHAT IS vars.yaml ?
+--------------------------------------------------
+
+    vars.yaml is a YAML formatted variable file.
+
+    YAML files are sometimes used in automation
+    pipelines or DevOps workflows.
+
+Example vars.yaml:
+
+    region: ap-south-1
+    instance_type: t2.micro
+    environment: dev
+
+Terraform itself does not automatically read YAML
+files directly unless a script or tool converts them.
+
+
+--------------------------------------------------
+WHAT IS provider.yaml ?
+--------------------------------------------------
+
+    provider.yaml is not a standard Terraform file.
+
+    It may be used in automation systems or pipelines
+    to store provider configuration information.
+
+Example provider.yaml:
+
+    provider:
+      aws:
+        region: ap-south-1
+        profile: dev-account
+
+Usually Terraform provider configuration is written
+inside .tf files instead.
+
+
+--------------------------------------------------
+REAL DEVOPS PROJECT STRUCTURE
+--------------------------------------------------
+
+Example Terraform project:
+
+    terraform-project/
+
+        main.tf
+        variables.tf
+        provider.tf
+
+        terraform.tfvars
+        dev.tfvars
+        prod.tfvars
+        sbx.tfvars
+
+
+--------------------------------------------------
+WORKFLOW EXAMPLE
+--------------------------------------------------
+
+1) Write Terraform code
+
+2) Initialize project
+
+    terraform init
+
+3) Run with sandbox variables
+
+    terraform plan -var-file="sbx.tfvars"
+
+4) Apply infrastructure
+
+    terraform apply -var-file="sbx.tfvars"
+
+
+--------------------------------------------------
+SIMPLE SUMMARY
+--------------------------------------------------
+
+    Terraform Variables
+        Make code reusable.
+
+    terraform.tfvars
+        Default variable file.
+
+    sbx.tfvars
+        Custom environment variable file.
+
+    vars.yaml
+        YAML formatted variables (used in automation).
+
+    provider.yaml
+        Not standard Terraform file (pipeline usage).
+
+    Best Practice:
+        Use different tfvars files for different
+        environments.
+
+
+
+   
