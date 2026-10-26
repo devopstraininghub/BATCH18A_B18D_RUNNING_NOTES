@@ -7,3 +7,5 @@ ami_id = "ami-0ed59cbb87dfa8dba"
 key_name = "ajakey"
 instance_count = 1
 tag_server_name = "SBOX-facebook-srv"
+
+#terraform apply -var-file="sbox.tfvars" -auto-approve

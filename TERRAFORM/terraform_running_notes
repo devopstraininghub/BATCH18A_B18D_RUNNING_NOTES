@@ -1058,3 +1058,167 @@ SIMPLE SUMMARY
 
     Best Practice:
         Use remote backend + locking (S3 + DynamoDB)
+===========================================================
+
+
+
+--------------------------------------------------3
+WHAT IS A MODULE (IN SIMPLE TERMS)?
+--------------------------------------------------
+
+    A module is a reusable block of Terraform code.
+
+    Instead of writing the same resource code
+    again and again, we write it once
+    and reuse it multiple times.
+
+DRY - DO NOT REPEAT YOURSELF 
+
+--------------------------------------------------
+PROBLEM WITHOUT MODULES
+--------------------------------------------------
+
+    Suppose you need:
+
+        • 3 EC2 instances
+        • 5 EC2 instances
+        • 10 EC2 instances
+
+    Without module:
+
+        You write same EC2 code multiple times ❌
+
+    Issues:
+
+        • Repeated code
+        • Hard to update
+        • Error-prone
+
+
+--------------------------------------------------
+SOLUTION WITH MODULES
+--------------------------------------------------
+
+    Create ONE EC2 module
+
+    Reuse it multiple times with different inputs ✅
+
+
+--------------------------------------------------
+STEP 1: CREATE MODULE
+--------------------------------------------------
+
+Folder structure:
+
+    modules/
+        ec2/
+            main.tf
+            variables.tf
+
+--------------------------------------------------
+modules/ec2/main.tf
+--------------------------------------------------
+
+    resource "aws_instance" "example" {
+        ami           = var.ami
+        instance_type = var.instance_type
+    }
+
+
+--------------------------------------------------
+modules/ec2/variables.tf
+--------------------------------------------------
+
+    variable "ami" {}
+    variable "instance_type" {}
+
+
+--------------------------------------------------
+STEP 2: USE MODULE MULTIPLE TIMES
+--------------------------------------------------
+
+main.tf (root module):
+
+    module "web_server" {
+        source         = "./modules/ec2"
+        ami            = "ami-123"
+        instance_type  = "t2.micro"
+    }
+
+    module "app_server" {
+        source         = "./modules/ec2"
+        ami            = "ami-456"
+        instance_type  = "t3.medium"
+    }
+
+    module "db_server" {
+        source         = "./modules/ec2"
+        ami            = "ami-789"
+        instance_type  = "t3.large"
+    }
+
+
+--------------------------------------------------
+WHAT IS HAPPENING HERE?
+--------------------------------------------------
+
+    Same EC2 code reused 3 times
+
+    Only inputs changed:
+
+        • web → small instance
+        • app → medium instance
+        • db  → large instance
+
+
+
+
+--------------------------------------------------
+REAL EXAMPLE
+--------------------------------------------------
+
+    Security Group Module:
+
+        One module defines:
+            - SSH access
+            - HTTP access
+
+    Use it for:
+
+        • EC2
+        • ALB
+        • Bastion host
+
+    Same code reused everywhere
+
+
+--------------------------------------------------
+BENEFITS OF MODULES (REUSABILITY)
+--------------------------------------------------
+
+    • Write once, use many times
+    • Reduce code duplication
+    • Easy to maintain
+    • Easy to update
+
+    Example:
+
+        Change in module → affects all usages
+
+
+--------------------------------------------------
+ SUMMARY
+--------------------------------------------------
+
+    Module = Reusable code block
+
+    Purpose:
+        Avoid repeating Terraform code
+
+    Key idea:
+
+        Write once → Use many times
+
+
+
+

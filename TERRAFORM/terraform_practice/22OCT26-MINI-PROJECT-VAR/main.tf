@@ -11,7 +11,7 @@
 
 
 
-# Create a VPC — 10.81.0.0/16
+# Create a VPC 
 
 resource "aws_vpc" "prod-vpc" {
    cidr_block = var.vpc_cidr

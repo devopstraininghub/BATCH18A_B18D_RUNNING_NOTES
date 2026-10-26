@@ -93,11 +93,47 @@ terraform apply
 
 ---
 
+## 8. Hands-on — running the mini project through three workspaces
+
+Today's lab reused the **exact same variablized mini project** from `22October_Terraform_MiniProject_Variables.md` — same `main.tf`, same `variables.tf`, same `.tfvars` files — but this time, each environment also got its **own workspace**, on top of its own `.tfvars`:
+
+```bash
+terraform workspace new lab
+terraform workspace new sbox
+terraform workspace new uat
+
+terraform workspace select lab
+terraform apply -var-file="lab.tfvars"
+
+terraform workspace select sbox
+terraform apply -var-file="sbox.tfvars"
+
+terraform workspace select uat
+terraform apply -var-file="uat.tfvars"
+```
+
+**What this actually produced on disk:**
+```
+terraform.tfstate.d/
+    lab/
+        terraform.tfstate
+    sbox/
+        terraform.tfstate
+    uat/
+        terraform.tfstate
+```
+- Each workspace's state lives in its **own subfolder** under `terraform.tfstate.d/` — this is what "separate state file per workspace" (§3) actually looks like on disk.
+- `.terraform/environment` is the one file that remembers which workspace is currently selected — switching with `terraform workspace select` just rewrites this one line.
+- This is workspaces and `.tfvars` genuinely **used together**, exactly as §6 recommends: `.tfvars` supplied each environment's VPC CIDR/subnet/key pair/tag, while the workspace kept each environment's state completely separate from the others — so `lab`'s VPC and `uat`'s VPC can never accidentally show up in the same state file, even though both came from identical code.
+
+---
+
 ## Quick Recap Table
 
 | Concept | One-line meaning | Real-time (DevOps) example |
 |---|---|---|
 | Workspace | Same code, separate state file per environment | `dev`, `qa`, `prod` workspaces off one codebase |
+| `terraform.tfstate.d/<workspace>/` | Where each non-default workspace's state actually lives | `terraform.tfstate.d/lab/terraform.tfstate` |
 | `default` workspace | The workspace every project starts in | Exists automatically, no setup needed |
 | `terraform workspace new <name>` | Creates a new workspace | `terraform workspace new dev` |
 | `terraform workspace select <name>` | Switches which workspace is active | `terraform workspace select prod` |

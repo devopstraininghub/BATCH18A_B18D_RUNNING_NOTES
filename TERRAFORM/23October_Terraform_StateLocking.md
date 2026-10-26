@@ -99,6 +99,30 @@ terraform force-unlock <LOCK_ID>
 
 ---
 
+## 8. Hands-on — today's practice folder used the local backend
+
+```hcl
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "prod_instance" {
+  ami           = "ami-004d1eaf8eaa0107d"
+  instance_type = "t3.micro"
+  key_name      = "mckey"
+  count         = 1
+
+  tags = {
+    Name = "test-Instance"
+  }
+}
+```
+- No `backend "s3" { ... }` block here — this ran on the plain **local backend** (§5's table).
+- That's a deliberate, useful choice for a classroom demo: it lets you *see* `terraform.tfstate` sitting right there as a plain file, and understand exactly what locking is protecting, before adding the complexity of a real S3+DynamoDB backend on top.
+- ⚠️ Worth repeating from §5: this exact setup is the one explicitly called out as **not safe for real team use** — it's shown here purely to understand the mechanics, not as something to copy into a shared project.
+
+---
+
 ## Quick Recap Table
 
 | Concept | One-line meaning | Real-time (DevOps) example |
