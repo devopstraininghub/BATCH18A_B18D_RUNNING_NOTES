@@ -98,57 +98,70 @@ module "db_server" {
 
 **`ec2-module/main.tf` (the module):**
 ```hcl
-resource "aws_instance" "web" {
+resource "aws_instance" "server" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
+  count         = var.instance_count
 
   tags = {
     Name = var.tag_server_name
   }
 }
 ```
+- Notice `count = var.instance_count` **inside the module itself** — the module doesn't just create one instance per call, it can create however many the caller asks for.
 
 **`ec2-module/variables.tf`:**
 ```hcl
 variable "ami_id" {
-  description = "The AMI ID to use for the EC2 instance"
-  type        = string
+  description = "Ami id for instance"
 }
 
 variable "instance_type" {
-  description = "The type of instance to use"
-  type        = string
+  description = "the instance family type"
 }
 
 variable "key_name" {
-  description = "The name of the key pair to use for the instance"
-  type        = string
+  description = "Key pair name to connect the instance"
+}
+
+variable "instance_count" {
+  description = "No of instances"
 }
 
 variable "tag_server_name" {
-  description = "The name of the server to be tagged"
-  type        = string
+  description = "Tag name of the ec2 instance"
 }
 ```
+- None of these variables declare a `type` this time — that's allowed. **A variable with no `type` defaults to `any`**, meaning Terraform won't check what kind of value gets passed in. It works, but it's looser than `21October_Terraform_Variables.md`'s style, which always pinned down `type = string`/`number`/etc. — being explicit about `type` catches mistakes earlier (passing a number where a string was expected, for instance), so it's worth doing even though Terraform doesn't force it.
 
-**`main.tf` (the root module, calling it):**
+**`main.tf` (the root module, calling it twice with genuinely different inputs):**
 ```hcl
 provider "aws" {
   region = "us-east-1"
 }
 
-module "madhu-ec2creation" {
+module "dev_webserver" {
+  source          = "./ec2-module"
+  ami_id          = "ami-04b938437b69a2c9c"
+  instance_count  = 1
+  instance_type   = "t2.micro"
+  tag_server_name = "DevServer"
+  key_name        = "mckey"
+}
+
+module "prod-server" {
   source          = "./ec2-module"
   ami_id          = "ami-0d97d7f07b25dd693"
-  key_name        = "mckey"
-  instance_type   = "t2.micro"
-  tag_server_name = "Madhu-server"
+  instance_count  = 2
+  instance_type   = "t3.micro"
+  key_name        = "ramanikey"
+  tag_server_name = "Prod servers"
 }
 ```
-- Same shape as §4–§5's teaching example, just with four inputs instead of two (`ami_id`, `key_name`, `instance_type`, `tag_server_name`), matching the variables already built up across `21October_Terraform_Variables.md` and `22October_Terraform_MiniProject_Variables.md`.
+- **This is a cleaner demonstration of the whole point of modules than a single call would be:** `dev_webserver` creates **1** `t2.micro`, `prod-server` creates **2** `t3.micro` instances — same module, same code, two calls, genuinely different outcomes each time, purely from different inputs.
 
-⚠️ **One thing worth fixing, verified against HashiCorp's own current guidance:** today's `ec2-module/main.tf` also had its own `provider "aws" { region = "us-east-1" }` block inside the module. **Child modules shouldn't declare their own provider blocks** — a module is meant to inherit its provider configuration from whatever calls it (the root module, here). A provider has to stay available for the *entire* lifetime of the resources it manages, including when they're eventually destroyed — a provider block living inside the module itself can break that, and this exact pattern is called out by HashiCorp as discouraged/legacy. The provider block removed from the example above is intentional — only the **root** `main.tf` should configure the provider; the module just uses whatever provider the caller already set up.
+⚠️ **Still worth fixing, verified against HashiCorp's own current guidance:** `ec2-module/main.tf` still has its own `provider "aws" { region = "us-east-1" }` block inside the module (same issue as the first pass at this exercise). **Child modules shouldn't declare their own provider blocks** — a module is meant to inherit its provider configuration from whatever calls it (the root module, here). A provider has to stay available for the *entire* lifetime of the resources it manages, including when they're eventually destroyed — a provider block living inside the module itself can break that, and this exact pattern is called out by HashiCorp as discouraged/legacy. The provider block is left out of the example above intentionally — only the **root** `main.tf` should configure the provider; the module just uses whatever provider the caller already set up.
 
 ---
 
@@ -176,7 +189,9 @@ module "madhu-ec2creation" {
 | Module | A reusable block of Terraform code | `modules/ec2/` reused for web/app/db servers |
 | DRY | Don't Repeat Yourself — write it once | Same principle as in regular programming |
 | `source` | Tells a `module` block where the reusable code lives | `source = "./modules/ec2"` |
-| Calling a module multiple times | Same code, different inputs each call | `web_server` (t2.micro) vs `db_server` (t3.large) |
+| Calling a module multiple times | Same code, different inputs each call | `dev_webserver` (1× t2.micro) vs `prod-server` (2× t3.micro) |
+| `count` inside a module | A module's own resource can still use `count` | `count = var.instance_count`, set per module call |
 | Module variables | The module's own "settings" it expects from the caller | `var.ami_id`, `var.instance_type`, etc. |
+| Variable with no `type` | Defaults to `any` — allowed, but looser than pinning a type | Worth adding `type = string` anyway, to catch mistakes early |
 | Provider blocks and modules | Keep provider config in the root module only | A provider inside a child module is a discouraged legacy pattern |
 | Updating a module | One change, applied everywhere it's used | Fix the SG module once → every EC2/ALB/Bastion using it updates |
