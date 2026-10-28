@@ -1,0 +1,247 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Glittering Website</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+            background: linear-gradient(
+                135deg,
+                #09001f,
+                #240046,
+                #5a189a,
+                #10002b
+            );
+            background-size: 300% 300%;
+            animation: gradient 10s ease infinite;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradient {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 8%;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #ffb3ff;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffb3ff;
+        }
+
+        /* Main section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .content {
+            max-width: 750px;
+            padding: 45px 30px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 40px rgba(200, 100, 255, 0.2);
+        }
+
+        .content h1 {
+            font-size: clamp(36px, 7vw, 65px);
+            margin-bottom: 20px;
+            background: linear-gradient(
+                90deg,
+                #fff,
+                #ffb3ff,
+                #ffd700,
+                #fff
+            );
+            background-size: 200% auto;
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .content p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #eee0ff;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 14px 32px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #9d4edd, #ff4ecd);
+            box-shadow: 0 0 20px #c77dff;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 0 35px #ff4ecd;
+        }
+
+        /* Floating glitter */
+        .sparkle {
+            position: fixed;
+            top: -20px;
+            color: #fff4b8;
+            pointer-events: none;
+            animation: fall linear infinite;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ffb3ff;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #d9c7ff;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            nav a {
+                margin: 0 8px;
+                font-size: 14px;
+            }
+
+            .content {
+                padding: 35px 20px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">✨ Sparkle</div>
+
+        <div>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <main class="hero" id="home">
+        <div class="content" id="about">
+            <h1>Let Your Dreams Sparkle ✨</h1>
+
+            <p>
+                Welcome to a magical world of colors, glitter,
+                and creativity. Discover something beautiful
+                and let your imagination shine brighter than ever.
+            </p>
+
+            <a href="#contact" class="button">Explore the Magic ✨</a>
+        </div>
+    </main>
+
+    <footer id="contact">
+        <p>Made with 💜 and a little sparkle ✨</p>
+        <p>&copy; 2026 Sparkle Website. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Create animated glitter particles
+        const symbols = ["✦", "✧", "✨", "⋆", "·"];
+
+        for (let i = 0; i < 45; i++) {
+            const sparkle = document.createElement("span");
+
+            sparkle.className = "sparkle";
+            sparkle.textContent =
+                symbols[Math.floor(Math.random() * symbols.length)];
+
+            sparkle.style.left = Math.random() * 100 + "vw";
+            sparkle.style.fontSize = (8 + Math.random() * 18) + "px";
+            sparkle.style.animationDuration =
+                (5 + Math.random() * 10) + "s";
+            sparkle.style.animationDelay =
+                (-Math.random() * 15) + "s";
+
+            document.body.appendChild(sparkle);
+        }
+    </script>
+
+</body>
+</html>
+```

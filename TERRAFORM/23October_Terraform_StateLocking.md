@@ -63,9 +63,8 @@ They simply have to wait until the first `apply` finishes and releases the lock.
 
 ---
 
-## 6. Real DevOps setup — the standard best practice
+## 6. Real DevOps setup — S3 (to store the state) + DynamoDB (to lock it)
 
-**Use S3 (to store the state) + DynamoDB (to lock it):**
 ```hcl
 terraform {
   backend "s3" {
@@ -79,6 +78,8 @@ terraform {
 - `bucket` — the S3 bucket that holds the actual `terraform.tfstate` file.
 - `key` — the path/filename inside that bucket (here, scoped under `dev/` — note this pairs naturally with the `dev`/`qa`/`prod` workspace or `.tfvars` pattern from earlier files).
 - `dynamodb_table` — the DynamoDB table Terraform uses purely to coordinate the **lock** — one row per state file, held only while an `apply`/`destroy` is actually running.
+
+⚠️ **Update from 28 October — this specific setup is no longer the current recommendation.** `dynamodb_table` is now **deprecated** (Terraform 1.11+) in favor of S3's own **native locking** via `use_lockfile` — no separate DynamoDB table needed at all. The mechanics above are still worth understanding (and this still works today), but see `28October_Terraform_RemoteBackend.md` for the setup to actually use going forward.
 
 ---
 
@@ -129,7 +130,7 @@ resource "aws_instance" "prod_instance" {
 |---|---|---|
 | State file locking | Only one `apply`/`destroy` at a time, on a given state | Prevents two engineers from colliding on the same infra |
 | Local backend | No real locking — unsafe for teams | Fine solo, never for a shared project |
-| S3 + DynamoDB backend | The standard team setup | S3 stores state, DynamoDB holds the lock |
+| S3 + DynamoDB backend | The older team setup — `dynamodb_table` now deprecated | See `28October_Terraform_RemoteBackend.md` for the current approach |
 | "State is locked by another process" | Someone else's `apply`/`destroy` is currently running | Just wait for it to finish |
 | `terraform force-unlock <LOCK_ID>` | Manually clears a stuck lock | Only after confirming the original process actually crashed |
 | Workspaces vs locking | Two different protections | Workspaces separate state per environment; locking protects *one* state file from concurrent writes |
