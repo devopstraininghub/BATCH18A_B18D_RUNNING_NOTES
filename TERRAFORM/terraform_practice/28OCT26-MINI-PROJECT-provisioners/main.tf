@@ -141,57 +141,63 @@ resource "aws_eip" "prod-eip" {
   }
 }
 
-resource "time_sleep" "wait60sec" {
+resource "time_sleep" "wait_60sec" {
   depends_on = [ aws_eip.prod-eip ]
 
-  create_duration = "60s"
+  create_duration = "30s"
 }
 
 # Create an EC2 instance using it — and launch an application on it
 
 resource "aws_instance" "prod-fb-srv" {
   ami           = "ami-0ed59cbb87dfa8dba" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.micro"
-  key_name      = "mckey" # Replace with your key pair name
+  instance_type = "t2.micro"
+  key_name      = "madhukey" # Replace with your key pair name
 
   network_interface {
     network_interface_id = aws_network_interface.prod-eni.id
     device_index         = 0
   }
 
-#   user_data = file("facebook.sh") # This file should contain the commands to launch your application
-
-  # The connection block tells Terraform how to communicate with the instance
-  
-
-provisioner "file" {
-  source = "index.html"
-  destination = "/tmp/index.html"
-}
-
-  connection {
-    type        = "ssh"
-    user        = "ec2-user"                                 # Default user for Amazon Linux 2 / RHEL
-    private_key = "/c/Users/Madhukiran/Desktop/batch18keys/mckey.pem" # Path to your local private key file
-    host        = self.public_ip                            # "self" refers back to this aws_instance
-  }
-
-  provisioner "remote-exec" {
+  # user_data = file("facebook.sh") # This file should contain the commands to launch your application
     
-    inline = [
-      "sudo yum update -y",
-      "sudo yum install httpd -y",
-      "sudo systemctl start httpd",
-      "sudo systemctl enable httpd",
-      "sudo mv /tmp/index.html /var/www/html/index.html"
-    ]
-
+#ssh -i "keypair" ec2-user@publicIP
+    
+   connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = file("C:/Users/Madhukiran/Desktop/batch18keys/madhukey.pem")
+    host        = aws_eip.prod-eip.public_ip
   }
+     
+    provisioner "file" {
+      source = "index.html"
+      destination = "/tmp/index.html"
+    } 
+
+    provisioner "remote-exec" {
+        inline = [
+        "sudo yum update -y",
+        "sudo yum install -y httpd",
+        "sudo systemctl start httpd",
+        "sudo systemctl enable httpd",
+        "sudo mv /tmp/index.html /var/www/html/index.html "
+        ]
+    }
+
+
+
+    provisioner "local-exec" {
+    command = "echo 'THIS IS A TEST FILE TO TEST LOCAL EXEC PROVISIONER' >> localfile.txt"
+    }
+
 
   tags = {
     Name = "prod-facebook-srv"
   }
 }
+
+
 
 
 output "instance_public_ip" {

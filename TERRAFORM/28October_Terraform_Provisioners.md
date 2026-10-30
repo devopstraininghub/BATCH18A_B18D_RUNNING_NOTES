@@ -167,22 +167,29 @@ resource "aws_instance" "example2" {
 
 ## 7. Hands-on — rebuilding the mini project with provisioners
 
-Today's lab took the exact same VPC/IGW/Subnet/SG/ENI/EIP/EC2 mini project from `16October_Terraform_MiniProject.md`, and swapped out `user_data = file("facebook.sh")` for real provisioners instead:
+Today's lab took the exact same VPC/IGW/Subnet/SG/ENI/EIP/EC2 mini project from `16October_Terraform_MiniProject.md`, and swapped out `user_data = file("facebook.sh")` for **all three** provisioner types on one resource — `file`, `remote-exec`, and `local-exec` together:
 
 ```hcl
-resource "time_sleep" "wait60sec" {
+resource "time_sleep" "wait_60sec" {
   depends_on      = [aws_eip.prod-eip]
-  create_duration = "60s"
+  create_duration = "30s"
 }
 
 resource "aws_instance" "prod-fb-srv" {
   ami           = "ami-0ed59cbb87dfa8dba"
-  instance_type = "t3.micro"
-  key_name      = "mckey"
+  instance_type = "t2.micro"
+  key_name      = "madhukey"
 
   network_interface {
     network_interface_id = aws_network_interface.prod-eni.id
     device_index         = 0
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = file("~/batch18keys/madhukey.pem") # path to your own key file
+    host        = aws_eip.prod-eip.public_ip
   }
 
   provisioner "file" {
@@ -190,21 +197,18 @@ resource "aws_instance" "prod-fb-srv" {
     destination = "/tmp/index.html"
   }
 
-  connection {
-    type        = "ssh"
-    user        = "ec2-user"
-    private_key = "~/batch18keys/mckey.pem" # path to your own key file
-    host        = self.public_ip
-  }
-
   provisioner "remote-exec" {
     inline = [
       "sudo yum update -y",
-      "sudo yum install httpd -y",
+      "sudo yum install -y httpd",
       "sudo systemctl start httpd",
       "sudo systemctl enable httpd",
       "sudo mv /tmp/index.html /var/www/html/index.html"
     ]
+  }
+
+  provisioner "local-exec" {
+    command = "echo 'THIS IS A TEST FILE TO TEST LOCAL EXEC PROVISIONER' >> localfile.txt"
   }
 
   tags = {
@@ -217,17 +221,14 @@ output "instance_public_ip" {
 }
 ```
 
+- Now all three provisioner types from §2 appear in one real resource: **`file`** copies the page over, **`remote-exec`** installs/starts httpd and moves the page into place, and **`local-exec`** runs right there too — writing a line to `localfile.txt` on the machine running Terraform, **not** on the EC2 instance at all. After this `apply`, `localfile.txt` sits locally next to the `.tf` files, proof that `local-exec` really does run outside the resource entirely.
+
 ### A genuinely new gotcha, only visible in the real code: `time_sleep`
 
-- `resource "time_sleep" "wait60sec"` comes from the separate `hashicorp/time` provider — it does nothing except **wait**.
-- `depends_on = [aws_eip.prod-eip]` + `create_duration = "60s"` means: *after* the Elastic IP is assigned, **wait 60 seconds** before continuing.
-- **Why this is needed:** an EC2 instance can show as "created" and have its EIP assigned, while the instance's SSH daemon genuinely isn't ready to accept connections yet. Without this deliberate pause, the `remote-exec` provisioner can try to SSH in **too early** and fail — exactly the "less reliable, can fail if the connection fails" downside called out in §6's comparison table, happening in practice, not just in theory.
+- `resource "time_sleep" "wait_60sec"` comes from the separate `hashicorp/time` provider — it does nothing except **wait**.
+- `depends_on = [aws_eip.prod-eip]` means: *after* the Elastic IP is assigned, pause before continuing. ⚠️ Note the resource is *named* `wait_60sec` but its `create_duration` is actually `"30s"` — a naming/value mismatch worth catching with your own eyes rather than trusting a resource's name to describe its current settings.
+- **Why the wait is needed at all:** an EC2 instance can show as "created" and have its EIP assigned, while the instance's SSH daemon genuinely isn't ready to accept connections yet. Without this deliberate pause, the `remote-exec` provisioner can try to SSH in **too early** and fail — exactly the "less reliable, can fail if the connection fails" downside called out in §6's comparison table, happening in practice, not just in theory.
 - **Easy memory trick:** `time_sleep` is Terraform explicitly admitting *"the SSH connection provisioners depend on isn't instant — give the instance a moment to actually be ready."* This specific problem is one reason `user_data` is preferred — it runs *inside* the instance, so it never has to wait for the instance to become reachable from the outside first.
-
-### A real mistake worth learning from
-
-- The `index.html` file used in this lab literally starts with a stray ```` ```html ```` line and ends with ```` ``` ```` — markdown code-fence markers that got pasted in along with the actual HTML, instead of being stripped out first.
-- If copied over exactly as-is, the page would show that literal fence text before the real content renders. **Always open a file like this and check it's *just* the HTML/script/code — no leftover formatting from wherever it was copied from** — a small thing, but it's exactly the kind of mistake that's invisible until you actually load the page in a browser.
 
 ---
 
@@ -242,4 +243,5 @@ output "instance_public_ip" {
 | `connection` block | Tells Terraform how to reach the resource | `type`, `user`, `private_key`, `host` |
 | Provisioners vs User Data | External/post-creation vs internal/boot-time | User Data preferred for production bootstrapping |
 | `time_sleep` (hashicorp/time) | Deliberately pauses before the next step | Waiting for SSH to actually be ready before `remote-exec` |
+| All three provisioners on one resource | `file` + `remote-exec` + `local-exec` can all live in the same `resource` block | Today's hands-on build did exactly this |
 | Provisioners' idempotency | Not fully idempotent — re-running can cause issues | Use sparingly, only when `user_data` isn't enough |

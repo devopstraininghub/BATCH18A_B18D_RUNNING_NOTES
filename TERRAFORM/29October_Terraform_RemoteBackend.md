@@ -1,4 +1,4 @@
-# Batch 18 — Terraform Running Notes: 28 October 2026
+# Batch 18 — Terraform Running Notes: 29 October 2026
 
 **Topic: Terraform Remote Backend (S3 — with Native Locking)**
 
@@ -106,6 +106,123 @@ terraform {
 
 ---
 
+## 7a. Hands-on — bootstrapping the backend for real, before using it
+
+Here's the part that's easy to miss on paper: **the S3 bucket your backend points at has to exist *before* you can configure your project to use it as a backend.** You can't have a project's own backend create its own bucket — so step one is a small, separate, one-off project just to create the bucket (and, if you want it, the table).
+
+**`s3_dynamodb_bootstarp/main.tf` — a one-time setup project:**
+```hcl
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+# S3 bucket to store Terraform state
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "mc-b18-state-bucket-2026-unique"
+
+  tags = {
+    Name = "terraform-state-bucket"
+  }
+}
+
+# Enable S3 versioning
+resource "aws_s3_bucket_versioning" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# Enable S3 encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# Block public access
+resource "aws_s3_bucket_public_access_block" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# DynamoDB table — built here too, purely so both approaches can be compared
+resource "aws_dynamodb_table" "terraform_lock" {
+  name         = "terraform-state-lock"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = {
+    Name = "terraform-state-lock"
+  }
+}
+```
+- Two new, genuinely useful S3-hardening resources beyond §7's basic steps:
+  - **`aws_s3_bucket_server_side_encryption_configuration`** — encrypts everything in the bucket at rest (`AES256`). Your state file can contain sensitive values (IPs, resource IDs, sometimes secrets depending on what you provision) — encrypting the bucket is a sensible default, not an optional extra.
+  - **`aws_s3_bucket_public_access_block`** — explicitly blocks every form of public access to the bucket. A state bucket should never, ever be reachable from the public internet.
+- The DynamoDB table was built here too — **not because it's needed**, but specifically so the class could see the old (§5) and new (§6) approaches side by side, in the same bootstrap project.
+
+**`project-prod/backend.tf` — the actual project, pointing at that bucket:**
+```hcl
+terraform {
+  backend "s3" {
+    bucket       = "mc-b18-state-bucket-2026-unique"
+    key          = "prod/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    # dynamodb_table = "terraform-state-lock"   ← old approach, left commented out
+    use_lockfile = true
+  }
+}
+```
+- `encrypt = true` — a one-line setting that tells Terraform to encrypt the state file itself when writing it, on top of whatever bucket-level encryption §7a already configured. Worth setting explicitly even when the bucket is already encrypted.
+- The `dynamodb_table` line is **commented out, not deleted** — a nice way to document "we considered the old approach, here's exactly what it would have looked like" without actually depending on it.
+- `use_lockfile = true` is what's actually active — this project uses S3's native locking (§6), even though the DynamoDB table from §7a still exists in the account.
+
+**`project-prod/main.tf` — a simple resource, just to prove the backend works:**
+```hcl
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "prod-fb-srv" {
+  ami           = "ami-0ed59cbb87dfa8dba"
+  instance_type = "t2.micro"
+  key_name      = "madhukey"
+  count         = 1
+
+  tags = {
+    Name = "facebook server"
+  }
+}
+```
+- Nothing special about this resource itself — the whole point was proving that `terraform init`/`plan`/`apply` against it now reads and writes `prod/terraform.tfstate` inside the S3 bucket, with native locking, instead of a local file.
+
+---
+
 ## 8. Workflow
 
 ```bash
@@ -155,3 +272,6 @@ terraform apply
 | `.tflock` | The actual lock file S3 native locking uses | Sits next to `terraform.tfstate` in the same bucket |
 | S3 versioning | Protects state file history | Recover an earlier state if something goes wrong |
 | Minimum Terraform version | `use_lockfile` needs a recent Terraform | Treat 1.11+ as the safe minimum |
+| Bootstrap project | A one-off project just to create the bucket/table first | `s3_dynamodb_bootstarp/` before `project-prod/` can use it |
+| `encrypt = true` in `backend "s3"` | Encrypts the state file itself, on write | Separate from, and in addition to, bucket-level encryption |
+| `aws_s3_bucket_public_access_block` | Blocks all public access to the state bucket | A state bucket should never be reachable from the internet |

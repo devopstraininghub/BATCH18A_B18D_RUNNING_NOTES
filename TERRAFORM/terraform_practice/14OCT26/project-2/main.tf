@@ -1,15 +1,15 @@
 
 provider "aws" {
-  region = "ap-south-1"
+  region = "us-east-1"
 }
 
-resource "aws_instance" "test" {
-  ami           = "ami-0cede6fe40e6ac719"
+resource "aws_instance" "prod-fb-srv" {
+  ami           = "ami-0ed59cbb87dfa8dba" # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t2.micro"
-  key_name      = "mc-mumbaikey"
+  key_name      = "madhukey"  
+  count         = 1
 
-  tags = {
-    Name = "TestInstance"
-  }
+   tags = {
+    Name = "testserver" 
+   }
 }
-
