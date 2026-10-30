@@ -26,3 +26,6 @@ terraform.rc
 
 # Terraform plan output files
 *.tfplan
+
+# Generated output of local-exec provisioner demos (side effect, not source)
+**/localfile.txt
