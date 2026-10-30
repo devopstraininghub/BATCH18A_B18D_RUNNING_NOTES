@@ -83,6 +83,42 @@ terraform plan
 
 ---
 
+## 5a. Hands-on — importing two different resource types
+
+Today's practice covered importing **two different kinds of resources** — an EC2 instance and an S3 bucket — to show that the same `terraform import` pattern works across resource types, not just EC2.
+
+**EC2 instance:**
+```hcl
+resource "aws_instance" "test" {
+  ami           = "ami-073f45061d35c86f0"
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "Madhuserver"
+  }
+}
+```
+```bash
+terraform import aws_instance.test i-0d2d91e7c9ece42f
+```
+
+**S3 bucket:**
+```hcl
+resource "aws_s3_bucket" "testbucket" {
+  bucket = "madhhutest-b18-12354"
+}
+```
+```bash
+terraform import aws_s3_bucket.testbucket madhhutest-b18-12354
+```
+
+**What changes between the two, and what doesn't:**
+- The **command shape** is identical for both: `terraform import <resource_type>.<resource_name> <id>`.
+- What counts as the "id" is different per resource type — an EC2 instance uses its **instance ID** (`i-...`), while an S3 bucket uses its **bucket name** itself (S3 bucket names are globally unique, so the name doubles as the ID here).
+- ⚠️ **Worth double-checking, since it's an easy typo to make:** the resource type in the import command must exactly match a real Terraform resource type — `aws_s3_bucket` (with underscores throughout), not `aws_s3bucket` or any other near-miss. Terraform will simply fail to recognize an incorrectly-typed resource type, so it's worth copy-pasting the type from your own `resource` block rather than retyping it by hand.
+
+---
+
 ## 6. Important notes
 
 - Import is a **one-time action** — it's a migration step, not something you run repeatedly.
@@ -110,3 +146,4 @@ terraform plan
 | Resource must already exist | Can't import something that isn't actually there | The ID passed in must be a real, existing resource |
 | After import | Always run `terraform plan` before `apply` | Catches mismatches before they become unwanted changes |
 | Common use case | Adopting manually-built or legacy infrastructure | A console-created EC2 instance, now Terraform-managed |
+| Import ID differs by resource type | What counts as the "id" argument changes per resource | EC2 → instance ID (`i-...`); S3 bucket → the bucket name itself |
