@@ -117,6 +117,27 @@ terraform import aws_s3_bucket.testbucket madhhutest-b18-12354
 - What counts as the "id" is different per resource type — an EC2 instance uses its **instance ID** (`i-...`), while an S3 bucket uses its **bucket name** itself (S3 bucket names are globally unique, so the name doubles as the ID here).
 - ⚠️ **Worth double-checking, since it's an easy typo to make:** the resource type in the import command must exactly match a real Terraform resource type — `aws_s3_bucket` (with underscores throughout), not `aws_s3bucket` or any other near-miss. Terraform will simply fail to recognize an incorrectly-typed resource type, so it's worth copy-pasting the type from your own `resource` block rather than retyping it by hand.
 
+**A follow-up pass on the same exercise** deliberately left `instance_type` out of the EC2 resource entirely:
+```hcl
+resource "aws_instance" "prod" {
+  ami = "ami-073f45061d35c86f0"
+  # instance_type = "t3.micro"
+
+  tags = {
+    Name = "Prodcution-Server"
+  }
+}
+
+resource "aws_s3_bucket" "prodbucket" {
+  bucket = "prod-mc-b18-1243"
+
+  tags = {
+    Name = "MC-bucket"
+  }
+}
+```
+- This is **Step 1's "minimal config" idea from §5, made concrete** — notice `instance_type` is commented out, not filled in. Importing against a config this bare will show up clearly in `terraform plan` as a difference to resolve, which is exactly the point: start minimal, import, then let `plan` tell you everything still missing from your `.tf` file.
+
 ---
 
 ## 6. Important notes
