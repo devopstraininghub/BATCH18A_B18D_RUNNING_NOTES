@@ -247,78 +247,6 @@ public_subnets = [
 
 ---
 
-## 8a. Usage inside a module
-
-Typed variables don't stop working once a **module** (`26October_Terraform_Modules.md`) is involved — a module has its **own** `variables.tf`, and the root project passes values into it exactly the same way `terraform.tfvars` feeds the root's own variables.
-
-**The module itself — `ec2-module/variables.tf`:**
-```hcl
-variable "instance_type" {
-  type = string
-}
-
-variable "instance_count" {
-  type = number
-}
-```
-
-**The module itself — `ec2-module/main.tf`:**
-```hcl
-resource "aws_instance" "server" {
-  instance_type = var.instance_type
-  count         = var.instance_count
-}
-```
-- Exactly the same pattern as every section above — the module's own `main.tf` reads `var.instance_type`/`var.instance_count`, and has no idea where those values ultimately came from.
-
-**The root project — `main.tf`, calling the module:**
-```hcl
-module "dev_webserver" {
-  source         = "./ec2-module"
-  instance_type  = var.dev_instance_type
-  instance_count = var.dev_instance_count
-}
-```
-
-**The root project — `variables.tf`:**
-```hcl
-variable "dev_instance_type" {
-  type = string
-}
-
-variable "dev_instance_count" {
-  type = number
-}
-```
-
-**The root project — `terraform.tfvars`:**
-```hcl
-dev_instance_type  = "t2.micro"
-dev_instance_count = 1
-```
-
-**How the value actually travels, end to end:**
-```
-terraform.tfvars (root)
-  dev_instance_type = "t2.micro"
-        │
-        ▼
-root variables.tf declares var.dev_instance_type (type = string)
-        │
-        ▼
-root main.tf's module "dev_webserver" block passes it in as instance_type = var.dev_instance_type
-        │
-        ▼
-ec2-module/variables.tf declares its OWN var.instance_type (type = string)
-        │
-        ▼
-ec2-module/main.tf uses var.instance_type to actually build the instance
-```
-- Notice the **root's** variable (`dev_instance_type`) and the **module's** variable (`instance_type`) don't have to share a name — the `module` block's `instance_type = var.dev_instance_type` line is what connects them. The type (`string`) has to match on both sides, but the variable *name* is local to whichever `variables.tf` it's declared in.
-- This is exactly how `26October_Terraform_Modules.md`'s `dev_webserver`/`prod-server` module calls actually received their different `instance_type`/`ami_id`/`tag_server_name` values — each one could just as easily have come from a typed root variable instead of a literal string, using this same pattern.
-
----
-
 ## 9. Why type constraints are actually important
 
 **1. Prevent errors:**
@@ -372,5 +300,4 @@ public_subnets = "10.0.1.0/24"   # ❌ wrong shape — a list was expected, not 
 | `object` | Structured data, fields can have different types | One server's full configuration |
 | `list(object)` | A list of structured objects — the most-used real-world type | Multiple subnets, each with its own CIDR + AZ |
 | The three-file flow | `variables.tf` (shape) → `main.tf` (`var.x` usage) → `terraform.tfvars` (real value) | Change the value in one place, every usage updates |
-| Variable into a module | A `module` block's argument connects a root variable to the module's own, same-named-or-not | `module "x" { instance_type = var.dev_instance_type }` |
 | Why types matter | Catches the wrong kind/shape of value before it's ever applied | `instance_count = "three"` fails immediately |
