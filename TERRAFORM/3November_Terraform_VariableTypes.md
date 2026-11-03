@@ -36,7 +36,18 @@ variable "region" {
 ```hcl
 region = "us-east-1"
 ```
-**Real-time use:** AWS region, resource names, environment name (`dev`/`prod`).
+
+**Another example — a key pair name:**
+```hcl
+variable "key_name" {
+  type = string
+}
+```
+```hcl
+key_name = "mckey"
+```
+
+**Real-time use:** AWS region, resource names, environment name (`dev`/`prod`), EC2 key pair names.
 
 ---
 
@@ -50,6 +61,17 @@ variable "instance_count" {
 ```hcl
 instance_count = 3
 ```
+
+**Another example — an EBS volume size:**
+```hcl
+variable "disk_size" {
+  type = number
+}
+```
+```hcl
+disk_size = 50
+```
+
 **Real-time use:** number of servers, disk size (GB), Auto Scaling limits.
 
 ---
@@ -64,7 +86,18 @@ variable "enable_public_ip" {
 ```hcl
 enable_public_ip = true
 ```
-**Real-time use:** turning a feature on or off, enabling/disabling a public IP.
+
+**Another example — S3 bucket versioning:**
+```hcl
+variable "enable_versioning" {
+  type = bool
+}
+```
+```hcl
+enable_versioning = true
+```
+
+**Real-time use:** turning a feature on or off, enabling/disabling a public IP, enabling/disabling S3 versioning (`21September_S3.md`).
 
 ---
 
@@ -81,6 +114,17 @@ subnet_cidrs = [
   "10.0.2.0/24"
 ]
 ```
+
+**Another example — a list of Availability Zones:**
+```hcl
+variable "availability_zones" {
+  type = list(string)
+}
+```
+```hcl
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+```
+
 **Real-time use:** subnets, Availability Zones, Security Group IDs — anything where you need several values of the *same* type, in a specific order.
 
 ---
@@ -99,7 +143,22 @@ tags = {
   owner = "madhu"
 }
 ```
-**Real-time use:** AWS resource tagging — this is exactly the shape every `tags = { Name = ... }` block we've written since `16October_Terraform_MiniProject.md` has actually been, just not formally typed as a variable until now.
+
+**Another example — a map used as a lookup table, not just tags:**
+```hcl
+variable "instance_type_by_env" {
+  type = map(string)
+}
+```
+```hcl
+instance_type_by_env = {
+  dev  = "t2.micro"
+  prod = "t3.large"
+}
+```
+- Here the map isn't metadata at all — it's a lookup: `instance_type_by_env["prod"]` gives you `"t3.large"` wherever you need it in your `.tf` code, instead of hardcoding the size separately for each environment.
+
+**Real-time use:** AWS resource tagging — this is exactly the shape every `tags = { Name = ... }` block we've written since `16October_Terraform_MiniProject.md` has actually been, just not formally typed as a variable until now — and per-environment lookup values like instance sizing.
 
 ---
 
@@ -123,6 +182,25 @@ server_config = {
 ```
 - Unlike a `map`, every field in an `object` can have its **own type** — `name` and `size` are strings, `count` is a number, all inside one variable.
 
+**Another example — RDS database settings:**
+```hcl
+variable "db_config" {
+  type = object({
+    engine            = string
+    allocated_storage = number
+    multi_az          = bool
+  })
+}
+```
+```hcl
+db_config = {
+  engine            = "mysql"
+  allocated_storage = 20
+  multi_az          = true
+}
+```
+- Three fields, three different types (`string`, `number`, `bool`) — all bundled into one `db_config` variable, matching the RDS concepts from `25September_RDS.md`.
+
 **Real-time use:** a single server's configuration, database settings, an application's config — anywhere several *related but differently-typed* values travel together.
 
 ---
@@ -145,6 +223,22 @@ public_subnets = [
 ]
 ```
 - A **list of objects** — each entry in the list is itself a small structured object with its own `cidr` and `az`.
+
+**Another example — multiple EC2 servers, each with its own settings (the `26October_Terraform_Modules.md` `dev_webserver`/`prod-server` idea, written as one variable instead of two separate `module` calls):**
+```hcl
+variable "ec2_instances" {
+  type = list(object({
+    name          = string
+    instance_type = string
+  }))
+}
+```
+```hcl
+ec2_instances = [
+  { name = "dev_webserver", instance_type = "t2.micro" },
+  { name = "prod-server",   instance_type = "t3.micro" }
+]
+```
 
 **Real-time use:** multiple subnets across multiple Availability Zones, multiple servers each with their own settings, multiple environments — **this is called out as the most-used type in real projects**, because almost everything in AWS that comes in sets (subnets, instances, listener rules) needs exactly this "list of small structured things" shape.
 
