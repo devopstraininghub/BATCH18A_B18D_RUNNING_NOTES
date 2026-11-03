@@ -2154,3 +2154,246 @@ TERRAFORM QUIZ -1
 https://docs.google.com/forms/d/e/1FAIpQLSeIq7VkAm1YI3pCKzLhf0rsICYiZv_s_OaSTFdQwI0maCvxCg/viewform
 
 ANALYZE 
+
+=============================
+
+3 nov 2026 :
+
+TERRAFORM VARIABLE DATA TYPE CONSTRAINTS
+
+
+---
+
+1. WHAT ARE DATA TYPE CONSTRAINTS?
+
+Data type constraints define what kind of value a variable can accept.
+
+
+         String → only text
+         Number → only numbers
+         List → multiple values
+         Object → structured data
+		 map --> key value pair 
+        
+Purpose:
+
+         Avoid mistakes
+         Make code predictable
+         Improve readability
+
+---
+
+2. STRING (text)
+
+Definition:
+A string is just text inside quotes.
+
+
+variable "region" {
+   type = string
+}
+
+Input:
+region = "us-east-1"
+
+Real-time use:
+
+* AWS region
+* Resource names
+* Environment (dev, prod)
+
+============================================================
+
+3. NUMBER
+
+Definition:
+Used for numeric values.
+
+Example:
+variable "instance_count" {
+type = number
+}
+
+Input:
+instance_count = 3
+
+Real-time use:
+
+* Number of servers
+* Disk size (GB)
+* Autoscaling limits
+
+---
+
+4. BOOL (true/false)
+
+Definition:
+Boolean values: true or false
+
+Example:
+variable "enable_public_ip" {
+type = bool
+}
+
+Input:
+enable_public_ip = true
+
+Real-time use:
+
+* Enable or disable public IP
+* Turn features ON or OFF
+
+---
+
+5. LIST (ordered values)
+
+Definition:
+A list holds multiple values in order.
+
+Example:
+
+variable "subnet_cidrs" {
+      type = list(string)
+               }
+
+Input:
+subnet_cidrs = [
+         "10.0.1.0/24",
+         "10.0.2.0/24"
+               ]
+
+Real-time use:
+
+* Subnets
+* Availability zones
+* Security group IDs
+
+---
+
+6. MAP (key-value pairs)
+
+Definition:
+Stores data as key = value
+
+Example:
+
+variable "tags" {
+type = map(string)
+}
+
+Input:
+
+tags = {
+Name = "web-server"
+Env  = "dev"
+owner = "madhu"
+}
+
+Real-time use:
+
+* Resource tagging in AWS
+* Labels and metadata
+
+---
+
+7. OBJECT (structured data)
+
+Definition:
+An object groups multiple fields together.
+
+Example:
+
+variable "server_config" {
+          type = object({
+                     name  = string
+                     size  = string
+                     count = number
+                       })
+          }
+
+Input:
+server_config = {
+name  = "web"
+size  = "t2.micro"
+count = 2
+}
+
+Real-time use:
+
+* Server configuration
+* Database settings
+* Application configs
+
+---
+
+8. LIST OF OBJECTS (IMPORTANT)
+
+Definition:
+A list containing multiple objects.
+
+Example:
+
+variable "public_subnets" {
+  description = "List of public subnets with CIDR and Availability Zone"
+  type = list(object({
+    cidr = string
+    az   = string
+  }))
+
+
+Input:
+public_subnets = [
+{ cidr = "10.0.1.0/24", az = "us-east-1a" },
+{ cidr = "10.0.2.0/24", az = "us-east-1b" }
+]
+
+Real-time use:
+
+* Multiple subnets in multiple availability zones 
+* Multiple servers
+* Multiple environments
+
+---
+
+9. WHY TYPE CONSTRAINTS ARE IMPORTANT
+
+10. Prevent errors
+    Example:
+    instance_count = "three"  (wrong type)
+
+11. Validate structure
+    Example:
+    public_subnets = "10.0.1.0/24" (should be list)
+
+12. Improve readability
+
+13. Help teamwork (others understand input format easily)
+
+---
+
+10. SIMPLE ANALOGY
+
+## Type           → Real-life example
+
+string         → Name
+number         → Age
+bool           → Yes or No
+list           → Shopping list
+map            → Dictionary (word → meaning)
+object         → Form with fields
+list(object)   → Multiple forms
+
+---
+
+11. FINAL SUMMARY
+
+* Terraform variables need correct data types
+* Types ensure correct input format
+* Common types: string, number, bool, list, map, object
+* Most used in real projects: list(object)
+
+================
+
+
+
+git clone <urlpath?
