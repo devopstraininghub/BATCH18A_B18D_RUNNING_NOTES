@@ -50,16 +50,6 @@ key_name = "mckey"
 - `main.tf` never hardcodes the value either — it just asks for `var.key_name`, whatever that turns out to be.
 - `terraform.tfvars` is the **only** place the real value `"mckey"` actually lives — change it there, and every place `var.key_name` is used picks up the new value automatically.
 
-**Another example — an AWS region:**
-```hcl
-variable "region" {
-  type = string
-}
-```
-```hcl
-region = "us-east-1"
-```
-
 **Real-time use:** AWS region, resource names, environment name (`dev`/`prod`), EC2 key pair names.
 
 ---
@@ -87,16 +77,6 @@ instance_count = 6
 - Six instances get created — change the `6` in `terraform.tfvars` to `2`, and the **same** `main.tf` creates two instead, with no code edit at all.
 - If someone typed `instance_count = "six"` in `terraform.tfvars` instead, Terraform rejects it immediately — `"six"` is a string, not a `number`, and the type constraint catches that before anything is ever sent to AWS.
 
-**Another example — an EBS volume size:**
-```hcl
-variable "disk_size" {
-  type = number
-}
-```
-```hcl
-disk_size = 50
-```
-
 **Real-time use:** number of servers, disk size (GB), Auto Scaling limits.
 
 ---
@@ -122,16 +102,6 @@ resource "aws_instance" "web" {
 enable_public_ip = true
 ```
 - Flip this single `true`/`false` in `terraform.tfvars`, and every instance built from this `main.tf` gets (or stops getting) a public IP — no digging through the resource block itself to change behavior.
-
-**Another example — S3 bucket versioning:**
-```hcl
-variable "enable_versioning" {
-  type = bool
-}
-```
-```hcl
-enable_versioning = true
-```
 
 **Real-time use:** turning a feature on or off, enabling/disabling a public IP, enabling/disabling S3 versioning (`21September_S3.md`).
 
@@ -165,16 +135,6 @@ subnet_cidrs = [
 - `var.subnet_cidrs[count.index]` picks out the CIDR for *that specific* subnet — index `0` gets `"10.0.1.0/24"`, index `1` gets `"10.0.2.0/24"`.
 - Add a third CIDR to the list in `terraform.tfvars`, and `main.tf` automatically creates a third subnet too — nothing in `main.tf` itself needs to change.
 
-**Another example — a list of Availability Zones:**
-```hcl
-variable "availability_zones" {
-  type = list(string)
-}
-```
-```hcl
-availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
-```
-
 **Real-time use:** subnets, Availability Zones, Security Group IDs — anything where you need several values of the *same* type, in a specific order.
 
 ---
@@ -206,21 +166,7 @@ tags = {
 - `main.tf` just points `tags` at `var.tags` — it has no idea, and doesn't need to know, how many key-value pairs are actually inside it.
 - Add a fourth tag (say, `CostCenter = "ops"`) in `terraform.tfvars`, and it shows up on the instance with no `main.tf` change at all.
 
-**Another example — a map used as a lookup table, not just tags:**
-```hcl
-variable "instance_type_by_env" {
-  type = map(string)
-}
-```
-```hcl
-instance_type_by_env = {
-  dev  = "t2.micro"
-  prod = "t3.large"
-}
-```
-- Here the map isn't metadata at all — it's a lookup: `instance_type_by_env["prod"]` gives you `"t3.large"` wherever you need it in your `.tf` code, instead of hardcoding the size separately for each environment.
-
-**Real-time use:** AWS resource tagging — this is exactly the shape every `tags = { Name = ... }` block we've written since `16October_Terraform_MiniProject.md` has actually been, just not formally typed as a variable until now — and per-environment lookup values like instance sizing.
+**Real-time use:** AWS resource tagging — this is exactly the shape every `tags = { Name = ... }` block we've written since `16October_Terraform_MiniProject.md` has actually been, just not formally typed as a variable until now.
 
 ---
 
@@ -260,25 +206,6 @@ server_config = {
 - Unlike a `map`, every field in an `object` can have its **own type** — `name` and `size` are strings, `count` is a number, all inside one variable.
 - Note the `.` syntax in `main.tf`: `var.server_config.size`, `var.server_config.count` — you reach into one named field at a time, instead of passing the whole object around as one blob.
 
-**Another example — RDS database settings:**
-```hcl
-variable "db_config" {
-  type = object({
-    engine            = string
-    allocated_storage = number
-    multi_az          = bool
-  })
-}
-```
-```hcl
-db_config = {
-  engine            = "mysql"
-  allocated_storage = 20
-  multi_az          = true
-}
-```
-- Three fields, three different types (`string`, `number`, `bool`) — all bundled into one `db_config` variable, matching the RDS concepts from `25September_RDS.md`.
-
 **Real-time use:** a single server's configuration, database settings, an application's config — anywhere several *related but differently-typed* values travel together.
 
 ---
@@ -315,22 +242,6 @@ public_subnets = [
 - A **list of objects** — each entry in the list is itself a small structured object with its own `cidr` and `az`.
 - `var.public_subnets[count.index]` picks out **one object** from the list (e.g. `{ cidr = "10.0.1.0/24", az = "us-east-1a" }`), and `.cidr`/`.az` then reach into that one object's fields — combining list-indexing (§5) with object field access (§7) in a single line.
 - Add a third `{ cidr = ..., az = ... }` entry in `terraform.tfvars`, and a third subnet gets created with its own CIDR *and* its own AZ — `main.tf` doesn't change at all.
-
-**Another example — multiple EC2 servers, each with its own settings (the `26October_Terraform_Modules.md` `dev_webserver`/`prod-server` idea, written as one variable instead of two separate `module` calls):**
-```hcl
-variable "ec2_instances" {
-  type = list(object({
-    name          = string
-    instance_type = string
-  }))
-}
-```
-```hcl
-ec2_instances = [
-  { name = "dev_webserver", instance_type = "t2.micro" },
-  { name = "prod-server",   instance_type = "t3.micro" }
-]
-```
 
 **Real-time use:** multiple subnets across multiple Availability Zones, multiple servers each with their own settings, multiple environments — **this is called out as the most-used type in real projects**, because almost everything in AWS that comes in sets (subnets, instances, listener rules) needs exactly this "list of small structured things" shape.
 
