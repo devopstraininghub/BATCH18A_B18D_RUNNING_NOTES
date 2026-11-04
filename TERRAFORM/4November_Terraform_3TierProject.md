@@ -23,21 +23,21 @@ Straight from the project's own `README.md`:
 
 ---
 
-## 2. The project as eight modules
+## 2. The project as nine modules
 
-Following `26October_Terraform_Modules.md`'s pattern, every piece of this architecture is its own module, called once from the root `main.tf`:
+Following `26October_Terraform_Modules.md`'s pattern, every piece of this architecture is its own module, called once from the root `main.tf`. **Each module has its own dedicated, detailed file** — this section is just the map:
 
-| Module | What it builds |
-|---|---|
-| `network` | VPC, public + private subnets, Internet Gateway, NAT Gateway, route tables |
-| `security` | A Security Group (ingress/egress rules, parameterized) |
-| `bastion` | The jump-host EC2 instance in a public subnet |
-| `load_balancers` | Two ALBs (frontend + backend), their listeners, and target groups |
-| `launch_templates` | Launch Templates for frontend/backend instances, with their own user-data scripts |
-| `asg` | Two Auto Scaling Groups (frontend + backend), using the launch templates above |
-| `rds` | The RDS MySQL instance + its DB Subnet Group |
-| `route53` | DNS records — both a private hosted zone (for RDS) and a public one (for the ALBs) |
-| `acm` | The TLS certificate for the public domain |
+| Module | What it builds | Full write-up |
+|---|---|---|
+| `network` | VPC, public + private subnets, Internet Gateway, NAT Gateway, route tables | `4November_Terraform_Module_Network.md` |
+| `security` | A Security Group (ingress/egress rules, parameterized) | `4November_Terraform_Module_Security.md` |
+| `bastion` | The jump-host EC2 instance in a public subnet | `4November_Terraform_Module_Bastion.md` |
+| `load_balancers` | Two ALBs (frontend + backend), their listeners, and target groups | `4November_Terraform_Module_LoadBalancers.md` |
+| `launch_templates` | Launch Templates for frontend/backend instances, with their own user-data scripts | `4November_Terraform_Module_LaunchTemplates.md` |
+| `asg` | Two Auto Scaling Groups (frontend + backend), using the launch templates above | `4November_Terraform_Module_ASG.md` |
+| `rds` | The RDS MySQL instance + its DB Subnet Group | `4November_Terraform_Module_RDS.md` |
+| `route53` | DNS records — both a private hosted zone (for RDS) and a public one (for the ALBs) | `4November_Terraform_Module_Route53.md` |
+| `acm` | The TLS certificate for the public domain | `4November_Terraform_Module_ACM.md` |
 
 **Root `main.tf` — how the modules connect to each other:**
 ```hcl
@@ -184,7 +184,7 @@ resource "aws_route53_record" "rds_endpoint" {
 
 ## 4. Two real things worth learning from, not just copying
 
-**1. A real, reused hardcoded RDS password.** The root `main.tf`'s `rds` module call, and the `backend.sh` user-data script, both contain the literal same password string for the RDS master user — with the module's own code comment already saying *"Consider using AWS Secrets Manager or Vault"* right next to it. This is exactly the mistake `2Nov_Vault.md` exists to solve — a real project is the moment that lesson actually matters, not just a one-off demo. **The fix isn't "use a stronger password" — it's "don't put the password in version-controlled code at all,"** which is the whole point of `2Nov_Vault.md`'s approach.
+**1. A real, reused hardcoded RDS password — partially mitigated, but only partially.** The `rds` module's own `db_password` variable is correctly marked `sensitive = true` (full explanation in `4November_Terraform_Module_RDS.md` §2) — a genuinely good practice, since it hides the value from `plan`/`apply` console output. But the root `main.tf`'s `rds` module call, and the `backend.sh` user-data script, both still contain the literal same password string in version-controlled code — `sensitive = true` never stops that. This is exactly the mistake `2Nov_Vault.md` exists to solve — a real project is the moment that lesson actually matters, not just a one-off demo. **The fix isn't "mark the variable sensitive" or "use a stronger password" — it's "don't put the real password in code at all,"** which is the whole point of `2Nov_Vault.md`'s approach.
 
 **2. Inconsistent file segregation across modules.** Most modules (`network`, `security`, `rds`, `load_balancers`, `asg`) correctly split their code into `main.tf`/`variables.tf`/`output.tf`, exactly as `21October_Terraform_Variables.md` taught. The `bastion` module, though, has its `variable` and `output` blocks written directly inside `main.tf`, leaving its own `variables.tf`/`output.tf` empty. **It still works** — Terraform doesn't actually care which file a block lives in within the same module, it reads every `.tf` file in the folder — but it's worth noticing as the kind of inconsistency that makes a real project harder to navigate later, even when nothing is technically broken.
 
