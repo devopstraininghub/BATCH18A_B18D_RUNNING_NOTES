@@ -29,3 +29,4 @@ terraform.rc
 
 # Generated output of local-exec provisioner demos (side effect, not source)
 **/localfile.txt
+**/ajalocalfile.txt

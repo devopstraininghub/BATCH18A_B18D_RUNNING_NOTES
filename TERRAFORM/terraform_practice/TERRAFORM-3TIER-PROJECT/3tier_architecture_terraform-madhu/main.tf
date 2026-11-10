@@ -67,7 +67,7 @@ module "rds" {
   db_allocated_storage = 25
   db_name             = "test"
   db_username         = "admin"
-  db_password         = "password123"  # Consider using AWS Secrets Manager or Vault  
+  db_password         = "mypassword"  # Consider using AWS Secrets Manager or Vault  
   db_security_group_id = module.security_group.security_group_id
   db_subnet_ids       = [module.network.private_subnet_ids[4], module.network.private_subnet_ids[5]]  # ✅ Fixed Reference
 }
@@ -102,9 +102,9 @@ module "launch_templates" {
   source              = "./modules/launch_templates"
   frontend_lt_name    = "frontend-lt"
   backend_lt_name     = "backend-lt"
-  key_name            = "madhu"
-  ami_id_frontend     = "ami-026ff2aed0f235b98"
-  ami_id_backend      = "ami-0cf6e84dc7d56f9d1"
+  key_name            = "madhukey"
+  ami_id_frontend     = "ami-026ad7eaed3f3e212"
+  ami_id_backend      = "ami-0bd217a59a1c761eb"
   instance_type       = "t3.micro"
   frontend_user_data  = "frontend.sh"
   backend_user_data   = "backend.sh"
@@ -133,7 +133,7 @@ module "bastion" {
   source            = "./modules/bastion"
   ami_id            = "ami-0c3389a4fa5bddaad"
   instance_type     = "t3.micro"
-  key_name          = "madhu"
+  key_name          = "madhukey"
   public_subnet_id  = module.network.public_subnet_ids[0]
   security_group_id = module.security_group.security_group_id
 }
@@ -142,17 +142,17 @@ output "jump_server" {
   value = module.bastion.bastion_public_ip
 }
 
-module "route53" {
-  source              = "./modules/route53"
-  vpc_id              = module.network.vpc_id
-  rds_endpoint        = module.rds.rds_endpoint
-  alb_dns_name        = module.alb.alb_backend_dns
-  alb_front_dns_name = module.alb.alb_frontend_dns
-}
+# module "route53" {
+#   source              = "./modules/route53"
+#   vpc_id              = module.network.vpc_id
+#   rds_endpoint        = module.rds.rds_endpoint
+#   alb_dns_name        = module.alb.alb_backend_dns
+#   alb_front_dns_name = module.alb.alb_frontend_dns
+# }
 
 
-module "acm" {
-  source      = "./modules/acm"
-  domain_name = "b17facebook.xyz"
-  san_names   = ["*.b17facebook.xyz"]
-}
+# module "acm" {
+#   source      = "./modules/acm"
+#   domain_name = "b17facebook.xyz"
+#   san_names   = ["*.b17facebook.xyz"]
+# }
