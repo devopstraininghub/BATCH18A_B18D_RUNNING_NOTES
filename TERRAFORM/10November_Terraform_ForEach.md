@@ -184,10 +184,45 @@ output "ec2_details" {
   }
 }
 ```
-- The **curly braces** `{ }` around the whole expression (instead of square brackets `[ ]`) are what make this produce a **map** instead of a list.
-- `for environment, instance in aws_instance.web` — loops over **both** the key (`environment`) and the value (`instance`) of the `for_each`-created resource, at the same time.
-- `environment => { ... }` — for every entry, build a small object (`instance_id`, `public_ip`, `private_ip`) and store it under that environment's name as the map key.
-- **Result:** one combined output where you can look up `ec2_details["prod"].public_ip` directly, instead of having to separately remember which list position `prod` ended up at.
+**Step by step, since this line genuinely looks intimidating the first time:**
+
+**1. What `aws_instance.web` actually is, after `for_each`.** Because this resource has `for_each = var.instances`, Terraform doesn't create one `aws_instance.web` — it creates a whole **bundle of them, each labeled by a key**, like a dictionary:
+```
+aws_instance.web = {
+  "dev"  → (the dev instance's full details: id, public_ip, private_ip, ...)
+  "qa"   → (the qa instance's full details)
+  "prod" → (the prod instance's full details)
+}
+```
+That's the thing the `for` expression is about to loop over.
+
+**2. `for environment, instance in aws_instance.web` — a loop, exactly like Python's `for key, value in some_dict`.** `environment` and `instance` are **not** special Terraform keywords — they're just **two names I'm choosing**, one for the current key and one for the current value. I could have written `for k, v in aws_instance.web` instead and it would mean exactly the same thing. They're named this way simply because that's what they represent — the environment's name, and that environment's instance object.
+
+So this loop runs **once per entry**:
+
+| Iteration | `environment` (the key) | `instance` (the value) |
+|---|---|---|
+| 1 | `"dev"` | the dev instance's object |
+| 2 | `"qa"` | the qa instance's object |
+| 3 | `"prod"` | the prod instance's object |
+
+**3. The colon `:`** just separates "what I'm looping over" (what you just read) from "what I want to build for each one" (next).
+
+**4. `environment => { instance_id = instance.id, public_ip = instance.public_ip, private_ip = instance.private_ip }`** — the "for each item, produce this key → this value" part:
+- **Left of `=>`** (`environment`) becomes the **key** in the new map — `"dev"`, `"qa"`, `"prod"`.
+- **Right of `=>`** is a **brand-new small object**, built right here by reaching into `instance` (this iteration's EC2 object) and pulling out its `.id`, `.public_ip`, `.private_ip`.
+
+**Putting all three iterations together, this is what the output actually becomes:**
+```hcl
+ec2_details = {
+  "dev"  = { instance_id = "i-0111...", public_ip = "3.1.1.1", private_ip = "10.0.1.1" }
+  "qa"   = { instance_id = "i-0222...", public_ip = "3.2.2.2", private_ip = "10.0.1.2" }
+  "prod" = { instance_id = "i-0333...", public_ip = "3.3.3.3", private_ip = "10.0.1.3" }
+}
+```
+Now you can type `ec2_details["prod"].public_ip` and get prod's IP directly — no need to remember which position in a list "prod" happened to land at.
+
+**Why `{ }` instead of `[ ]`?** `{ for ... : key => value }` (curly braces + `=>`) builds a **map**. `[ for ... : value ]` (square brackets, no `=>`) builds a plain **list** — that's what `4November_Terraform_Module_Network.md`'s `[for s in aws_subnet.public : s.id]` does instead. Same `for` keyword, same looping idea — the brackets around it decide whether you end up with a list or a map.
 
 **Other ways to reach into `for_each` resources**, straight from the raw notes:
 ```hcl
