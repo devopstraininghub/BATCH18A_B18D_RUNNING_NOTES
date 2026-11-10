@@ -192,8 +192,20 @@ resource "aws_route53_record" "rds_endpoint" {
 
 ## 5. Two passes at the same project
 
-- **`3TIER-PROJECT-CLASS/`** — the in-class, build-along version: just the `network` module on its own, with the exact same VPC/subnet layout as the full project. This is where the `network` module itself (splat/`for` expressions and all) was actually worked through live.
-- **`3tier_architecture_terraform-madhu/`** — the complete take-home version, with every module from §2 wired together, plus its own `README.md` and architecture diagram.
+- **`3TIER-PROJECT-CLASS/`** — the in-class, build-along version. It started with just the `network` module on its own (where splat/`for` expressions were first worked through live), and **has since grown into a complete build** — `security`, `rds`, `load_balancer`, `launch_templates`, `asg`, and `bastion` all got added in later sessions, with `route53` and `acm` written but **commented out** for the actual `apply` run (same as `madhu`'s version — see below).
+- **`3tier_architecture_terraform-madhu/`** — the complete take-home version, with every module from §2 wired together, plus its own `README.md` and architecture diagram. `route53` and `acm` are also commented out here for the current `apply` run — both modules exist and are fully documented (`4November_Terraform_Module_Route53.md`, `4November_Terraform_Module_ACM.md`), they're just not part of *this particular* live build right now.
+
+⚠️ **The two versions use slightly different module/output names for the same things** — worth knowing if comparing them side by side, not a sign anything is broken:
+
+| Same thing | Named in `madhu`'s version | Named in `CLASS`'s version |
+|---|---|---|
+| The root network module call | `module.network` | `module.network_vpc` |
+| The root security module call | `module.security_group` | `module.security_groups` |
+| The root RDS module call | `module.rds` | `module.rds_instance` |
+| The Load Balancer module's folder | `modules/load_balancers` | `modules/load_balancer` |
+| The root bastion module call | `module.bastion` | `module.jumpserver` |
+
+- Also note: as of this session, both versions reuse the same **real, weak RDS password pattern** flagged in §4 — `madhu`'s version now uses `"mypassword"` (changed from the earlier `"password123"`), while `CLASS`'s `rds_instance` call also uses `"mypassword"`. Different literal string than before, same underlying mistake, same fix (`2Nov_Vault.md`).
 
 ---
 
