@@ -1,4 +1,0 @@
-aws_region    = "us-east-1"
-ami_id        = "ami-xxxxxxxxxxxxxxxxx"
-instance_type = "t3.micro"
-environments  = ["dev", "qa", "prod"]

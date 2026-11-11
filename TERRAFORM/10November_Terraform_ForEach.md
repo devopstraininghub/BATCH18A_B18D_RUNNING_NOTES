@@ -239,11 +239,14 @@ values(aws_instance.web)[*].id
 
 ---
 
-## 6. More real-time examples from the raw notes (conceptual, not hands-on today)
+## 6. Hands-on, round two — Security Groups and IAM Users with `for_each`
+
+A follow-up practice session actually built both of these for real (`terraform_practice/10NOV26-FORACH/Terraform_Multiple_Separate_Projects/4-sg/`) — same code shape as the raw notes, just run against a real VPC:
 
 **Multiple Security Groups, one block:**
 ```hcl
 variable "security_groups" {
+  type = map(string)
   default = {
     web = "Web server security group"
     app = "Application security group"
@@ -255,15 +258,20 @@ resource "aws_security_group" "sg" {
   for_each    = var.security_groups
   name        = "${each.key}-sg"
   description = each.value
-  vpc_id      = "vpc-xxxxxxxx"
+  vpc_id      = "vpc-066e6bd0d51c6b811"
+
+  tags = {
+    Name = "${each.key}-sg"
+  }
 }
 ```
-- Creates `web-sg`, `app-sg`, `db-sg` — matching exactly the per-tier Security Group split already built by hand across `4November_Terraform_Module_Security.md`'s single wide-open SG — this is what the *parameterized, per-tier* version of that same idea would look like.
+- Creates `web-sg`, `app-sg`, `db-sg` — matching exactly the per-tier Security Group split already built by hand across `4November_Terraform_Module_Security.md`'s single wide-open SG — this is what the *parameterized, per-tier* version of that same idea looks like, actually running.
 
-**Multiple IAM users, one block:**
+**Multiple IAM users, one block — in the exact same project:**
 ```hcl
 variable "iam_users" {
-  default = toset(["developer", "tester", "admin"])
+  type    = set(string)
+  default = ["developer", "tester", "admin"]
 }
 
 resource "aws_iam_user" "users" {
@@ -271,7 +279,19 @@ resource "aws_iam_user" "users" {
   name     = each.key
 }
 ```
+- Notice **two completely unrelated resource types** (`aws_security_group` and `aws_iam_user`) both using `for_each` in the same `main.tf` — nothing stops you from mixing it into as many different resource blocks as a project needs, they don't have to share a variable or a pattern.
 ⚠️ Creating these users does **not** grant them any permissions by itself — policies/group memberships (`18September_IAM.md`) are still a separate step.
+
+---
+
+## 6a. A detail worth catching: reading a tag back out
+
+The hands-on `ec2_details`/`ec2details` outputs across all three EC2 versions (§3) also pull this value out of each instance:
+```hcl
+name = instance.tags["Name"]
+```
+- `.tags` on an EC2 resource is itself a **map** — `instance.tags["Name"]` reaches into that map and pulls out the value stored under the `"Name"` key, the same `["key"]` indexing already used on `each.value`/`var.x` elsewhere, just applied to a resource's own `tags` attribute instead of an input variable.
+- Handy any time you want an output to echo back a tag you set, rather than retyping the same string in two places.
 
 **`for_each` with a module, not just a resource:**
 ```hcl
@@ -323,3 +343,5 @@ module "s3_buckets" {
 | Resource built with `for_each` | A map of instances, addressed by key, not by number | `aws_instance.web["dev"]`, never `aws_instance.web[0]` |
 | `for_each` vs `count` | Meaningful keys vs plain numbers | `count = HOW MANY?`, `for_each = WHICH ONES?` |
 | Changing a `for_each` key | Terraform sees a different resource, not a rename | Plans destroy + recreate unless state is migrated |
+| `for_each` on multiple resource types | Not limited to one resource per project | Security Groups + IAM Users, both `for_each`, same `main.tf` |
+| `instance.tags["Name"]` | Reads a tag's value back out of a resource | `.tags` is itself a map — same `["key"]` indexing as everywhere else |

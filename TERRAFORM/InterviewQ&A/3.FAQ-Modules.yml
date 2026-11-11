@@ -1,0 +1,67 @@
+1. What are Terarform Modules?
+A: A Module in Terraform is also Terraform Code which is designed for perticular functionality. 
+For Example:
+1. VPC Module => This module will have the code to create VPC, Subnets, Route Tables, Internet Gateway, NAT Gateway, Security Groups etc.
+2. EC2 Module => This module will have the code to create EC2 instances, Security Groups, Key Pairs etc.
+3. RDS Module => This module will have the code to create RDS instances, Security Groups, Subnet Groups etc.
+
+You can use modules again and again in your code to create resources for multiple environments or customers.
+
+2. Where do you save your modules? (or) What is Module Registry?
+A: Modules are version controlled and tagged in the git repository. We can use the modules from the git repository or local file system. It follows symanteic versioning like 0.0.1, 0.0.2, 0.1.0, 1.0.0 etc.
+If there is a change in the module like adding new feature, fixing the bug, then we need to update the version of the module.
+
+3. what are the files in the module?
+A: We can have n number of files in the module. But the main files are:
+1. main.tf => This file will have the code to create the resources.
+2. variables.tf => This file will have the input variables which are required to create the resources.
+3. outputs.tf => This file will have the output variables which are required to pass the information to the other modules or resources.
+
+4. What are outputs in the module? (or) Image I have two modules and how do you pass the information from one module to another module?
+A: Outputs are the variables which are used to pass the information from one module to another module. You can use output of one more in other as shown below.
+module "alpha_sg_1" {
+  source        = "../modules/2.sg"
+  vpc_name      = module.alpha_vpc_1.vpc_name #Taking out of the output of alpha_vpc_1 module and using in alpha_sg_1 module.
+  vpc_id        = module.alpha_vpc_1.vpc_id
+  environment   = module.alpha_vpc_1.environment
+  service_ports = var.service_ports
+}
+
+OUTPUT's are also called as Return Values of the module.
+
+5. I have three customers or Three Environments(Dev,UAT,Prod) and I want to create identical resources for all the customers. How do you do that without duplicating the code?
+A: To create identical infra for multiple customers, we can use modules along with workspaces. We can create a module for the resources and use the module in the main code. We can use workspaces to create the resources for multiple customers.
+
+Modules will help to to avoid to duplicate the code. 
+Workspaces will help to create diffrent statefiles for each customer using multiple tfvars files.
+
+6. Tell me in a simple way What Terraform workspaces does?
+A. I will help us to create multiple state files for the same code. We can use workspaces to create the resources for multiple environments like Dev, QA, Prod etc.
+
+7. What is the difference between Terraform Modules and Workspaces?
+A: Modules are the Terraform code which is designed for perticular functionality. We can use modules again and again in the code.
+Workspaces are used to create multiple state files for the same code. We can use workspaces to create the resources for multiple environments like Dev, QA, Prod etc.
+
+8. What is Terraform Enterprise?
+A: Terraform Enterprise is a paid version of Terraform. It is used to manage the Terraform code in the organization. It provides the features like:
+1. Sentinel Policies
+2. Cost Estimation
+3. Collaboration
+4. VCS Integration
+5. API Access
+6. Audit Logging
+7. Private Module Registry
+8. Workspaces
+9. Remote State Management for Locking.
+
+9. How can I save the state file in Terraform Enterprise?
+A: Generate API Token and use environment variables to save the state file in Terraform Enterprise. 
+export TF_TOKEN_app_terraform_io=xxxxxx.atlasv1.zzzzzzzzzzzzz
+
+10. How do you make sure your Terraform code is secure?
+A: Checkov is a tool which is used to scan the Terraform code for the security issues. We can use checkov to scan the code and fix the security issues.
+Checkov, TFSec, Terrascan are the tools which are used to scan the Terraform code for the security issues.
+
+11. How do you do testing or unit testing in Terraform?
+A: Terratest is a tool which is used to do the testing in Terraform. We can use terratest to write the test cases and run the test cases.
+Event terratest will deploy the resources and test the resources. This is same thing liek deploying infra and testing the infra manually.

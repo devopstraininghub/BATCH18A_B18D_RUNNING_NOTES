@@ -1,8 +1,0 @@
-aws_region = "us-east-1"
-ami_id     = "ami-09bf9dfeeb1e9adbc"
-
-instances = {
-  dev  = "t3.micro"
-  qa   = "t3.micro"
-  prod = "t3.small"
-}
