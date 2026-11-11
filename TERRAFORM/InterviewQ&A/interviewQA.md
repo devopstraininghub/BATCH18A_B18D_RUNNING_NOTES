@@ -449,8 +449,9 @@ terraform untaint aws_instance.web    # remove that mark
 
 ---
 
-### Q37. What provisioner types does Terraform support?
+### Q37. What provisioner types does Terraform support, and why is `user_data` usually preferred over them?
 **Answer:** `file`, `remote-exec`, and `local-exec` are the three genuinely common ones (full detail in `28October_Terraform_Provisioners.md`). Chef, Puppet, Ansible, and Salt-masterless provisioners also exist, but are rarely used in practice — most teams reach for a dedicated configuration-management tool run separately instead of a Terraform provisioner for that.
+- **Why `user_data` wins in practice:** a provisioner needs live SSH/WinRM connectivity *at apply time* (and can need workarounds like a `time_sleep` resource just to wait for SSH to come up, since the instance isn't always immediately reachable the moment it's created) — `user_data` just runs once, automatically, the first time the instance boots, with no connection step and nothing for Terraform to wait on.
 
 ---
 
@@ -759,6 +760,206 @@ With `for_each`, the equivalent is feeding it an empty set/map when the conditio
 
 ---
 
+## Part E — From This Batch's Own Hands-On (for_each, Variable Types, Backend Bootstrapping, Vault)
+
+These come directly from this batch's own practice code and running notes, not generic interview-prep lists — the kind of question that catches someone who only memorized theory.
+
+### Q68. When reading outputs from a resource built with `for_each`, how do you produce a **map** instead of a plain list?
+**Answer:** A `for` expression normally produces a list — `[for s in aws_subnet.public : s.id]` (square brackets, no `=>`). To get a **map** back instead, use curly braces and `=>`:
+```hcl
+output "ec2_details" {
+  value = {
+    for environment, instance in aws_instance.web : environment => {
+      instance_id = instance.id
+      public_ip   = instance.public_ip
+    }
+  }
+}
+```
+`environment` and `instance` are just loop variable names you choose (not keywords) — `environment` becomes each entry's key in the new map, and the `{ ... }` on the right becomes that key's value. The result lets you look up `ec2_details["prod"].public_ip` directly, by name, instead of hunting through a list by position. **Rule of thumb:** `[ for ... : value ]` → list, `{ for ... : key => value }` → map.
+
+---
+
+### Q69. What's a clean, safe way to document what values a `.tfvars` file needs, without risking a real secret getting committed?
+**Answer:** Commit a **`terraform.tfvars.example`** file alongside the code — placeholder values only, showing the exact shape expected — while the real `terraform.tfvars` (actual AMI IDs, actual region, any real values) stays local and gitignored. A teammate clones the repo, copies the `.example` file to a real `.tfvars`, and fills in their own values — nobody has to guess the format, and nobody's real values ever reach Git.
+
+---
+
+### Q70. You renamed a key in a `for_each` map from `"qa"` to `"staging"` — what does Terraform actually do?
+**Answer:** **Destroys the `"qa"` resource and creates a brand-new `"staging"` one** — it does not rename/relabel the existing resource in place. A resource built with `for_each` is addressed by its map key/set value (`aws_instance.web["qa"]`), so changing that key changes the resource's *address* — Terraform sees a different resource appearing, not the same one renamed, unless you deliberately migrate state first (`terraform state mv aws_instance.web[\"qa\"] aws_instance.web[\"staging\"]`, or a `moved` block, Q54).
+
+---
+
+### Q71. What variable type constraints does Terraform support, and which one is actually used the most in real projects?
+**Answer:** `string`, `number`, `bool`, `list`, `map`, `object` — and compositions of them, most importantly **`list(object(...))`**.
+```hcl
+variable "public_subnets" {
+  type = list(object({
+    cidr = string
+    az   = string
+  }))
+}
+```
+```hcl
+public_subnets = [
+  { cidr = "10.0.1.0/24", az = "us-east-1a" },
+  { cidr = "10.0.2.0/24", az = "us-east-1b" }
+]
+```
+**`list(object)` is the most-used type in real projects** — almost everything in AWS that comes in sets (subnets, instances, listener rules) needs exactly this "list of small structured things" shape: `var.public_subnets[count.index].cidr` combines list-indexing with object field access in one line. Type constraints exist to catch the wrong *kind* or *shape* of value (`instance_count = "three"`, or a single string where a list was expected) before it's ever sent to AWS, not just at review time.
+
+---
+
+### Q72. Is S3 + DynamoDB still the right way to set up state locking?
+**Answer:** **No, not for a new project** — `dynamodb_table` in the `backend "s3"` block is **deprecated as of Terraform 1.11** (the underlying capability, S3-native locking via `use_lockfile`, arrived experimentally in 1.10). It still works today and HashiCorp hasn't ripped it out, but it's explicitly legacy. The current recommended setup needs no DynamoDB table at all:
+```hcl
+terraform {
+  backend "s3" {
+    bucket       = "my-tf-state"
+    key          = "prod/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
+  }
+}
+```
+This is a genuinely easy way to sound out-of-date in an interview if you only know the old S3+DynamoDB answer — know that S3 can lock itself natively now.
+
+---
+
+### Q73. Your Terraform project's backend points at an S3 bucket — but that bucket doesn't exist yet. How do you get started?
+**Answer:** You can't have a project's `backend.tf` create the very bucket it depends on — that's a chicken-and-egg problem. The fix is a small, **separate, one-off "bootstrap" project**, applied with plain local state, whose only job is to create the bucket (plus versioning, encryption, and a public-access block) before the real project's backend ever references it.
+```hcl
+# bootstrap project — run once, with local state
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "mc-b18-state-bucket-2026-unique"
+}
+
+resource "aws_s3_bucket_versioning" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+  versioning_configuration { status = "Enabled" }
+}
+
+resource "aws_s3_bucket_public_access_block" "terraform_state" {
+  bucket                  = aws_s3_bucket.terraform_state.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+```
+Only *after* this bootstrap project has run can the real project's `backend "s3" { bucket = "mc-b18-state-bucket-2026-unique" ... }` actually point at something that exists.
+
+---
+
+### Q74. How do you integrate HashiCorp Vault with Terraform, in practice, so credentials are never hardcoded?
+**Answer:** Configure the **Vault provider**, then read the secret through a **data source** instead of typing the real value into any `.tf` file.
+```hcl
+provider "vault" {
+  address = "http://127.0.0.1:8200"
+  token   = var.vault_token
+}
+
+data "vault_kv_secret_v2" "aws_secret" {
+  mount = "secret"
+  name  = "aws"
+}
+
+resource "aws_db_instance" "example" {
+  username = data.vault_kv_secret_v2.aws_secret.data["db_username"]
+  password = data.vault_kv_secret_v2.aws_secret.data["db_password"]
+  # ...
+}
+```
+The Vault token itself still has to get to Terraform somehow — normally an environment variable (`VAULT_TOKEN`) or a `.tfvars` file that's gitignored, never hardcoded either. **If an interviewer asks this directly:** "We use the Vault provider in Terraform to fetch secrets at runtime via a data source, instead of hardcoding credentials. In production, dev-mode Vault (temporary storage, token resets on restart) gets replaced with persistent storage and a real auth method like AppRole or IAM."
+
+---
+
+### Q75. What is a splat expression, and how does it relate to a `for` expression?
+**Answer:** `resource[*].attribute` — shorthand for pulling the same attribute off **every instance** of a resource built with `count`, as a plain list.
+```hcl
+# These two lines produce the exact same result:
+output "subnet_ids_splat"   { value = aws_subnet.public[*].id }
+output "subnet_ids_for"     { value = [for s in aws_subnet.public : s.id] }
+```
+A splat (`[*]`) is just the compact form of the simplest kind of `for` expression — "give me this one field off every instance." Once you need anything more than that (filtering, reshaping into an object, building a map instead of a list — Q68), you need the full `for` expression; splat alone can't do it.
+
+---
+
+### Q76. Why does `aws_launch_template`'s `user_data` need `base64encode(file(...))`, when `aws_instance`'s `user_data` just needs `file(...)`?
+**Answer:** This is a real, easy-to-miss inconsistency between two resource types that look like they should work the same way — **they don't.**
+```hcl
+# aws_instance — plain file() is enough
+resource "aws_instance" "web" {
+  user_data = file("install.sh")
+}
+
+# aws_launch_template — requires base64 encoding
+resource "aws_launch_template" "web" {
+  user_data = base64encode(file("${path.module}/install.sh"))
+}
+```
+`aws_launch_template.user_data` specifically expects **base64-encoded** text; `aws_instance.user_data` doesn't. Forgetting the `base64encode(...)` wrapper on a launch template is a genuinely common mistake — and `${path.module}` matters here too (Q77) if the script lives inside a module's own folder rather than the root project's.
+
+---
+
+### Q77. What is `path.module`, and why does it matter once your code is split into modules?
+**Answer:** A Terraform built-in that always resolves to **the folder the current module's own files live in** — regardless of where the root project that's calling it happens to sit.
+```hcl
+user_data = base64encode(file("${path.module}/install.sh"))
+```
+Without it, a relative path like `"install.sh"` would be resolved relative to wherever `terraform apply` is actually run (normally the root project's folder) — which breaks the moment a script lives *inside* a module's own folder instead. `path.module` makes the module correctly find its own files no matter who's calling it or from where.
+
+---
+
+### Q78. Can a Route 53 DNS name resolve only inside your VPC, and not to the public internet at all?
+**Answer:** Yes — a **private hosted zone**. Add a `vpc { vpc_id = ... }` block to `aws_route53_zone`, and that zone only resolves for things inside that specific VPC.
+```hcl
+resource "aws_route53_zone" "rds_private" {
+  name = "rds.internal"
+  vpc {
+    vpc_id = var.vpc_id
+  }
+}
+
+resource "aws_route53_record" "rds_endpoint" {
+  zone_id = aws_route53_zone.rds_private.zone_id
+  name    = "db.rds.internal"
+  type    = "CNAME"
+  ttl     = 100
+  records = [var.rds_endpoint]
+}
+```
+**Real use case:** giving an RDS endpoint (a long, AWS-generated hostname) a short, memorable internal name for app servers to use — without making a database address resolvable from the public internet, which a normal public hosted zone would do.
+
+---
+
+### Q79. Does marking a variable `sensitive = true` encrypt it, or keep it out of the state file?
+**Answer:** **No — common trick question.** `sensitive = true` only hides the value from `plan`/`apply` console output and logs (Terraform prints `(sensitive value)` instead of the real one).
+```hcl
+variable "db_password" {
+  type      = string
+  sensitive = true
+}
+```
+It does **not** encrypt the value, and it does **not** stop the real value from being written into the state file, or from being hardcoded by whoever calls the module. It's a genuinely useful habit for keeping secrets off a screen/CI log — but it is not, by itself, a secrets-management solution. Real secrets management is Vault (Q74) or AWS Secrets Manager/SSM Parameter Store (Q68 in Part D).
+
+---
+
+### Q80. Why shouldn't a child module declare its own `provider` block?
+**Answer:** A provider has to stay configured and available for the **entire lifetime** of the resources it manages — including when they're eventually destroyed. A provider block living inside a child module can break that guarantee, and HashiCorp explicitly calls this pattern discouraged/legacy. The fix: configure the provider **only in the root module**; every child module simply inherits whatever provider the root (or caller) already set up — a module should never configure its own provider.
+```hcl
+# root main.tf — the ONLY place a provider block belongs
+provider "aws" {
+  region = "us-east-1"
+}
+
+module "web" {
+  source = "./modules/ec2"   # this module has NO provider block of its own
+}
+```
+
+---
+
 ## Quick Recap Table
 
 | Topic | One-line takeaway |
@@ -778,3 +979,12 @@ With `for_each`, the equivalent is feeding it an empty set/map when the conditio
 | Policy as code | Sentinel (paid HCP tiers) or OPA/Conftest (open source) against `plan`'s JSON output |
 | Safe CI/CD apply | `plan -out=file` then `apply file` — never let `apply` silently re-plan |
 | OpenTofu | 2023 MPL→BUSL license fork; Linux Foundation project, drop-in compatible |
+| `{ for k,v in x : k => {...} }` vs `[for ... ]` | Curly braces + `=>` build a map; square brackets build a list |
+| `.tfvars.example` | A committed, safe template — the real `.tfvars` stays local and gitignored |
+| `list(object)` | The most-used real-world variable type — a list of small structured things |
+| S3 native locking (`use_lockfile`) | Current standard; DynamoDB-based locking is deprecated (Terraform 1.11+) |
+| Backend bootstrap problem | A separate one-off local-state project creates the bucket before the real backend can use it |
+| Splat (`[*]`) | Shorthand for the simplest `for` expression — one attribute off every instance |
+| `base64encode(file(...))` | Required for `aws_launch_template.user_data`; plain `file()` is enough for `aws_instance.user_data` |
+| `sensitive = true` | Hides console/log output only — does NOT encrypt, does NOT remove it from state |
+| Provider in a child module | Discouraged — configure providers only in the root; modules inherit them |
