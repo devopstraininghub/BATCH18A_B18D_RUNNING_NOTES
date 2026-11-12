@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AWS Lambda Architecture</title>
+<style>
+  body { margin:0; background:#F5F3EC; color:#14202E; font-family:system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
+  main { max-width:1600px; margin:0 auto; padding:32px 24px 40px; }
+  h1 { margin:0 0 6px; font-size:34px; }
+  p.sub { margin:0 0 20px; font-size:19px; color:#3E4B5B; }
+  svg { width:100%; height:auto; display:block; background:#FBFAF6; border:1px solid #DDD9CD; border-radius:16px; }
+  text { font-family:system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
+  .t  { font-size:31px; font-weight:700; text-anchor:middle; }
+  .s  { font-size:23px; text-anchor:middle; }
+  .lb { font-size:22px; font-weight:700; letter-spacing:2px; fill:#B8500A; }
+  .al { font-size:22px; text-anchor:middle; fill:#3E4B5B; }
+  .big{ font-size:27px; fill:#14202E; }
+</style>
+</head>
+<body>
+<main>
+<h1>AWS Lambda in one picture</h1>
+<p class="sub">Read left to right: something happens, your code runs, other services do the work, and you get a result. The boxes underneath support every run.</p>
+
+<svg viewBox="0 0 1600 880" role="img" aria-label="AWS Lambda architecture for beginners. Step 1, a trigger such as a file upload, a schedule or a web request. Step 2, your Lambda function runs your code. Step 3, it uses other AWS services such as a database, email or file storage. Step 4, the result, such as an email sent or data saved. Three supporting parts sit under the function: an IAM role for permissions, CloudWatch Logs for a record of each run, and settings such as memory and timeout. You provide the code and settings; AWS provides the servers, scaling and patching.">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#14202E"/>
+    </marker>
+  </defs>
+
+  <!-- step headers -->
+  <g fill="#B8500A"><circle cx="72" cy="112" r="22"/><circle cx="472" cy="112" r="22"/><circle cx="872" cy="112" r="22"/><circle cx="1272" cy="112" r="22"/></g>
+  <g fill="#FFFFFF" font-size="25" font-weight="700" text-anchor="middle">
+    <text x="72" y="121">1</text><text x="472" y="121">2</text><text x="872" y="121">3</text><text x="1272" y="121">4</text>
+  </g>
+  <text class="lb" x="106" y="120">TRIGGER</text>
+  <text class="lb" x="506" y="120">LAMBDA</text>
+  <text class="lb" x="906" y="120">OTHER SERVICES</text>
+  <text class="lb" x="1306" y="120">RESULT</text>
+
+  <!-- step boxes -->
+  <rect x="50" y="150" width="300" height="200" rx="16" fill="#14202E"/>
+  <text class="t" x="200" y="198" fill="#F5F3EC">Something happens</text>
+  <text class="s" x="200" y="238" fill="#C9D3DF">A file is uploaded,</text>
+  <text class="s" x="200" y="270" fill="#C9D3DF">a clock hits 8 AM,</text>
+  <text class="s" x="200" y="302" fill="#C9D3DF">or an API is called.</text>
+
+  <rect x="450" y="150" width="300" height="200" rx="16" fill="#E8731A"/>
+  <text class="t" x="600" y="198" fill="#14202E">Lambda function</text>
+  <text class="s" x="600" y="238" fill="#14202E">Your code runs here.</text>
+  <text class="s" x="600" y="270" fill="#14202E">It starts only when</text>
+  <text class="s" x="600" y="302" fill="#14202E">triggered, then stops.</text>
+
+  <rect x="850" y="150" width="300" height="200" rx="16" fill="#14202E"/>
+  <text class="t" x="1000" y="198" fill="#F5F3EC">AWS services</text>
+  <text class="s" x="1000" y="238" fill="#C9D3DF">Your code uses them</text>
+  <text class="s" x="1000" y="270" fill="#C9D3DF">for the real work:</text>
+  <text class="s" x="1000" y="302" fill="#C9D3DF">database, email, files.</text>
+
+  <rect x="1250" y="150" width="300" height="200" rx="16" fill="#14202E"/>
+  <text class="t" x="1400" y="198" fill="#F5F3EC">The job is done</text>
+  <text class="s" x="1400" y="238" fill="#C9D3DF">An email is sent,</text>
+  <text class="s" x="1400" y="270" fill="#C9D3DF">data is saved,</text>
+  <text class="s" x="1400" y="302" fill="#C9D3DF">a file is created.</text>
+
+  <!-- arrows -->
+  <g stroke="#14202E" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M350 250 H442" marker-end="url(#ah)"/>
+    <path d="M750 250 H842" marker-end="url(#ah)"/>
+    <path d="M1150 250 H1242" marker-end="url(#ah)"/>
+  </g>
+  <text class="al" x="396" y="234">event</text>
+  <text class="al" x="796" y="234">calls</text>
+  <text class="al" x="1196" y="234">output</text>
+
+  <!-- supporting bus -->
+  <text class="lb" x="40" y="396">SUPPORTING PARTS</text>
+  <g stroke="#14202E" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 8">
+    <path d="M600 350 V410"/>
+    <path d="M315 410 H1115"/>
+    <path d="M315 410 V462" marker-end="url(#ah)"/>
+    <path d="M715 410 V462" marker-end="url(#ah)"/>
+    <path d="M1115 410 V462" marker-end="url(#ah)"/>
+  </g>
+
+  <rect x="145" y="470" width="340" height="150" rx="16" fill="#E9E5D8"/>
+  <text class="t" x="315" y="512" fill="#14202E" style="font-size:29px">IAM role</text>
+  <text class="s" x="315" y="550" fill="#14202E">Permissions: what Lambda</text>
+  <text class="s" x="315" y="582" fill="#14202E">is allowed to do.</text>
+
+  <rect x="545" y="470" width="340" height="150" rx="16" fill="#E9E5D8"/>
+  <text class="t" x="715" y="512" fill="#14202E" style="font-size:29px">CloudWatch Logs</text>
+  <text class="s" x="715" y="550" fill="#14202E">A diary of every run.</text>
+  <text class="s" x="715" y="582" fill="#14202E">Read it when it fails.</text>
+
+  <rect x="945" y="470" width="340" height="150" rx="16" fill="#E9E5D8"/>
+  <text class="t" x="1115" y="512" fill="#14202E" style="font-size:29px">Settings</text>
+  <text class="s" x="1115" y="550" fill="#14202E">Memory, timeout and</text>
+  <text class="s" x="1115" y="582" fill="#14202E">environment variables.</text>
+
+  <!-- who does what -->
+  <text class="lb" x="50" y="672">WHO DOES WHAT</text>
+  <rect x="50" y="690" width="740" height="84" rx="16" fill="#E8731A"/>
+  <text class="t" x="420" y="728" fill="#14202E" style="font-size:28px">YOU provide</text>
+  <text class="s" x="420" y="758" fill="#14202E">Your code and its settings</text>
+  <rect x="820" y="690" width="730" height="84" rx="16" fill="#14202E"/>
+  <text class="t" x="1185" y="728" fill="#F5F3EC" style="font-size:28px">AWS provides</text>
+  <text class="s" x="1185" y="758" fill="#C9D3DF">Servers, scaling, patching and running it</text>
+
+  <!-- takeaway -->
+  <text class="big" x="50" y="824"><tspan font-weight="700">The big idea:</tspan> no server runs all day. Lambda starts when triggered, and you pay only while it runs.</text>
+  <text class="big" x="50" y="862" style="fill:#3E4B5B">Example from your project: 8 AM schedule, then Lambda, then Cost Explorer, then an SNS email.</text>
+</svg>
+</main>
+</body>
+</html>
