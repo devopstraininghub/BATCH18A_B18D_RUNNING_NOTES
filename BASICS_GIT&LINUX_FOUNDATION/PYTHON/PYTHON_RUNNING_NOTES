@@ -1,0 +1,194 @@
+DATE: 13 NOV 2026
+
+IF SHELL SCRIPTING IS ALREADY THERE, WHY PYTHON?
+
+    --------------------------------------------------
+    SHELL SCRIPTING (WHAT IT IS)
+    --------------------------------------------------
+
+        - A command-line interpreter and scripting language for Unix/Linux systems.
+        - Mainly used to automate Linux commands and OS-level tasks.
+        - Ideal for:
+              • File operations
+              • System administration
+              • Package installation
+              • Cron jobs
+              • Service management
+        - Not designed for complex programming.
+        - Works best only on Unix-like systems (Linux, macOS).
+        - Windows uses PowerShell instead, not Bash.
+
+
+    --------------------------------------------------
+    WHY PYTHON IS NEEDED (EVEN IF SHELL EXISTS)
+    --------------------------------------------------
+
+        - Python is a full programming language.
+        - Handles complex automation that shell cannot.
+        - Required for modern DevOps automation:
+              • AWS / Azure / GCP automation
+              • CI/CD integrations
+              • API-based automation
+              • CloudOps scripting
+        - Cross-platform (Linux, Windows, macOS)
+        - Easy to learn, clean syntax, very powerful.
+        - Faster automation with fewer lines of code.
+
+        Summary:
+            Shell → OS-level automation (Low level automation)
+            Python → High-level automation + APIs + DevOps tools
+
+
+    --------------------------------------------------
+    PYTHON (WHAT IT IS)
+    --------------------------------------------------
+
+        - A high-level, general-purpose programming language.
+        - Clean and readable syntax.
+        - Supports multiple paradigms:
+              • Object-Oriented
+              • Functional
+              • Procedural
+        - Used for:
+              • Web development
+              • Data analysis
+              • Machine learning
+              • DevOps automation (scope of our course) 
+              • Scientific computing
+
+        DevOps scope:
+            Python scripting + API automation only.
+
+        OOP Concepts supported:
+            - Classes
+            - Objects
+            - Inheritance
+            - Encapsulation
+            - Polymorphism
+            - Abstraction
+
+
+    --------------------------------------------------
+    WHAT IS A PROGRAM?
+    --------------------------------------------------
+
+        - A collection of instructions written in code.
+        - Passed to computer --> CPU → Processor executes instructions.
+        - Programs manipulate data.
+        - Data is stored using variables.
+
+
+    --------------------------------------------------
+    WHAT IS A VARIABLE?
+    --------------------------------------------------
+
+        - A container used to store data.
+        - Example:
+
+              x = "madhu"
+              x = 10
+              x = 10.3
+              x = 3+4j
+
+
+    --------------------------------------------------
+    WHAT IS A DATA TYPE?
+    --------------------------------------------------
+
+        - Defines what type of value a variable stores.
+
+        Common types:
+            Text      → str
+            Numeric   → int, float, complex
+            Boolean   → bool (True/False)
+
+        Collection types (can store multiple values):
+            list, tuple, set, dictionary
+
+
+        Example:
+            X = [10, 9.8, "KIRAN", True] 
+
+
+    --------------------------------------------------
+    READING INPUT & PRINTING OUTPUT
+    --------------------------------------------------
+
+        In Linux (shell):
+
+            echo "Enter your name"
+            read name
+            echo "Value of name is $name"
+
+        In Python:
+
+            name = input("Enter your name: ")
+            print(f"Hello,", {name})
+
+        Shell script example:
+
+            #!/bin/bash
+            read -p "Enter your name: " name
+            echo "Hello, $name"
+
+
+    --------------------------------------------------
+    OPERATORS
+    --------------------------------------------------
+
+        Arithmetic:
+            +  -  *  /  %
+
+        Assignment:
+            =  +=  -=  *=
+			
+			a = 10
+			a+=2  --> a = a + 2
+			
+
+        Comparison:
+            <  >  <=  >=  ==  !=
+            Shell equivalents: -eq -lt -le -gt -ge
+
+        Logical:
+            and, or, not
+
+        Identity:
+            is, is not
+
+        Membership:
+            in, not in
+
+        Bitwise:
+            & | ^ ~
+
+
+    --------------------------------------------------
+    PYTHON EXAMPLE
+    --------------------------------------------------
+
+        num1 = float(input("Enter first number: "))
+        num2 = float(input("Enter second number: "))
+
+        sum = num1 + num2
+
+        print(f"The sum of {num1} and {num2} is: {sum}")
+
+
+    --------------------------------------------------
+    SHELL EXAMPLE
+    --------------------------------------------------
+
+        #!/bin/bash
+		
+		echo "ENter numer 1"
+        read num1
+		
+	    echo "ENter numer 2"
+        read num2
+		
+        sum=$((num1+num2))
+        echo "Sum of 2 numbers : $sum"
+
+
+    
