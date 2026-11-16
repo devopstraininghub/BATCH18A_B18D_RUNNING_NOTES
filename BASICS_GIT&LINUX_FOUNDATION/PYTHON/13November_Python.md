@@ -30,7 +30,8 @@ Friends, you already know Shell Scripting (`BASICS_GIT&LINUX_FOUNDATION/AWS-LINU
   - API-based automation
   - CloudOps scripting
 - **Cross-platform** — the same script runs on Linux, Windows, and macOS unchanged.
-- Clean, easy-to-read syntax — faster automation with fewer lines of code than an equivalent Shell script.
+- Easy to learn, clean syntax, very powerful.
+- Faster automation with fewer lines of code than an equivalent Shell script.
 
 **Easy memory trick:** **Shell = OS-level automation** (low-level, Linux-only). **Python = high-level automation + APIs + DevOps tools** (cross-platform).
 
@@ -133,7 +134,11 @@ print(f"Hello, {name}")
 ```python
 print(f"Hello,", {name})   # ❌ wrong — don't do this
 ```
-This looks like it should print `Hello, madhu` — but it doesn't work the way it looks. The `{name}` here is **outside** the f-string's quotes, so Python doesn't treat it as a placeholder at all — it treats `{name}` as a **set literal** containing the variable's value. If `name = "madhu"`, this actually prints `Hello, {'madhu'}` — with the curly braces and quotes showing up in your output. The placeholder has to live **inside** the f-string itself:
+- This looks like it should print `Hello, madhu` — but it doesn't.
+- The `{name}` here sits **outside** the f-string's quotes, so Python doesn't treat it as a placeholder at all.
+- Instead, Python treats `{name}` as a **set literal** containing the variable's value.
+- If `name = "madhu"`, this actually prints `Hello, {'madhu'}` — curly braces and quotes included.
+- The placeholder has to live **inside** the f-string itself:
 ```python
 print(f"Hello, {name}")    # ✅ correct — prints: Hello, madhu
 ```
