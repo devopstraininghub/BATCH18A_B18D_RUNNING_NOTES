@@ -11,7 +11,12 @@ Friends, you already know Shell Scripting (`BASICS_GIT&LINUX_FOUNDATION/AWS-LINU
 ### Shell Scripting — what it's good at
 - A command-line interpreter and scripting language, built into Unix/Linux systems.
 - Mainly automates **Linux commands and OS-level tasks.**
-- Ideal for: file operations, system administration, package installation, cron jobs, service management.
+- Ideal for:
+  - File operations
+  - System administration
+  - Package installation
+  - Cron jobs
+  - Service management
 - Not designed for complex programming (no real data structures, weak math, clunky string handling).
 - Works best only on Unix-like systems (Linux, macOS).
 - Windows doesn't run Bash natively — it uses PowerShell instead (Git Bash/WSL exist, but that's a workaround, not Windows' native shell).
@@ -46,7 +51,12 @@ Friends, you already know Shell Scripting (`BASICS_GIT&LINUX_FOUNDATION/AWS-LINU
   - **Object-Oriented** — code organized around classes/objects.
   - **Functional** — code organized around functions.
   - **Procedural** — code organized around step-by-step instructions (what most of our DevOps scripts will look like).
-- Real-world uses: web development, data analysis, machine learning, scientific computing, and — **the actual scope of this course** — **DevOps automation.**
+- Real-world uses:
+  - Web development
+  - Data analysis
+  - Machine learning
+  - Scientific computing
+  - **DevOps automation — the actual scope of this course**
 - **Our scope specifically:** Python scripting + API automation only — not web dev, not ML.
 
 **OOP concepts Python supports** (we'll come back to these in a later class, just know the names for now):
