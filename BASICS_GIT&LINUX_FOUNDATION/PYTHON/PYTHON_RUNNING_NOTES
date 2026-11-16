@@ -191,4 +191,658 @@ IF SHELL SCRIPTING IS ALREADY THERE, WHY PYTHON?
         echo "Sum of 2 numbers : $sum"
 
 
-    
+
+===============================================================
+
+
+DATE: 16 NOV 2026
+--------------------------------------------------
+    ADVANCED DATA TYPES (COLLECTION TYPES)
+    --------------------------------------------------
+
+     x = [ 10, madhu, 5.3, 4+3i ]
+
+        List:
+            - Ordered
+            - Mutable
+            - Allows duplicates
+            list = [1, 2, 3, 1]
+
+        Tuple:
+            - Ordered
+            - Immutable
+            - Allows duplicates
+            tuple = (1, 2, 3, 1)
+
+        Set:
+            - Unordered
+            - No duplicates
+            - No index
+			- unique values 
+			
+            set = {1, 2, 3}
+
+        Dictionary:
+            - Unordered
+            - Mutable
+            - Key-value pairs
+            dict = {
+			         "name": "Madhu", 
+			         "age": 30
+					 "address: "xyz"
+                     "prof" : "abc" 
+
+					 }
+
+
+    --------------------------------------------------
+    REAL DEVOPS EXAMPLES
+    --------------------------------------------------
+
+
+
+Real-Time DevOps Examples 
+
+List:
+
+Server IPs: 
+       A list of IP addresses of servers in a Cluster, which may change as servers are added or removed.
+
+   - Server IPs: ['192.168.3.2', '192.168.1.2', '10.81.0.3'] 
+
+   
+==============================
+
+
+Tuple:
+
+Server Configuration: 
+          A tuple containing details of server configuration  (IP, OS, version). These values are fixed Once set, these details should not change.
+		  
+          Immutable System Settings: Information about the region, availability zone, and instance type, which remains constant for the duration of a deployment.
+		  
+   - Server Configuration: ('192.168.1.1', 'Ubuntu', '18.04') 
+   - Immutable System Settings: ('US-East', 'us-east-1a', 'm5.large')		  
+		  
+====================
+	  
+Set:
+
+    Active Services --- A set of active services running on a server, where uniqueness (no duplicates) is crucial.
+	
+    Unique Error Codes ---A set of unique error codes encountered during operations, useful for monitoring and alerting.
+
+	- Active Services: {'nginx', 'redis', 'mysql', 'jenkins'} 
+	- Unique Error Codes: {404, 500, 502}
+	
+=====================
+
+Dictionaries :	
+	
+    Environment Variables: Key-value pairs representing environment variables for an application, where keys are unique and values can vary.
+	
+    Configurations: Dictionary of configurations, such as timeout settings and retry limits, where keys represent the setting and values are the parameters
+
+    - Environment Variables: {
+	                          'DB_HOST': 'mcdb.example.com', 
+	                           'DB_USER': 'admin'
+							   
+							   
+							   } 
+	
+    - Configurations: {
+	
+	                   'timeout': 30, 
+					   'retries': 3
+					   }
+					   
+					   
+	    dict = {
+			         "name": "Madhu", 
+			         "age": 30
+					 "address: "xyz"
+                     "prof" : "abc" 
+
+					 }
+
+
+========================================================
+
+        LIST
+            Server IPs:
+                ["192.168.1.1", "192.168.1.2", "10.81.0.3"]
+
+        TUPLE
+            Immutable server config:
+                ("192.168.1.1", "Ubuntu", "18.04")
+
+        SET
+            Active services:
+                {"nginx", "redis", "mysql"}
+
+            Unique error codes:
+                {404, 500, 502}
+
+        DICTIONARY
+            Environment variables:
+                {"DB_HOST": "db.example.com", "DB_USER": "admin"}
+
+            Configurations:
+                {"timeout": 30, "retries": 3}
+
+
+==================================================
+
+    --------------------------------------------------
+    PRACTICAL EXAMPLES
+    --------------------------------------------------
+
+        Remove duplicates from list:
+
+            usernames = ["madhu", "kiran", "madhu", "raja" ]
+            unique = list(set(usernames))
+
+        Contact book:
+
+            contact = {
+                "name": "Madhu",
+                "phone": "73966",
+                "email": "devops@gmail.com"
+            }
+
+            contact_book = [
+     
+                {"name": "xyz",   "phone": "...","email": "abc@gmail.com"},
+				{                                                        },
+				{"name": "Madhu", "phone": "...", "email": "abc@gmail.com"},
+            ]
+
+===============================================================================
+
+========================================================
+
+
+	FUNCTIONS 
+          -- BLOCK OF CODE FOR REPEATED USE 
+		  -- ALLOWS TO GROUP A SET OF COMMANDS INTO A SINGLE, REUSABLE UNIT. 
+		  -- BREAK DOWN TOTAL FUNCTIONALITY OF SCRIPT INTO LOGICAL SUB-SECTIONS 
+          -- ENCAPSULATE AND REUSE CODE
+		  -- WE CAN CALL FUNCTIONS WHEN EVER NEEDED
+		  -- MAKE YOUR SCRIPTS MORE ORGANIZED, MODULAR, AND EASIER TO MAINTAIN.
+		  
+	
+
+============================================================
+
+FUNCTIONS IN PYTHON: 
+
+# Python example
+
+def greet(name):
+    print(f"Hello, {name}!")
+
+greet("Madhu")	
+
+====================================================================
+
+
+FUNCTIONS IN SHELL : 
+# Bash example
+
+greet() {
+  echo "Hello, $1!"
+}
+
+greet "Madhu"
+
+greet "kiran"
+
+=================================
+
+
+LINUX :
+
+yum install python -y 
+apt install python -y 
+
+WINDOWS: 
+
+DOWNLOAD & INSTALL 
+================================================================
+
+DATE:
+17 JAN 26
+
+
+PYTHON VS SHELL, FUNCTIONS, AND DATA TYPES (NOTES)
+
+    --------------------------------------------------
+    PYTHON TRACING (DEBUGGING)
+    --------------------------------------------------
+
+        Run script with tracing:
+
+            python3 -m trace --trace script.py
+
+
+    --------------------------------------------------
+    SHELL FUNCTION EXAMPLE
+    --------------------------------------------------
+
+        #!/bin/bash
+
+        greet() {
+            echo "Hello, $1!"
+        }
+
+        greet "Madhu"
+        greet "Kiran"
+
+
+    --------------------------------------------------
+    PYTHON FUNCTION EXAMPLE
+    --------------------------------------------------
+
+        def greet(name):
+            print(f"Hello, {name}!")
+
+        greet("Madhu")
+        greet("Kiran")
+
+
+    --------------------------------------------------
+    SHELL FUNCTION WITH set -x (DEBUGGING)
+    --------------------------------------------------
+
+        #!/bin/bash
+
+        set -x
+        sum() {
+            result=$(( $1 + $2 ))
+            echo "The sum of $1 and $2 is $result"
+        }
+
+        sum 5 10
+        sum 20 30
+        sum 100 250
+
+
+    --------------------------------------------------
+    PYTHON SUM FUNCTION
+    --------------------------------------------------
+
+        def sum(a, b):
+            result = a + b
+            print(f"The sum of {a} and {b} is {result}")
+
+        sum(5, 10)
+        sum(20, 30)
+        sum(100, 250)
+
+
+    --------------------------------------------------
+    PYTHON FUNCTION WITH RETURN
+    --------------------------------------------------
+
+        def add_numbers(a, b):
+            result = a + b
+            return result
+
+        num1 = float(input("Enter first number: "))
+        num2 = float(input("Enter second number: "))
+
+        sum_result = add_numbers(num1, num2)
+        print(f"The sum of {num1} and {num2} is {sum_result}")
+
+
+    ==================================================
+    LIST OPERATIONS USING FUNCTIONS & METHODS :
+    ==================================================
+
+        my_list = [1, 2, 3, 4, 5]
+
+        my_list.append(4)
+        print("After append:", my_list)
+
+        my_list.extend([8, 9, 7])
+        print("After extend:", my_list)
+
+        my_list.insert(0, 10)
+        print("After insert:", my_list)
+
+        my_list.remove(1)
+        print("After remove:", my_list)
+
+        popped_element = my_list.pop()
+        print("Popped element:", popped_element)
+        print("After pop:", my_list)
+
+        index_of_9 = my_list.index(9)
+        print("Index of 9:", index_of_9)
+
+        count_of_1 = my_list.count(1)
+        print("Count of 1:", count_of_1)
+
+        my_list.sort()
+        print("After sort:", my_list)
+
+        my_list.reverse()
+        print("After reverse:", my_list)
+
+        copied_list = my_list.copy()
+        print("Copied list:", copied_list)
+
+        my_list.clear()
+        print("After clear:", my_list)
+
+        print("Length of list:", len(my_list))
+        print("Length of copied list:", len(copied_list))
+        print("Maximum:", max(copied_list))
+        print("Minimum:", min(copied_list))
+        print("Sum:", sum(copied_list))
+
+
+    ==================================================
+    TUPLE – OPERATIONS (IMMUTABLE)
+    ==================================================
+	
+	Immutability: Tuples cannot be modified once created. 
+
+    Methods like append(), remove(), pop(), etc., are not available.
+
+        my_tuple = (3, 1, 4, 1, 5, 9, 2, 6, 5)
+
+        count_of_1 = my_tuple.count(1)
+        print("Count of 1:", count_of_1)
+
+        index_of_9 = my_tuple.index(9)
+        print("Index of 9:", index_of_9)
+
+        print("Length:", len(my_tuple))
+        print("Max:", max(my_tuple))
+        print("Min:", min(my_tuple))
+        print("Sum:", sum(my_tuple))
+
+        sorted_list = sorted(my_tuple)
+        print("Sorted tuple as list:", sorted_list)
+
+        sorted_list.append(4)
+        print("After append:", sorted_list)
+
+
+    ==================================================
+    SETS – OPERATIONS (NO DUPLICATES)
+    ==================================================
+    No Duplicate Elements:   Sets automatically remove duplicate elements.
+    Unordered: Sets do not maintain the order of elements.
+    Mutable: You can add or remove elements from a set.
+	Use Cases: Sets are useful for removing duplicates from a collection, checking for membership, and performing set operations like union, intersection, and difference.
+
+
+        my_set = {1, 2, 3, 4, 5}
+
+        my_set.add(6)
+        print("After add:", my_set)
+
+        my_set.remove(4)
+        print("After remove:", my_set)
+
+        popped = my_set.pop()
+        print("Popped:", popped)
+        print("After pop:", my_set)
+
+        my_set.clear()
+        print("After clear:", my_set)
+
+        set_a = {1, 2, 3}
+        set_b = {3, 4, 5}
+
+        print("Union:", set_a.union(set_b))
+        print("Intersection:", set_a.intersection(set_b))
+        print("Difference:", set_a.difference(set_b))
+
+
+    ==================================================
+    DICTIONARIES – OPERATIONS
+    ==================================================
+
+        my_dict = {
+            "name": "Madhu",
+            "phone": "7396627149",
+            "city": "Hyderabad"
+        }
+
+        print("Name:", my_dict['name'])
+
+        phone = my_dict.get('phone')
+        print("Phone:", phone)
+
+        salary = my_dict.get('salary', 'Not Available')
+        print("Salary:", salary)
+
+        my_dict['occupation'] = 'DevOps Engineer'
+        print("After adding occupation:", my_dict)
+
+        popped_value = my_dict.pop('phone')
+        print("Popped:", popped_value)
+        print("After pop:", my_dict)
+
+        print("Keys:", list(my_dict.keys()))
+        print("Values:", list(my_dict.values()))
+        print("Items:", list(my_dict.items()))
+
+        my_dict.clear()
+        print("After clear:", my_dict)
+
+        new_dict = {'a': 1, 'b': 2}
+        copied_dict = new_dict.copy()
+        print("Copied:", copied_dict)
+
+
+======================================
+    FUNCTIONS VS METHODS IN PYTHON
+
+    --------------------------------------------------
+    WHAT IS A FUNCTION?
+    --------------------------------------------------
+
+        A function is a standalone block of code that:
+
+            - Is not tied to any object
+            - Takes data as arguments
+            - Returns a result
+
+        Examples (built-in functions):
+
+            len(my_list)
+            max(my_list)
+            sum(my_list)
+
+        General form:
+
+            function_name(data)
+
+        Your examples:
+
+            len(my_list)
+            max(copied_list)
+            min(copied_list)
+            sum(copied_list)
+
+        These:
+
+            ✔ Work on data you pass
+            ✔ Do NOT belong to the data itself (not part of list)
+
+
+    --------------------------------------------------
+    WHAT IS A METHOD?
+    --------------------------------------------------
+
+        A method is a function that belongs to an object.
+
+        In Python:
+
+            - Methods are defined inside a class
+            - They are called using an object
+
+        Examples:
+
+            my_list.append(4)
+            my_list.sort()
+
+        General form:
+
+            object.method(arguments)
+
+        Your examples:
+
+            my_list.append(4)
+            my_list.extend([8, 9, 7])
+            my_list.insert(0, 10)
+            my_list.remove(1)
+            my_list.pop()
+            my_list.sort()
+            my_list.reverse()
+            my_list.copy()
+            my_list.clear()
+
+        These:
+
+            ✔ Belong to the list object
+            ✔ Know how to modify the list
+
+
+    --------------------------------------------------
+    WHY append() IS NOT A FUNCTION
+    --------------------------------------------------
+
+        This will fail:
+
+            append(my_list, 4)     (❌ invalid)
+
+        Because append is a method defined inside the list class.
+
+        Correct usage:
+
+            my_list.append(4)
+
+
+    --------------------------------------------------
+    WHY len() IS NOT A METHOD
+    --------------------------------------------------
+
+        This will fail:
+
+            my_list.len()      (❌ invalid)
+
+        Because len() is a built-in function, not a method.
+
+        Correct:
+
+            len(my_list)
+
+
+    --------------------------------------------------
+    USAGE:
+    --------------------------------------------------
+
+        Function:
+
+            function(data)
+			greet(name)
+			sum (num1, num2))
+
+        Method:
+
+            data.method()
+            mylist.append()
+
+
+
+    --------------------------------------------------
+    WHY PYTHON HAS BOTH
+    --------------------------------------------------
+
+        Functions:
+            - Generic
+            - Work on many data types
+            - Examples: len(), type(), sum()
+
+        Methods:
+            - Specific to a particular data type
+            - Modify or act on that object
+            - Examples: list.append(), str.upper()
+
+
+    --------------------------------------------------
+    FUNCTION VS METHOD (SIDE-BY-SIDE)
+    --------------------------------------------------
+
+        Feature                     Function        Method
+        ----------------------------------------------------
+        Belongs to object          No              Yes
+        Called using               function(x)     x.method()
+        Defined in                 Global/module   Class
+        Needs object               Passed          Implicit (self)
+        Example                    len(x)          x.append(4)
+
+
+    --------------------------------------------------
+    CLASSIFICATION OF YOUR CODE
+    --------------------------------------------------
+
+        LIST METHODS (object methods):
+
+            append()
+            extend()
+            insert()
+            remove()
+            pop()
+            index()
+            count()
+            sort()
+            reverse()
+            copy()
+            clear()
+
+        BUILT-IN FUNCTIONS:
+
+            len()
+            max()
+            min()
+            sum()
+
+
+    --------------------------------------------------
+    FINAL TAKEAWAY (MEMORIZE THIS)
+    --------------------------------------------------
+
+        If you call it like:
+
+            object.something()
+
+        → It is a METHOD.
+
+        If you call it like:
+
+            something(object)
+
+        → It is a FUNCTION.
+
+
+====================================================================================
+
+x = 10
+x = "madhu"
+x = 10.2
+x = 4 + 3j
+
+
+STATICALLY TYPED  VS DYNAMIC TYPED 
+Dynamic typing means that the type of a variable is determined at runtime, not in advance. You do not need to declare the type of a variable when you create it. 
+
+
+Static typing means that the type of a variable is known at compile time. You must declare the type of a variable before you use it, and this type cannot change throughout the program. Languages like C, C++, go  and Java are statically typed.
+
+======================================================================
