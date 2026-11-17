@@ -480,6 +480,44 @@ PYTHON VS SHELL, FUNCTIONS, AND DATA TYPES (NOTES)
         sum(100, 250)
 
 
+
+===============
+
+debuging :
+
+# sum_numbers(50,60)
+Madhukiran@BOOK-6QJPLNSHMI MINGW64 ~/Desktop/BATCH-18/BATCH18A_B18D_RUNNING_NOTES/BASICS_GIT&LINUX_FOUNDATION/PYTHON/Python-practice/python-practice/16nov26 (main)
+$ python3 -m trace --trace 4-sum.py
+ --- modulename: 4-sum, funcname: <module>
+4-sum.py(3):  def sum_numbers(num1, num2):
+4-sum.py(8):  sum_numbers(10,20)
+ --- modulename: 4-sum, funcname: sum_numbers
+4-sum.py(4):      sum = num1 + num2
+4-sum.py(5):      print(f"The sum of {num1} & {num2} is {sum}" )
+The sum of 10 & 20 is 30
+
+Madhukiran@BOOK-6QJPLNSHMI MINGW64 ~/Desktop/BATCH-18/BATCH18A_B18D_RUNNING_NOTES/BASICS_GIT&LINUX_FOUNDATION/PYTHON/Python-practice/python-practice/16nov26 (main)
+$ python3 -m trace --trace 4-sum.py
+ --- modulename: 4-sum, funcname: <module>
+4-sum.py(3):  def sum_numbers(num1, num2):
+4-sum.py(8):  sum_numbers(10,20)
+ --- modulename: 4-sum, funcname: sum_numbers
+4-sum.py(4):      sum = num1 + num2
+4-sum.py(5):      print(f"The sum of {num1} & {num2} is {sum}" )
+The sum of 10 & 20 is 30
+4-sum.py(9):  sum_numbers(30,40)
+ --- modulename: 4-sum, funcname: sum_numbers
+4-sum.py(4):      sum = num1 + num2
+4-sum.py(5):      print(f"The sum of {num1} & {num2} is {sum}" )
+The sum of 30 & 40 is 70
+4-sum.py(10):  sum_numbers(50,60)
+ --- modulename: 4-sum, funcname: sum_numbers
+4-sum.py(4):      sum = num1 + num2
+4-sum.py(5):      print(f"The sum of {num1} & {num2} is {sum}" )
+The sum of 50 & 60 is 110
+
+
+=================
     --------------------------------------------------
     PYTHON FUNCTION WITH RETURN
     --------------------------------------------------
@@ -494,6 +532,8 @@ PYTHON VS SHELL, FUNCTIONS, AND DATA TYPES (NOTES)
         sum_result = add_numbers(num1, num2)
         print(f"The sum of {num1} and {num2} is {sum_result}")
 
+
+DATE: 17 NOV 26
 
     ==================================================
     LIST OPERATIONS USING FUNCTIONS & METHODS :
@@ -846,3 +886,501 @@ Dynamic typing means that the type of a variable is determined at runtime, not i
 Static typing means that the type of a variable is known at compile time. You must declare the type of a variable before you use it, and this type cannot change throughout the program. Languages like C, C++, go  and Java are statically typed.
 
 ======================================================================
+
+
+
+STRING MANIPULATION WITH in built METHONS /FUNCTIONS in python :
+
+
+
+my_string = "Hello, Welcome to Aws Devops World"
+
+# 1. Length of the string
+print(f"Length of the string: {len(my_string)}")
+
+# 2. Convert to uppercase and lowercase
+print(f"Uppercase: {my_string.upper()}")
+print(f"Lowercase: {my_string.lower()}")
+
+# 3. Count occurrences of a substring
+substring = "Welcome"
+print(f"Occurrences of '{substring}': {my_string.count(substring)}")
+
+# 4. Check if the string starts or ends with a particular substring
+print(f"Starts with 'Hello': {my_string.startswith('Hello')}")
+print(f"Ends with 'World.': {my_string.endswith('World')}")
+
+# 5. Find the index of a substring (first occurrence)
+print(f"Index of 'World': {my_string.find('World')}")
+
+# 6. Replace a substring with another substring
+new_string = my_string.replace('Aws', 'Cloud')
+print(f"Original string: {my_string}")
+print(f"Modified string: {new_string}")
+
+# 7. Split the string into a list based on a delimiter
+words = my_string.split()
+print(f"Split into words: {words}")
+
+# 8. Check if all characters are alphanumeric
+alphanumeric_string = "Python123"
+print(f"Is Python123 alphanumeric? {alphanumeric_string.isalnum()}")
+
+# 9. Convert string to title case
+title_case_string = "python programming"
+print(f"Title case: {title_case_string.title()}")
+
+
+=================================================================
+
+
+
+# Integer examples
+x = 10
+y = -5
+z = 0
+
+# Floating-point examples
+a = 3.14
+b = -0.001
+
+
+# Print examples
+print(f"Integers: x = {x}, y = {y}, z = {z}")
+print(f"Floating-point numbers: a = {a}, b = {b}, c = {c}")
+
+
+# Arithmetic operations
+print(f"\nArithmetic Operations:")
+print(f"x + y = {x + y}")   # Addition
+print(f"x - y = {x - y}")   # Subtraction
+print(f"x * y = {x * y}")   # Multiplication
+print(f"x / y = {x / y}")   # Division
+print(f"x % y = {x % y}")   # Modulus
+
+
+# Type conversions
+print(f"\nType Conversions:")
+f = float(x)
+print(f"Convert int {x} to float: f = {f}")
+
+g = int(a)
+print(f"Convert float {a} to int: g = {g}")
+
+
+
+
+=================================================================
+
+CONDITIONAL EXPRESSION : 
+
+
+=================================================================
+
+if condition1:
+    # Block of code to execute if condition1 is True
+   
+elif condition2:
+    # Block of code to execute if condition1 is False and condition2 is True
+   
+elif condition3:
+    # Block of code to execute if previous conditions are False and condition3 is True
+	
+elif condition4:
+    # Block of code to execute if previous conditions are False and condition4 is True	
+   
+else:
+    # Block of code to execute if all previous conditions are False
+   
+=================================================================
+cat if.sh
+
+#!/bin/bash
+
+
+read -p "Enter a number: " NUMBER
+
+if [ $NUMBER -gt 10 ]; then
+    echo "$NUMBER is greater than 10"
+
+elif [ $NUMBER -lt 10  ]; then
+    echo "$NUMBER is less than 10"
+
+else
+    echo "$NUMBER is equal to 10"
+
+fi
+=================================================================
+
+$ cat if.py
+
+number = float(input("Enter a number: "))
+
+if number > 10:
+    print(f"{number} is greater than 10")
+
+elif number < 10:
+    print(f"{number} is less than 10")
+
+else:
+    print(f"{number} is equal to 10")
+	
+	
+===================================================================
+
+PYTHON LOOPS :
+      
+WHILE 
+FOR 
+
+	 
+	  
+WHILE  LOOP:
+
+  it enables you to execute set of commands as long as conndition is true . 
+  
+  once condition fails , it comes out of loop .
+ 
+-------------------------------------------------------------------
+
+#!/bin/bash
+
+i=0
+
+while [ "$i" -lt 101 ]; do
+    echo "Iteration number: $i"
+    ((i++))
+done
+
+echo "Loop finished!"
+
+ 
+-------------------------------------------------------------------
+
+cat while.py
+
+i = 0 
+
+while i < 101:
+    print("Iteration number:", i)
+    i = i + 1 
+
+print("Loop finished!")
+	
+-------------------------------------------------------------------
+BREAK & CONTINUE :
+
+In Python, break and continue are control flow statements used inside loops (for and while). They help control the flow of loop execution based on certain conditions
+
+
+**a. break Statement:
+
+Used to exit the loop prematurely.
+
+
+
+**b. continue Statement:
+
+Skips the rest of the current iteration and proceeds to the next iteration of the loop.
+
+
+-------------------------------------------------------------------
+BREAK :
+
+
+i = 0 
+
+while i < 101:
+    print("Iteration number:", i)
+
+    if i == 5:
+        print("Reached 5, breaking the loop.")
+        break
+    
+
+    i = i + 1 
+
+print("Loop finished!")
+-------------------------------------------------------------------
+
+CONTIUE: 
+
+
+i = 0 
+
+while i < 101:
+
+    if i == 5:
+        i += 1
+        continue
+    
+    print("Iteration number:", i)
+
+    i = i + 1 
+
+print("Loop finished!")
+
+==============================================================================
+
+FOR LOOP : 
+
+For loop operates on list of items , it repeats commands on every item in the list 
+
+----------------
+for variable in iterable:
+    # Block of code to execute
+    statement1
+    statement2
+    # More statements
+	
+	
+
+-----------------------------------
+
+
+mc_list = [1,2,3,4,5,6,7,8,9,10]
+
+for mc in mc_list:
+    print(f"Processing mc value: {mc}") 
+    
+
+-----------------------------------
+
+for i in range(50,101):
+    print("Iteration number:", i)
+
+
+
+------------------   ### range(n) ---> 0 - n-1
+for i in range(5):    
+    print(i)
+
+----------------
+
+for number in range(1, 11):  ### range(k, n) ---> k ... n-1
+    print(number)
+
+----------------
+
+fruits = ["apple", "banana", "cherry"]
+
+for fruit in fruits:
+    print(fruit)
+
+
+=======================================================
+
+def add(a,b):
+    return a + b 
+
+result = add(3, 5)
+print(result)  
+
+================================================================
+LAMBDA : 
+
+lambda arguments: expression
+
+   - a lambda function is a small, anonymous function defined using the lambda keyword. 
+   
+   
+    lambda: Keyword to define an anonymous function.
+    arguments: The input parameters to the function.
+    expression: A single expression that the function returns.
+	
+================================================================	
+cat lambda.py
+
+
+sum = lambda a, b: a + b
+
+print("Sum of 5 and 3 is:", sum(5, 3))
+print("Sum of 10 and 20 is:", sum(10, 20))
+
+
+>===================================================================
+
+Keywords In Python:
+
+Keywords in Python are reserved words that have special meanings and purposes within the language. These keywords cannot be used as identifiers (variable names, function names, etc.) because they are part of the language syntax.
+
+List of keywords in Python: 
+ 
+False      await      else       import     pass   None       break      except     in         raise
+True       class      finally    is         return   and        continues   for        lambda     try
+as         def        from       nonlocal   while assert     del        global     not        with
+async      elif       if         or         yield
+
+
+
+Description of Keywords:
+
+
+1.	Boolean Values: True, False, and None are used to represent truth values (True and False) and a null value (None).
+
+2.	Control Flow: Keywords like if, else, elif, while, for, break, continue, pass, and return are used for controlling the flow of execution in programs.
+
+3.	Defining Entities: def is used to define functions, class is used to define classes, and lambda is used to create anonymous functions.
+
+4.	Exception Handling: try, except, finally, and raise are used for handling exceptions and errors in Python programs.
+
+5.	Importing Modules: import and from are used to import modules and contents from modules.
+
+6.	Context Managers: with is used to manage resources and contexts that need cleanup actions.
+
+7.	Operators: and, or, and not are logical operators used for boolean operations.
+
+8.	Asyncio: async, await, and nonlocal are used in asynchronous programming (async and await) and for accessing variables in outer scopes (nonlocal).
+
+9.	Assertions: assert is used to assert or enforce certain conditions in the code.
+
+
+
+===================================================================================================
+NAMING CONVENTION OF VARIABLES - BEST PRACTICES : Variable Naming Rules:
+
+
+
+1.	Variables names must start with a letter (a-z, A-Z) or an underscore (_).
+2.	The remaining characters can be letters, numbers, or underscores.
+3.	Variable names are case-sensitive (age, Age, and AGE are three different variables).
+4.	Python keywords (like if, else, for, etc.) cannot be used as variable names.
+
+5.  Variables can be classified into GLOBAL scope variables and LOCAL scope variables 
+                based on their scope, which determines where in your code they can be accessed and modified.
+
+================================================================				
+Assigning Values to Variables:
+You assign a value to a variable using the assignment operator =.
+Examples:
+# Assigning integers
+age = 25
+
+# Assigning floating-point numbers
+height = 5.11
+
+# Assigning strings
+name = "Madhu"
+
+# Assigning a boolean value
+is_student = True
+
+# Assigning a list
+numbers = [1, 2, 3, 4, 5]
+
+================================================================
+
+LOCAL VS GLOBAL VARIABLES 
+
+
+---------------------------------
+Global Scope Variables
+Global variables are defined outside of any function and can be accessed (read and modified) by any part of the code, including inside functions.
+
+--------
+Local Scope Variables
+
+Local variables are defined within a function and are only accessible within the scope of that function. They cannot be accessed outside the function.
+
+-----------
+Global Variables and Local Variables Together:
+
+Variables with the same name can exist both globally and locally, but they are treated as separate variables with different scopes.
+Example:
+
+
+------------------------------------------------- 
+cat local_global.py
+
+x = 10
+y = 20
+
+def add_numbers():
+    x = 15
+    y = 25  
+    print(f"Sum of 2 numbers is:, {x + y}")
+
+
+def multiply_numbers():
+    global x
+    x = 5
+    y = 4  
+    print(f"Product of 2 numbers is:, {x * y}")
+
+
+add_numbers()
+multiply_numbers()
+print(f"Global Sum of 2 numbers is:, {x + y}")
+
+===============================================================================================
+
+
+MODULES & PACKAGES
+   
+   modules and packages are fundamental concepts used TO ORGANIZE AND STRUCTURE CODE
+  
+   A module is A SINGLE FILE (WITH A .PY EXTENSION) that contains Python code. It can include functions, classes, and variables. You can also include runnable code. Modules are used to organize related code into a single file and to promote code reusability.
+   
+ ----------------------------------------  
+ # my_module.py
+    
+
+def greet(name):
+    print(f"Hello, {name}!")
+
+
+def add(a, b):
+    result = a + b
+    print(f"The sum of {a} and {b} is {result}")
+----------------------------------------
+
+
+# main.py
+
+import my_module
+
+my_module.greet("Madhukiran")
+my_module.add(5, 10)
+my_module.add(20, 30)
+my_module.greet("Alice")    
+my_module.add(7, 3)
+my_module.greet("BATCH 17")
+
+
+=======================================================================
+
+PYTHON PACKAGE: 
+
+A package is a way of organizing multiple related modules into a directory hierarchy. 
+A PACKAGE IS A DIRECTORY THAT CONTAINS A SPECIAL FILE NAMED __INIT__.PY (WHICH CAN BE EMPTY) AND OTHER MODULES. 
+The presence of __init__.py indicates that the directory should be treated as a package.
+
+
+my_package/
+    __init__.py
+    module1.py
+    module2.py
+	module3.py
+
+--------------
+# module1.py
+
+def function1():
+    return "This is function 1 from module 1"
+
+-----------
+
+# module2.py
+
+def function2():
+    return "This is function 2 from module 2"
+
+-----------
+
+cat main.py
+
+from my_package import module1, module2, module3
+
+module1.func1()
+module2.func2() 
+module3.func3()

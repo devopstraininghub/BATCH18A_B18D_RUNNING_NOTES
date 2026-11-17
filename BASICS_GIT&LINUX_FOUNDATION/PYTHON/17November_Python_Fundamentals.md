@@ -1,0 +1,195 @@
+# Batch 18 — Running Notes: 17 November 2026
+
+**Topic: Keywords, Variable Naming, Scope, and Modules & Packages**
+
+Friends, the last 17 November file — the language's own reserved words, the rules for naming your own variables, how `global` actually behaves, and how to split code across multiple files.
+
+---
+
+## 1. Keywords in Python
+
+- Keywords are **reserved words** with special meaning built into the language.
+- You can never use one as a variable name, function name, or any other identifier.
+
+| Category | Keywords |
+|---|---|
+| Boolean / special values | `True`, `False`, `None` |
+| Control flow | `if`, `elif`, `else`, `while`, `for`, `break`, `continue`, `pass`, `return` |
+| Defining entities | `def`, `class`, `lambda` |
+| Exception handling | `try`, `except`, `finally`, `raise` |
+| Importing modules | `import`, `from` |
+| Context managers | `with` |
+| Logical operators | `and`, `or`, `not` |
+| Membership / identity | `in`, `is` |
+| Scope control | `global`, `nonlocal` |
+| Asynchronous programming | `async`, `await` |
+| Other | `as`, `assert`, `del`, `yield` |
+
+⚠️ The raw notes' keyword grid had a typo — `continues` isn't a real Python keyword, it's **`continue`** (no `s`). Fixed in the table above.
+
+---
+
+## 2. Variable naming — the rules
+
+- Must start with a letter (`a`–`z`, `A`–`Z`) or an underscore (`_`).
+- After that first character, the rest can be letters, numbers, or underscores.
+- Case-sensitive — `age`, `Age`, and `AGE` are three completely different variables.
+- Can never be one of the keywords from §1 (e.g. `for = 5` is a syntax error).
+- Variables also fall into **global scope** or **local scope** — see §3.
+
+**Assigning values — one variable, any type, no declaration needed:**
+```python
+age = 25                    # int
+height = 5.11                # float
+name = "Madhu"               # str
+is_student = True            # bool
+numbers = [1, 2, 3, 4, 5]    # list
+```
+
+---
+
+## 3. Local vs global variables
+
+- **Global** variables are defined outside any function, and can be read **and** modified from anywhere in the file, including inside functions.
+- **Local** variables are defined inside a function, and only exist inside that function's own scope — they disappear once the function returns.
+- A variable can exist as **both** at once, with the same name — Python treats them as two completely separate variables, unless you explicitly tell it otherwise with `global`.
+
+**Complete script (`local_global.py`):**
+```python
+x = 10
+y = 20
+
+def add_numbers():
+    x = 15
+    y = 25
+    print(f"Sum of 2 numbers is:, {x + y}")
+
+
+def multiply_numbers():
+    global x
+    x = 5
+    y = 4
+    print(f"Product of 2 numbers is:, {x * y}")
+
+
+add_numbers()
+multiply_numbers()
+print(f"Global Sum of 2 numbers is:, {x + y}")
+```
+
+**Sample output:**
+```
+Sum of 2 numbers is:, 40
+Product of 2 numbers is:, 20
+Global Sum of 2 numbers is:, 25
+```
+
+**What's actually happening, step by step:**
+- `add_numbers()` creates its **own local** `x = 15` and `y = 25` — these never touch the global `x`/`y` at all, since neither is declared `global` inside this function. Prints `15 + 25 = 40`.
+- `multiply_numbers()` has `global x` — so its `x = 5` changes the **real, global** `x`. But `y = 4` here has no `global` declaration, so it's a **brand-new local** `y`, separate from the global one. Prints `5 * 4 = 20` (global `x`, local `y`).
+- After both calls: global `x` is now `5` (changed by `multiply_numbers`'s `global x`), global `y` is still `20` (never touched by either function). Final print: `5 + 20 = 25`.
+- ⚠️ **This is the real lesson:** `global` only affects the *one variable name* it's declared for in that function — `multiply_numbers()` changed the real `x`, but its own `y = 4` was still just a local shadow, exactly like `add_numbers()`'s `y`.
+
+---
+
+## 4. Modules
+
+- A **module** is a single `.py` file containing Python code — functions, classes, variables, even runnable code.
+- Modules exist to organize related code into one file, and make it reusable from anywhere else.
+
+**`my_module.py`:**
+```python
+def greet(name):
+    print(f"Hello, {name}!")
+
+
+def add(a, b):
+    result = a + b
+    print(f"The sum of {a} and {b} is {result}")
+```
+
+**`main.py` — using the module:**
+```python
+import my_module
+
+my_module.greet("Madhukiran")
+my_module.add(5, 10)
+my_module.add(20, 30)
+my_module.greet("Alice")
+my_module.add(7, 3)
+my_module.greet("BATCH 17")
+```
+
+**Sample output:**
+```
+Hello, Madhukiran!
+The sum of 5 and 10 is 15
+The sum of 20 and 30 is 50
+Hello, Alice!
+The sum of 7 and 3 is 10
+Hello, BATCH 17!
+```
+- `import my_module` loads the whole file; every function inside it is then reached as `my_module.function_name(...)` — the same dot syntax as calling a method (`16November_Python_DataTypes.md`), just on a module instead of an object.
+
+---
+
+## 5. Packages
+
+- A **package** organizes multiple **related modules** into one directory.
+- A directory becomes a package the moment it contains a file named `__init__.py` (which can be completely empty) — that file's presence is what tells Python "treat this folder as a package," not a plain folder.
+
+```
+my_package/
+    __init__.py
+    module1.py
+    module2.py
+    module3.py
+```
+
+**`module1.py`:**
+```python
+def function1():
+    return "This is function 1 from module 1"
+```
+
+**`module2.py`:**
+```python
+def function2():
+    return "This is function 2 from module 2"
+```
+
+**Using the package (`main.py`):**
+```python
+from my_package import module1, module2, module3
+
+print(module1.function1())
+print(module2.function2())
+print(module3.function3())
+```
+
+⚠️ **The raw class example had a real bug here, worth seeing once:**
+- It called `module1.func1()` and `module2.func2()`.
+- But the functions actually defined above are named `function1()` and `function2()`, not `func1()`/`func2()`.
+- Calling the wrong name would crash with `AttributeError: module 'module1' has no attribute 'func1'`.
+- Fixed above to call the functions by their real names.
+
+**Sample output** (assuming `module3.py` defines a matching `function3()`, following the same pattern as `module1`/`module2`):
+```
+This is function 1 from module 1
+This is function 2 from module 2
+This is function 3 from module 3
+```
+
+---
+
+## Quick Recap Table
+
+| Concept | One-line meaning | Real-time (DevOps) example |
+|---|---|---|
+| Keywords | Reserved words — can never be used as a variable/function name | `for = 5` is a syntax error |
+| Variable naming | Start with a letter/underscore, case-sensitive, no keywords | `age`, `Age`, `AGE` are three different variables |
+| Global variable | Defined outside any function, readable/writable from anywhere | A shared config value used by several functions |
+| Local variable | Defined inside a function, invisible outside it | A loop counter that only matters inside one function |
+| `global` keyword | Explicitly lets a function modify the *real* global variable | Without it, an assignment inside a function just creates a new local |
+| Module | One `.py` file of reusable code | `my_module.py` with shared helper functions |
+| Package | A folder of related modules, marked by `__init__.py` | Organizing a large automation toolkit into logical sub-folders |

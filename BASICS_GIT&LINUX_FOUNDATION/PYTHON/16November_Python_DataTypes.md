@@ -2,7 +2,7 @@
 
 **Topic: Python Collection Types — Deep Dive + Real DevOps Examples**
 
-Friends, `13November_Python.md` §4 introduced `list`/`tuple`/`set`/`dict` by name only. Today we go deeper into each one — their actual properties, where a DevOps engineer would really use each one, and we close with static vs dynamic typing.
+Friends, `13November_Python.md` §4 introduced `list`/`tuple`/`set`/`dict` by name only. Today we go deeper into each one — their actual properties, and where a DevOps engineer would really use each one.
 
 ---
 
@@ -100,21 +100,6 @@ contact_book = [
 
 ---
 
-## 4. Static typing vs dynamic typing
-
-- **Dynamic typing** (what Python uses): a variable's type is decided **at runtime**, not in advance. You never declare a type before assigning.
-- **Static typing**: a variable's type is fixed **at compile time** — you must declare it up front, and it can't change afterward. C, C++, Go, and Java are statically typed.
-
-```python
-x = 10        # int
-x = "madhu"   # now a string — perfectly legal in Python
-x = 10.2      # now a float
-x = 4 + 3j    # now a complex number
-```
-- This is the exact same behavior already shown in `13November_Python.md` §3 — today just gives it its proper name: **dynamic typing.**
-
----
-
 ## Quick Recap Table
 
 | Concept | One-line meaning | Real-time (DevOps) example |
@@ -125,5 +110,3 @@ x = 4 + 3j    # now a complex number
 | Dict | Key-value pairs | Environment variables for an app |
 | List of dicts | A list where each element is its own structured dict | A contact book, or a list of servers each with their own properties |
 | `list(set(x))` | A quick way to remove duplicates from a list | `list(set(["a", "b", "a"]))` |
-| Dynamic typing | Python decides a variable's type at runtime | `x = 10` then `x = "madhu"` — both legal |
-| Static typing | Type fixed at compile time, declared upfront | C, C++, Go, Java |
