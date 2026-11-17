@@ -179,9 +179,74 @@ The sum of 100 and 250 is 350
 ## 4. Built-in operations — List, Tuple, Set, Dictionary
 
 ### List operations (`6-list_ops.py`)
+
+**Complete script:**
 ```python
 my_list = [1, 2, 3, 1, 4, 5]
+
+my_list.append(4)
+print("After append:", my_list)
+
+my_list.extend([8, 9, 7])
+print("After extend:", my_list)
+
+my_list.insert(0, 10)
+print("After insert:", my_list)
+
+my_list.remove(1)
+print("After remove:", my_list)
+
+popped_element = my_list.pop()
+print("Popped element:", popped_element)
+print("After pop:", my_list)
+
+index_of_9 = my_list.index(9)
+print("Index of 9:", index_of_9)
+
+count_of_1 = my_list.count(1)
+print("Count of 1:", count_of_1)
+
+my_list.sort()
+print("After sort:", my_list)
+
+my_list.reverse()
+print("After reverse:", my_list)
+
+copied_list = my_list.copy()
+print("Copied list:", copied_list)
+
+my_list.clear()
+print("After clear:", my_list)
+
+print("Length of list:", len(my_list))
+print("Length of copied list:", len(copied_list))
+print("Maximum:", max(copied_list))
+print("Minimum:", min(copied_list))
+print("Sum:", sum(copied_list))
 ```
+
+**Sample output:**
+```
+After append: [1, 2, 3, 1, 4, 5, 4]
+After extend: [1, 2, 3, 1, 4, 5, 4, 8, 9, 7]
+After insert: [10, 1, 2, 3, 1, 4, 5, 4, 8, 9, 7]
+After remove: [10, 2, 3, 1, 4, 5, 4, 8, 9, 7]
+Popped element: 7
+After pop: [10, 2, 3, 1, 4, 5, 4, 8, 9]
+Index of 9: 8
+Count of 1: 1
+After sort: [1, 2, 3, 4, 4, 5, 8, 9, 10]
+After reverse: [10, 9, 8, 5, 4, 4, 3, 2, 1]
+Copied list: [10, 9, 8, 5, 4, 4, 3, 2, 1]
+After clear: []
+Length of list: 0
+Length of copied list: 9
+Maximum: 10
+Minimum: 1
+Sum: 46
+```
+
+**What each line does:**
 
 | Operation | Code | Result after running it |
 |---|---|---|
@@ -197,21 +262,53 @@ my_list = [1, 2, 3, 1, 4, 5]
 | Make an independent copy | `copied_list = my_list.copy()` | `[10, 9, 8, 5, 4, 4, 3, 2, 1]` |
 | Empty the list | `my_list.clear()` | `[]` |
 
-**After `clear()`, using built-in functions on the untouched `copied_list`:**
-```python
-print("Length of copied list:", len(copied_list))   # 9
-print("Maximum:", max(copied_list))                  # 10
-print("Minimum:", min(copied_list))                  # 1
-print("Sum:", sum(copied_list))                      # 46
-```
-- `len()`/`max()`/`min()`/`sum()` are **functions**, not methods — see §5 for exactly why that distinction matters.
+- `len()`/`max()`/`min()`/`sum()` on the untouched `copied_list` are **functions**, not methods — see §5 for exactly why that distinction matters.
 
 ---
 
 ### Tuple operations (`7-tuple_ops.py`) — immutable, so far fewer methods exist
+
+**Complete script:**
 ```python
 my_tuple = (3, 1, 4, 1, 5, 9, 2, 6, 5)
+
+count_of_1 = my_tuple.count(1)
+print("Count of 1:", count_of_1)
+
+index_of_9 = my_tuple.index(9)
+print("Index of 9:", index_of_9)
+
+print("Length:", len(my_tuple))
+print("Max:", max(my_tuple))
+print("Min:", min(my_tuple))
+print("Sum:", sum(my_tuple))
+
+sorted_list = sorted(my_tuple)
+print("Sorted tuple as list:", sorted_list)
+
+sorted_list.append(4)
+print("After append:", sorted_list)
+
+my_tuple.append(4)  # This will raise an AttributeError since tuples are immutable
+print("After append:", my_tuple)
 ```
+
+**Sample output:**
+```
+Count of 1: 2
+Index of 9: 5
+Length: 9
+Max: 9
+Min: 1
+Sum: 36
+Sorted tuple as list: [1, 1, 2, 3, 4, 5, 5, 6, 9]
+After append: [1, 1, 2, 3, 4, 5, 5, 6, 9, 4]
+Traceback (most recent call last):
+  ...
+AttributeError: 'tuple' object has no attribute 'append'
+```
+
+**What's happening:**
 
 | Operation | Code | Result |
 |---|---|---|
@@ -223,19 +320,52 @@ my_tuple = (3, 1, 4, 1, 5, 9, 2, 6, 5)
 | Sum | `sum(my_tuple)` | `36` |
 | Sort (returns a new **list**, doesn't touch the tuple) | `sorted_list = sorted(my_tuple)` | `[1, 1, 2, 3, 4, 5, 5, 6, 9]` |
 
-- `sorted_list.append(4)` **works fine** here — `sorted()` handed back a plain `list`, and lists are mutable. Result: `[1, 1, 2, 3, 4, 5, 5, 6, 9, 4]`.
-- `my_tuple.append(4)` **crashes the script**, because tuples have no `.append()` method at all:
-```
-AttributeError: 'tuple' object has no attribute 'append'
-```
+- `sorted_list.append(4)` **works fine** — `sorted()` handed back a plain `list`, and lists are mutable. Result: `[1, 1, 2, 3, 4, 5, 5, 6, 9, 4]`.
+- `my_tuple.append(4)` **crashes the script right there** — tuples have no `.append()` method at all, so the last `print` line never runs.
 - ⚠️ **Tuples simply don't have `append()`/`remove()`/`pop()`/etc.** — not because they're blocked, but because those methods were never defined for the tuple type in the first place, since a tuple is meant to never change after creation.
 
 ---
 
 ### Set operations (`8-set_ops.py`)
+
+**Complete script:**
 ```python
-my_set = {1, 2, 1, 3, 4, 5}   # duplicates auto-removed on creation
+my_set = {1, 2, 1, 3, 4, 5}
+
+my_set.add(6)
+print("After add:", my_set)
+
+my_set.remove(4)
+print("After remove:", my_set)
+
+popped = my_set.pop()
+print("Popped:", popped)
+print("After pop:", my_set)
+
+my_set.clear()
+print("After clear:", my_set)
+
+set_a = {1, 2, 3}
+set_b = {3, 4, 5}
+
+print("Union:", set_a.union(set_b))
+print("Intersection:", set_a.intersection(set_b))
+print("Difference:", set_a.difference(set_b))
 ```
+
+**Sample output** (`my_set = {1, 2, 1, 3, 4, 5}` auto-dedupes to `{1, 2, 3, 4, 5}` on creation; exact element order is never guaranteed — see the warning below):
+```
+After add: {1, 2, 3, 4, 5, 6}
+After remove: {1, 2, 3, 5, 6}
+Popped: 1
+After pop: {2, 3, 5, 6}
+After clear: set()
+Union: {1, 2, 3, 4, 5}
+Intersection: {3}
+Difference: {1, 2}
+```
+
+**What's happening:**
 
 | Operation | Code | Result |
 |---|---|---|
@@ -243,28 +373,67 @@ my_set = {1, 2, 1, 3, 4, 5}   # duplicates auto-removed on creation
 | Remove a specific element | `my_set.remove(4)` | `4` is gone |
 | Remove and return an arbitrary element | `popped = my_set.pop()` | removes *some* element — sets have no order, so you can't predict which one |
 | Empty the set | `my_set.clear()` | `set()` (empty) |
+| Combine two sets | `set_a.union(set_b)` | every element from both: `{1, 2, 3, 4, 5}` |
+| Only shared elements | `set_a.intersection(set_b)` | `{3}` |
+| Only in `set_a`, not `set_b` | `set_a.difference(set_b)` | `{1, 2}` |
 
-**Set math, between two separate sets:**
-```python
-set_a = {1, 2, 3}
-set_b = {3, 4, 5}
-
-print("Union:", set_a.union(set_b))               # {1, 2, 3, 4, 5}
-print("Intersection:", set_a.intersection(set_b)) # {3}
-print("Difference:", set_a.difference(set_b))     # {1, 2}
-```
-- ⚠️ **A set's printed order is never guaranteed** — don't rely on the order you happen to see in one run; two runs (or two machines) can legitimately print the same set's contents in a different order.
+- ⚠️ **A set's printed order is never guaranteed** — don't rely on the order you happen to see in one run; two runs (or two machines) can legitimately print the same set's contents in a different order. The output above is one realistic example, not a promise of what you'll always see.
 
 ---
 
 ### Dictionary operations (`9-dict-ops.py`)
+
+**Complete script:**
 ```python
 my_dict = {
     "name": "Madhu",
     "phone": "7396627149",
     "city": "Hyderabad"
 }
+
+print("Name:", my_dict['name'])
+
+phone = my_dict.get('phone')
+print("Phone:", phone)
+
+salary = my_dict.get('salary', 'Not Available')
+print("Salary:", salary)
+
+my_dict['occupation'] = 'DevOps Engineer'
+print("After adding occupation:", my_dict)
+
+popped_value = my_dict.pop('phone')
+print("Popped:", popped_value)
+print("After pop:", my_dict)
+
+print("Keys:", list(my_dict.keys()))
+print("Values:", list(my_dict.values()))
+print("Items:", list(my_dict.items()))
+
+my_dict.clear()
+print("After clear:", my_dict)
+
+new_dict = {'a': 1, 'b': 2}
+copied_dict = new_dict.copy()
+print("Copied:", copied_dict)
 ```
+
+**Sample output:**
+```
+Name: Madhu
+Phone: 7396627149
+Salary: Not Available
+After adding occupation: {'name': 'Madhu', 'phone': '7396627149', 'city': 'Hyderabad', 'occupation': 'DevOps Engineer'}
+Popped: 7396627149
+After pop: {'name': 'Madhu', 'city': 'Hyderabad', 'occupation': 'DevOps Engineer'}
+Keys: ['name', 'city', 'occupation']
+Values: ['Madhu', 'Hyderabad', 'DevOps Engineer']
+Items: [('name', 'Madhu'), ('city', 'Hyderabad'), ('occupation', 'DevOps Engineer')]
+After clear: {}
+Copied: {'a': 1, 'b': 2}
+```
+
+**What's happening:**
 
 | Operation | Code | Result |
 |---|---|---|
@@ -277,13 +446,7 @@ my_dict = {
 | List all values | `list(my_dict.values())` | `['Madhu', 'Hyderabad', 'DevOps Engineer']` |
 | List all key-value pairs | `list(my_dict.items())` | `[('name', 'Madhu'), ('city', 'Hyderabad'), ('occupation', 'DevOps Engineer')]` |
 | Empty the dict | `my_dict.clear()` | `{}` |
-
-**Making an independent copy — a fresh, separate dict:**
-```python
-new_dict = {'a': 1, 'b': 2}
-copied_dict = new_dict.copy()
-print("Copied:", copied_dict)   # Copied: {'a': 1, 'b': 2}
-```
+| Make an independent copy (on a fresh dict) | `copied_dict = new_dict.copy()` | `{'a': 1, 'b': 2}` |
 
 - ⚠️ `my_dict['salary']` (square-bracket access on a missing key) would **crash** with `KeyError: 'salary'` — that's exactly why `.get('salary', 'Not Available')` is the safer way to read a key that might not exist.
 - Unlike a set, a **dict's order is reliable** — Python guarantees (since 3.7) that a dict remembers the order keys were inserted in.
