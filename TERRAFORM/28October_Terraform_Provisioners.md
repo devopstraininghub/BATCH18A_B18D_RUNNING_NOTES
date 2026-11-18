@@ -223,7 +223,7 @@ output "instance_public_ip" {
 
 - Now all three provisioner types from §2 appear in one real resource: **`file`** copies the page over, **`remote-exec`** installs/starts httpd and moves the page into place, and **`local-exec`** runs right there too — writing a line to `localfile.txt` on the machine running Terraform, **not** on the EC2 instance at all. After this `apply`, `localfile.txt` sits locally next to the `.tf` files, proof that `local-exec` really does run outside the resource entirely.
 
-### A genuinely new gotcha, only visible in the real code: `time_sleep`
+### A genuinely new detail, only visible in the real code: `time_sleep`
 
 - `resource "time_sleep" "wait_60sec"` comes from the separate `hashicorp/time` provider — it does nothing except **wait**.
 - `depends_on = [aws_eip.prod-eip]` means: *after* the Elastic IP is assigned, pause before continuing. ⚠️ Note the resource is *named* `wait_60sec` but its `create_duration` is actually `"30s"` — a naming/value mismatch worth catching with your own eyes rather than trusting a resource's name to describe its current settings.

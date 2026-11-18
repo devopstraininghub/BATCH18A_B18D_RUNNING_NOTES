@@ -60,7 +60,7 @@ module "acm" {
   san_names   = ["*.b17facebook.xyz"]
 }
 ```
-- `domain_name = "b17facebook.xyz"` (the apex domain) **plus** `san_names = ["*.b17facebook.xyz"]` (a wildcard SAN) — exactly the "request both explicitly" pattern from `29September_ACM.md` §14's wildcard-certificate gotcha: a wildcard alone never covers the bare apex domain, so both have to be requested together if you need both covered.
+- `domain_name = "b17facebook.xyz"` (the apex domain) **plus** `san_names = ["*.b17facebook.xyz"]` (a wildcard SAN) — exactly the "request both explicitly" pattern from `29September_ACM.md` §14's wildcard-certificate note: a wildcard alone never covers the bare apex domain, so both have to be requested together if you need both covered.
 - ⚠️ As already flagged in `4November_Terraform_Module_Route53.md` §5 — this module's domain (`b17facebook.xyz`) doesn't match the `route53` module's default public zone (`b15facebook.xyz`). In a real deployment, a certificate only secures the exact domain(s) it was issued for — a mismatch like this would mean the certificate genuinely wouldn't cover the domain Route 53 is actually routing traffic for.
 - Unlike every other module in this project, `acm`'s **output isn't referenced anywhere else** in the root `main.tf` — the certificate ARN is available (`module.acm.acm_certificate_arn`), but nothing here actually attaches it to the ALBs' listeners yet. In a fully finished version of this project, that ARN would feed into the `load_balancers` module, turning the plain-HTTP listeners from `4November_Terraform_Module_LoadBalancers.md` into real HTTPS ones — exactly the ALB + ACM certificate pattern from `29September_ACM.md` §18.
 

@@ -133,8 +133,6 @@ g = int(a)
 print(f"Convert float {a} to int: g = {g}")
 ```
 
-⚠️ An earlier version of this class example used a floating-point `print` line that referenced a variable `c` which was never actually defined, which would have crashed with `NameError: name 'c' is not defined` — the real practice script above is already clean, only printing the two floats that actually exist, `a` and `b`.
-
 **Sample output:**
 ```
 Integers: x = 10, y = 5, z = 0

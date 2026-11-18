@@ -293,7 +293,7 @@ print("Sum of 10 and 20 is:", sum(10, 20))
 Sum of 5 and 3 is: 8
 Sum of 10 and 20 is: 30
 ```
-- ⚠️ Same gotcha as `17November_Python_Collections_Methods.md`'s `4-sum.py`: naming this `sum` **shadows** Python's built-in `sum()` function for the rest of this script. Fine here, since nothing else needs the real `sum()`, but worth being deliberate about.
+- Note: same as in `16November_Python_Functions.md`'s `4-sum.py` — naming this `sum` **shadows** Python's built-in `sum()` function for the rest of this script. Fine here, since nothing else needs the real `sum()`, but worth being deliberate about.
 - A lambda is best for a short, throwaway expression used once (e.g. as a `sort()` key) — anything longer or reused in several places is clearer as a normal `def` function.
 
 ---

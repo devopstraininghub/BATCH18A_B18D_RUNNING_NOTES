@@ -218,7 +218,7 @@ This is exactly the kind of thing that's easy to mix up, so it's worth being pre
 | **Default TTL** | Used when the origin sends no `Cache-Control`/`Expires` header | 86400 seconds (24 hours) |
 | **Maximum TTL** | The *most* amount of time an object can stay cached under the policy | 31536000 seconds (~1 year) |
 
-⚠️ **Important gotcha:** if **Minimum TTL is greater than 0**, CloudFront can still cache content for at least that duration **even if** the origin's response says `no-cache`/`no-store`/`private`. Setting Minimum TTL to `0` is the safer default if you're not fully sure what the origin is sending.
+⚠️ **Important note:** if **Minimum TTL is greater than 0**, CloudFront can still cache content for at least that duration **even if** the origin's response says `no-cache`/`no-store`/`private`. Setting Minimum TTL to `0` is the safer default if you're not fully sure what the origin is sending.
 
 - The origin's own **`Cache-Control` header** (e.g. `Cache-Control: max-age=3600`) works together with the cache policy's TTL settings to decide actual freshness.
 

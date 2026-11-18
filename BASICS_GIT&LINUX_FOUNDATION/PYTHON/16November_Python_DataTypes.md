@@ -45,17 +45,11 @@ dict_example = {
 }
 ```
 
-⚠️ **The raw class example for a mixed-type list had two real bugs, worth seeing once:**
+**A mixed-type list — one of each basic type at once:**
 ```python
-x = [10, madhu, 5.3, 4+3i]   # ❌ wrong
+x = [10, "madhu", 5.3, 4 + 3j]   # int, str, float, complex, all in one list
 ```
-- `madhu` with no quotes — Python reads this as a **variable name**, not text. Since no variable called `madhu` exists, this crashes with `NameError: name 'madhu' is not defined`.
-- `4+3i` — Python's complex-number suffix is **`j`**, not `i` (unlike the math/engineering convention). This is a `SyntaxError`.
-
-**Correct version:**
-```python
-x = [10, "madhu", 5.3, 4 + 3j]   # ✅ works — int, str, float, complex, all in one list
-```
+- Note: two easy mistakes to make here — writing `madhu` with no quotes (Python then reads it as a **variable name**, not text, and crashes with `NameError` if no such variable exists), and writing a complex number as `4+3i` instead of `4+3j` (Python's complex-number suffix is `j`, not `i`, unlike the usual math/engineering convention).
 
 **Easy memory trick:** **List** = ordered + changeable. **Tuple** = ordered + locked. **Set** = no duplicates, no order. **Dict** = named slots (keys), not numbered ones.
 

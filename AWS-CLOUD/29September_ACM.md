@@ -221,7 +221,7 @@ admin.b18facebook.store
 ```
 covers: `login.b18facebook.store`, `api.b18facebook.store`, `dev.b18facebook.store`, `test.b18facebook.store`
 
-⚠️ **Two easy-to-miss gotchas:**
+⚠️ **Two easy-to-miss notes:**
 - `*.b18facebook.store` does **NOT** cover the bare apex domain `b18facebook.store` — if you need both, request both explicitly: `b18facebook.store` **and** `*.b18facebook.store`.
 - `*.b18facebook.store` does **NOT** cover `api.dev.b18facebook.store` — that's a second subdomain level, one level deeper than the wildcard reaches.
 
@@ -308,7 +308,7 @@ So `http://login.b18facebook.store` automatically forwards the user to `https://
 
 ---
 
-## 19. ACM certificate regions — a genuinely common gotcha
+## 19. ACM certificate regions — a genuinely common mistake
 
 - **ACM certificates are regional resources** — they only work with services in the same region they were requested in.
 

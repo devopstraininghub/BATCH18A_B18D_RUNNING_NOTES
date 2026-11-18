@@ -25,8 +25,6 @@ Friends, the last 17 November file — the language's own reserved words, the ru
 | Asynchronous programming | `async`, `await` |
 | Other | `as`, `assert`, `del`, `yield` |
 
-⚠️ The raw notes' keyword grid had a typo — `continues` isn't a real Python keyword, it's **`continue`** (no `s`). Fixed in the table above.
-
 ---
 
 ## 2. Variable naming — the rules
@@ -166,12 +164,6 @@ print(module1.function1())
 print(module2.function2())
 print(module3.function3())
 ```
-
-⚠️ **The raw class example had a real bug here, worth seeing once:**
-- It called `module1.func1()` and `module2.func2()`.
-- But the functions actually defined above are named `function1()` and `function2()`, not `func1()`/`func2()`.
-- Calling the wrong name would crash with `AttributeError: module 'module1' has no attribute 'func1'`.
-- Fixed above to call the functions by their real names.
 
 **Sample output** (assuming `module3.py` defines a matching `function3()`, following the same pattern as `module1`/`module2`):
 ```
