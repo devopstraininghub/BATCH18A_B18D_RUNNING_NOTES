@@ -2,7 +2,7 @@
 
 **Topic: Amazon Route 53 (DNS)**
 
-Friends, on 25 September we got our RDS database up and reachable via its own AWS-generated endpoint (`23September_Databases.md` / `25September_RDS.md`). Today's topic — **Route 53** — is what does the same job for your *application*: giving users a clean, memorable domain name (`myapp.com`) instead of an ALB's long auto-generated DNS name or a raw IP.
+Friends, on 25 September we got our RDS database up and reachable via its own AWS-generated endpoint (`23.2September_Databases.md` / `25September_RDS.md`). Today's topic — **Route 53** — is what does the same job for your *application*: giving users a clean, memorable domain name (`myapp.com`) instead of an ALB's long auto-generated DNS name or a raw IP.
 
 ---
 

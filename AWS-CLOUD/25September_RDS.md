@@ -2,7 +2,7 @@
 
 **Topic: Amazon RDS (Relational Database Service)**
 
-Friends, on 23 September we looked at databases conceptually — structured vs semi-structured vs unstructured data, and a quick summary of which AWS database service fits where (see `23September_Databases.md`). Today we go hands-on with the one you'll use most as a DevOps engineer: **Amazon RDS**, AWS's fully-managed relational database service — we'll create a real MySQL RDS instance, connect to it, and run our first SQL queries against it.
+Friends, on 23 September we looked at databases conceptually — structured vs semi-structured vs unstructured data, and a quick summary of which AWS database service fits where (see `23.2September_Databases.md`). Today we go hands-on with the one you'll use most as a DevOps engineer: **Amazon RDS**, AWS's fully-managed relational database service — we'll create a real MySQL RDS instance, connect to it, and run our first SQL queries against it.
 
 ---
 
@@ -18,7 +18,7 @@ Friends, on 23 September we looked at databases conceptually — structured vs s
 
 - No OS-level maintenance — no patching a server just to keep the database engine current.
 - Automated backups and point-in-time recovery, out of the box.
-- Built-in high availability via **Multi-AZ** (a standby copy in a second Availability Zone, automatic failover) — covered in more depth in `23September_Databases.md`.
+- Built-in high availability via **Multi-AZ** (a standby copy in a second Availability Zone, automatic failover) — covered in more depth in `23.2September_Databases.md`.
 - Easy vertical scaling — resize the instance class without a manual migration.
 - Monitoring built in via CloudWatch, without installing anything extra.
 
@@ -146,7 +146,7 @@ A client only needs three things to attempt a connection: the endpoint, the port
 
 - The database itself doesn't need to be reachable from the public Internet — only your application (typically on EC2, in turn behind an ALB) needs to reach it.
 - Keeping RDS in a **private subnet** means it has no direct path to/from the Internet, cutting off a whole category of external attacks.
-- This is the same private-subnet reasoning already applied to the mini-project's backend EC2 instances (see `17September_MiniProject.md`).
+- This is the same private-subnet reasoning already applied to the mini-project's backend EC2 instances (see `17.3September_MiniProject.md`).
 
 ---
 
@@ -162,7 +162,7 @@ A client only needs three things to attempt a connection: the endpoint, the port
 
 ## 14. RDS Security Group
 
-- Controls what's allowed to reach the DB instance on its port — same concept as an EC2 Security Group (see `10September_SG.md`), just attached to RDS instead.
+- Controls what's allowed to reach the DB instance on its port — same concept as an EC2 Security Group (see `10.3September_SG.md`), just attached to RDS instead.
 - Stateful, allow-only, evaluated the same way EC2 SGs are.
 
 ---
@@ -205,7 +205,7 @@ Internet
   RDS MySQL   (private subnet, Multi-AZ)
 ```
 
-This is the same layered pattern from the mini project (`17September_MiniProject.md`) — RDS simply becomes the private, database-layer tier at the bottom of it.
+This is the same layered pattern from the mini project (`17.3September_MiniProject.md`) — RDS simply becomes the private, database-layer tier at the bottom of it.
 
 ---
 
@@ -368,7 +368,7 @@ For the connection to succeed:
 5. Correct **password**.
 6. The RDS **Security Group** must allow your client's IP (if connecting straight from your laptop).
 7. RDS must be **publicly accessible**, if you're connecting directly over the public Internet.
-8. **Network ACLs** must not be blocking the traffic (see `11September_NACL.md`).
+8. **Network ACLs** must not be blocking the traffic (see `11.2September_NACL.md`).
 9. Your local/company **firewall** must allow the outbound connection.
 
 **Easy memory trick:** this is basically the same "can I even reach it, and am I allowed to" checklist you'd run through for any EC2 connectivity issue — endpoint/port/credentials get you to the door, SG/NACL/firewall decide whether the door opens.
@@ -381,7 +381,7 @@ If the database is private (§12–13), your laptop cannot connect to it directl
 ```
 VPN
 AWS Direct Connect
-Bastion / Jump Host   (see 17September_Bastion.md)
+Bastion / Jump Host   (see 17.1September_Bastion.md)
 ```
 
 **Example:**
@@ -426,7 +426,7 @@ DELETE
 ALTER
 DROP
 ```
-(SQL syntax and the CRUD mapping are covered in more depth with worked examples in `23September_Databases.md` — today's session is the first time we ran these against a *real, live RDS instance* instead of just on paper.)
+(SQL syntax and the CRUD mapping are covered in more depth with worked examples in `23.2September_Databases.md` — today's session is the first time we ran these against a *real, live RDS instance* instead of just on paper.)
 
 ---
 

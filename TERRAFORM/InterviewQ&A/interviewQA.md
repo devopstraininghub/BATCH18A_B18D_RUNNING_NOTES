@@ -75,7 +75,7 @@ terraform {
 ### Q7. What happens if the state file is deleted?
 **Answer:** Terraform loses track of what it's already created. Running `terraform apply` afterward can try to **recreate** resources that already exist in AWS — causing duplicates, naming conflicts, or errors. This is exactly why the state file should live in a remote backend with versioning/backup enabled (`29October_Terraform_RemoteBackend.md` §7's "always enable versioning" rule), not just locally.
 
-If there's genuinely no backup, you can rebuild tracking of the existing resources with `terraform import` (`30October_Terraform_Import.md`) instead of recreating them.
+If there's genuinely no backup, you can rebuild tracking of the existing resources with `terraform import` (`30.1October_Terraform_Import.md`) instead of recreating them.
 
 ---
 
@@ -238,13 +238,13 @@ resource "aws_route53_record" "app" {
 ```bash
 terraform import aws_instance.my_ec2 i-0abcd1234efgh5678
 ```
-Full walkthrough in `30October_Terraform_Import.md`. Once imported, `terraform destroy` **will** delete it — unlike a data source (Q19), an imported resource genuinely becomes something Terraform owns.
+Full walkthrough in `30.1October_Terraform_Import.md`. Once imported, `terraform destroy` **will** delete it — unlike a data source (Q19), an imported resource genuinely becomes something Terraform owns.
 
 ---
 
 ### Q21. What does your Terraform folder structure typically look like?
 **Answer:** It depends on how similar the environments are:
-- If **Dev/QA/Prod are structurally identical** → one codebase, driven by **workspaces** + per-environment `.tfvars` files (`23October_Terraform_Workspaces.md`).
+- If **Dev/QA/Prod are structurally identical** → one codebase, driven by **workspaces** + per-environment `.tfvars` files (`23.1October_Terraform_Workspaces.md`).
 - If **Dev/QA/Prod genuinely differ** → separate folders per environment.
 - Either way, shared pieces (VPC, EC2, RDS patterns) get pulled into **modules** (`26October_Terraform_Modules.md`) and reused.
 
@@ -291,7 +291,7 @@ terraform apply -parallelism=20
 ```bash
 terraform force-unlock <LOCK_ID>
 ```
-⚠️ Only do this once you're sure the original process actually crashed and isn't still running — covered in `23October_Terraform_StateLocking.md` §7.
+⚠️ Only do this once you're sure the original process actually crashed and isn't still running — covered in `23.2October_Terraform_StateLocking.md` §7.
 
 ---
 
@@ -433,7 +433,7 @@ resource "aws_instance" "critical" {
 }
 ```
 - `prevent_destroy = true` — blocks `terraform destroy`/any plan that would destroy this specific resource, outright.
-- `create_before_destroy = true` — when a replacement is needed anyway, build the new one **first**, then remove the old one (same pattern already used for the ACM certificate in `4November_Terraform_Module_ACM.md`).
+- `create_before_destroy = true` — when a replacement is needed anyway, build the new one **first**, then remove the old one (same pattern already used for the ACM certificate in `4.10November_Terraform_Module_ACM.md`).
 - `ignore_changes = [tags, instance_type]` — tells Terraform to stop proposing to "undo" changes to just these specific attributes, even if they drift from what the code says.
 
 ⚠️ In practice, you'd rarely combine all three in one block the way shown above — `prevent_destroy` and `create_before_destroy` solve different problems. Pick the one(s) that actually match your situation.
@@ -518,7 +518,7 @@ resource "terraform_data" "on_tag_change" {
 ## Part C — Modules, Workspaces & Tooling
 
 ### Q41. What are Terraform modules?
-**Answer:** A module is just Terraform code, packaged for one specific purpose, that you can reuse across projects instead of copy-pasting (full coverage in `26October_Terraform_Modules.md`). Typical examples: a `network` module (VPC/subnets/IGW/NAT/route tables), an `ec2` module, an `rds` module — exactly the shape of `4November_Terraform_3TierProject.md`'s nine modules.
+**Answer:** A module is just Terraform code, packaged for one specific purpose, that you can reuse across projects instead of copy-pasting (full coverage in `26October_Terraform_Modules.md`). Typical examples: a `network` module (VPC/subnets/IGW/NAT/route tables), an `ec2` module, an `rds` module — exactly the shape of `4.1November_Terraform_3TierProject.md`'s nine modules.
 
 ---
 
@@ -551,19 +551,19 @@ module "security" {
   vpc_id = module.network.vpc_id   # output of "network" feeding into "security"
 }
 ```
-This is exactly the module-composition pattern documented across `4November_Terraform_3TierProject.md` §2.
+This is exactly the module-composition pattern documented across `4.1November_Terraform_3TierProject.md` §2.
 
 ---
 
 ### Q45. You need identical infrastructure for three environments (Dev/UAT/Prod) — how do you avoid duplicating code?
 **Answer:** **Modules** for the shared infrastructure pattern + **workspaces** (or separate `.tfvars` files) for the per-environment values.
 - The module avoids duplicating the *code*.
-- Workspaces (`23October_Terraform_Workspaces.md`) give each environment its own **state file**, so they never collide, while still running the exact same module.
+- Workspaces (`23.1October_Terraform_Workspaces.md`) give each environment its own **state file**, so they never collide, while still running the exact same module.
 
 ---
 
 ### Q46. In simple terms, what do Terraform workspaces actually do?
-**Answer:** They let the **same code** produce **separate state files** — one per environment. See `23October_Terraform_Workspaces.md` for the full `terraform workspace new/select/list` walkthrough.
+**Answer:** They let the **same code** produce **separate state files** — one per environment. See `23.1October_Terraform_Workspaces.md` for the full `terraform workspace new/select/list` walkthrough.
 
 ---
 
@@ -595,7 +595,7 @@ export TF_TOKEN_app_terraform_io="<your-real-token>"
 ---
 
 ### Q50. How do you scan Terraform code for security issues before it's applied?
-**Answer:** Static-analysis tools built specifically for Terraform/IaC — **Checkov**, **tfsec**, and **Terrascan** are the common ones. They catch things like publicly-open Security Groups, unencrypted S3 buckets, or an RDS instance without `publicly_accessible = false` — exactly the kind of mistakes already flagged by hand throughout `4November_Terraform_3TierProject.md`.
+**Answer:** Static-analysis tools built specifically for Terraform/IaC — **Checkov**, **tfsec**, and **Terrascan** are the common ones. They catch things like publicly-open Security Groups, unencrypted S3 buckets, or an RDS instance without `publicly_accessible = false` — exactly the kind of mistakes already flagged by hand throughout `4.1November_Terraform_3TierProject.md`.
 
 ---
 
@@ -645,7 +645,7 @@ Advantage over `terraform state mv`: this is committed to version control, so an
 ---
 
 ### Q55. What is the `import` block, and how is it different from the `terraform import` CLI command?
-**Answer:** The **`import` block** (Terraform 1.5+) is the modern, declarative way to import existing infrastructure — you describe the import in code, run `plan`, and Terraform shows you exactly what it will bring in before touching state. The older `terraform import` CLI command (`30October_Terraform_Import.md`) does the same job imperatively, one resource at a time, with no `plan` preview first.
+**Answer:** The **`import` block** (Terraform 1.5+) is the modern, declarative way to import existing infrastructure — you describe the import in code, run `plan`, and Terraform shows you exactly what it will bring in before touching state. The older `terraform import` CLI command (`30.1October_Terraform_Import.md`) does the same job imperatively, one resource at a time, with no `plan` preview first.
 ```hcl
 import {
   to = aws_instance.web
@@ -707,7 +707,7 @@ provider "aws" {
 ---
 
 ### Q60. Are CLI workspaces (`terraform workspace new`) the same thing as Terraform Cloud/HCP Terraform workspaces?
-**Answer:** **No — common trick question.** A **CLI workspace** (`23October_Terraform_Workspaces.md`) is just a named state-file slot within one local/remote backend, for the same code. An **HCP Terraform (Terraform Cloud) workspace** is a much bigger unit — it bundles its own VCS connection, its own variables/secrets, its own run history, and its own state, and is usually the equivalent of one *entire project*, not just one environment slot within a project. Mixing these two up in an interview is an easy way to look junior — know that the word "workspace" means two genuinely different things depending on context.
+**Answer:** **No — common trick question.** A **CLI workspace** (`23.1October_Terraform_Workspaces.md`) is just a named state-file slot within one local/remote backend, for the same code. An **HCP Terraform (Terraform Cloud) workspace** is a much bigger unit — it bundles its own VCS connection, its own variables/secrets, its own run history, and its own state, and is usually the equivalent of one *entire project*, not just one environment slot within a project. Mixing these two up in an interview is an easy way to look junior — know that the word "workspace" means two genuinely different things depending on context.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Topic: AWS WAF + AWS Shield**
 
-Friends, we now have CloudFront and ALB handling delivery and traffic distribution, and Security Groups controlling *who* can connect (`30September_CloudFront.md`, `17September_MiniProject.md`). Today's topic closes the remaining gap: Security Groups only look at IP/port — they can't tell a legitimate `GET /` from a SQL-injection attempt riding on the same port 443. **AWS WAF** and **AWS Shield** are the two services that inspect the *actual content and pattern* of the traffic itself, not just where it's coming from.
+Friends, we now have CloudFront and ALB handling delivery and traffic distribution, and Security Groups controlling *who* can connect (`30.1September_CloudFront.md`, `17.3September_MiniProject.md`). Today's topic closes the remaining gap: Security Groups only look at IP/port — they can't tell a legitimate `GET /` from a SQL-injection attempt riding on the same port 443. **AWS WAF** and **AWS Shield** are the two services that inspect the *actual content and pattern* of the traffic itself, not just where it's coming from.
 
 ---
 
@@ -320,7 +320,7 @@ uri:               /
 | Example rule | Allow TCP 443 | Allow/deny traffic at the subnet | Block a SQL-injection pattern |
 | Stateful? | Yes | No (stateless) | N/A — operates on request content |
 
-**Full layered architecture, closing the loop from `30September_CloudFront.md` §20:**
+**Full layered architecture, closing the loop from `30.1September_CloudFront.md` §20:**
 ```
 Internet → Shield → WAF → ALB → Security Group → Targets
 ```
@@ -491,7 +491,7 @@ aws shield describe-subscription
                       APPLICATION
 ```
 
-This is the natural extension of the layered security chain built up across the last few sessions: `30September_CloudFront.md` §20 (CloudFront's origin-facing prefix list locking the ALB-SG) and `25September_RDS.md` §15 (RDS-SG only trusting EC2-SG) — Shield and WAF simply slot in as two more layers, each solving a problem the layers around them can't.
+This is the natural extension of the layered security chain built up across the last few sessions: `30.1September_CloudFront.md` §20 (CloudFront's origin-facing prefix list locking the ALB-SG) and `25September_RDS.md` §15 (RDS-SG only trusting EC2-SG) — Shield and WAF simply slot in as two more layers, each solving a problem the layers around them can't.
 
 ---
 

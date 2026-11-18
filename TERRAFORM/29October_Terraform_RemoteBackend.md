@@ -2,14 +2,14 @@
 
 **Topic: Terraform Remote Backend (S3 — with Native Locking)**
 
-Friends, on 23 October (`23October_Terraform_StateLocking.md`) we covered *why* state locking matters, using the classic **S3 + DynamoDB** setup as the real DevOps best practice. Today updates that: DynamoDB-based locking is now **deprecated**, and S3 itself can handle locking natively. This file covers both the backend concept and the current recommended setup.
+Friends, on 23 October (`23.2October_Terraform_StateLocking.md`) we covered *why* state locking matters, using the classic **S3 + DynamoDB** setup as the real DevOps best practice. Today updates that: DynamoDB-based locking is now **deprecated**, and S3 itself can handle locking natively. This file covers both the backend concept and the current recommended setup.
 
 ---
 
 ## 1. What is a Terraform backend?
 
 - A **backend** defines **where Terraform stores its state file** (`terraform.tfstate`).
-- **Default:** a local file — not safe for team use (same point already made in `13October_Terraform.md` §3 and `23October_Terraform_StateLocking.md` §5).
+- **Default:** a local file — not safe for team use (same point already made in `13October_Terraform.md` §3 and `23.2October_Terraform_StateLocking.md` §5).
 - **Remote backend:** stores the state file somewhere shared instead — S3, Terraform Cloud, Azure Blob Storage, or Google Cloud Storage (GCS).
 
 ---
@@ -46,7 +46,7 @@ Friends, on 23 October (`23October_Terraform_StateLocking.md`) we covered *why* 
 User1 → terraform apply
 User2 → blocked until User1 finishes
 ```
-- Full mechanics (how a lock is acquired/released, what happens if one gets stuck, `force-unlock`) are already covered in `23October_Terraform_StateLocking.md` — this file is specifically about *where that lock itself now lives.*
+- Full mechanics (how a lock is acquired/released, what happens if one gets stuck, `force-unlock`) are already covered in `23.2October_Terraform_StateLocking.md` — this file is specifically about *where that lock itself now lives.*
 
 ---
 
@@ -65,7 +65,7 @@ terraform {
 - **S3** stored the actual state file.
 - **DynamoDB** handled the locking, in a separate table.
 
-⚠️ **This exact setup is what `23October_Terraform_StateLocking.md` §6 described as "the real DevOps setup / best practice" — that framing is now outdated.** `dynamodb_table` is **deprecated** as of Terraform 1.11 (the underlying `use_lockfile` capability was introduced experimentally in Terraform 1.10). It still works today, but HashiCorp has said it will eventually be removed in a future minor version — don't build new projects around it.
+⚠️ **This exact setup is what `23.2October_Terraform_StateLocking.md` §6 described as "the real DevOps setup / best practice" — that framing is now outdated.** `dynamodb_table` is **deprecated** as of Terraform 1.11 (the underlying `use_lockfile` capability was introduced experimentally in Terraform 1.10). It still works today, but HashiCorp has said it will eventually be removed in a future minor version — don't build new projects around it.
 
 ---
 

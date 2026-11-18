@@ -2,7 +2,7 @@
 
 **Topic: Mini Project — The VPC + EC2 Architecture, Built With Terraform**
 
-Friends, yesterday's homework (`15October_Terraform.md` §6) was to rebuild a familiar architecture — VPC → Internet Gateway → Route Table → Subnet → Security Group → Network Interface → Elastic IP → EC2 — but this time in Terraform, instead of clicking through the console like we did back in `9September_VPC.md` through `11September_ENI.md`. Today we built it, end to end, and it worked. This file walks through the real `main.tf` we ran in class.
+Friends, yesterday's homework (`15October_Terraform.md` §6) was to rebuild a familiar architecture — VPC → Internet Gateway → Route Table → Subnet → Security Group → Network Interface → Elastic IP → EC2 — but this time in Terraform, instead of clicking through the console like we did back in `9September_VPC.md` through `11.1September_ENI.md`. Today we built it, end to end, and it worked. This file walks through the real `main.tf` we ran in class.
 
 ---
 
@@ -25,7 +25,7 @@ resource "aws_vpc" "prod-vpc" {
   }
 }
 ```
-- Same CIDR (`10.81.0.0/16`) as the original console-built project in `17September_MiniProject.md`.
+- Same CIDR (`10.81.0.0/16`) as the original console-built project in `17.3September_MiniProject.md`.
 
 **Step 2 — Internet Gateway:**
 ```hcl
@@ -119,7 +119,7 @@ resource "aws_security_group" "prod-sg" {
 }
 ```
 - Three separate `ingress` blocks — one per port (22 = SSH, 80 = HTTP, 443 = HTTPS).
-- `protocol = "-1"` in the `egress` block means **all protocols** — this is Terraform's/AWS's way of writing "allow everything outbound," same idea as the "allow all" egress rule in `17September_MiniProject.md`'s single-SG setup.
+- `protocol = "-1"` in the `egress` block means **all protocols** — this is Terraform's/AWS's way of writing "allow everything outbound," same idea as the "allow all" egress rule in `17.3September_MiniProject.md`'s single-SG setup.
 
 **Step 7 — Network Interface, with a fixed private IP:**
 ```hcl
@@ -212,7 +212,7 @@ EOF
 ```
 - Same idea as the User Data scripts already covered in `4September_LB_UserData.md` — a shell script that runs once, automatically, the first time the instance boots.
 - `yum install -y httpd` + `systemctl enable/start httpd` — installs and starts Apache, exactly like the original console-based mini project.
-- The `cat > /var/www/html/index.html <<'EOF' ... EOF` block writes the actual webpage Apache serves — this time a small styled "Sample MC Facebook App" page instead of the plain page from `17September_MiniProject.md`.
+- The `cat > /var/www/html/index.html <<'EOF' ... EOF` block writes the actual webpage Apache serves — this time a small styled "Sample MC Facebook App" page instead of the plain page from `17.3September_MiniProject.md`.
 - `user_data = file("facebook.sh")` in the `aws_instance` block (Step 9) is how Terraform reads the script's contents and hands it to AWS as the instance's User Data — you write the script as its own file, and Terraform just loads it in.
 
 ---
@@ -244,7 +244,7 @@ EOF
    attached to the ENI         Amazon Linux 2, t2.micro
                                 Apache + facebook.sh page
 ```
-- This is exactly the same shape as `17September_MiniProject.md`'s console-built architecture — the only thing that changed is **how** it got built: nine console clicks became one `main.tf` and one `terraform apply`.
+- This is exactly the same shape as `17.3September_MiniProject.md`'s console-built architecture — the only thing that changed is **how** it got built: nine console clicks became one `main.tf` and one `terraform apply`.
 
 ---
 
@@ -276,4 +276,4 @@ instance_public_ip = "<the Elastic IP that was assigned>"
 | ENI-first EC2 networking | Attach the instance to a pre-built ENI, instead of a bare subnet+SG | `network_interface { network_interface_id = ... }` |
 | `user_data = file("facebook.sh")` | Loads a separate shell script as the instance's boot-time script | Installs Apache and writes `index.html`, same as `4September_LB_UserData.md` |
 | `output` block | Prints a value from the created infrastructure after `apply` | `instance_public_ip` printed straight to the terminal |
-| Same architecture, two ways | Console (`17September_MiniProject.md`) vs Terraform (today) | Same VPC/IGW/Subnet/SG/ENI/EIP/EC2 shape, built two different ways |
+| Same architecture, two ways | Console (`17.3September_MiniProject.md`) vs Terraform (today) | Same VPC/IGW/Subnet/SG/ENI/EIP/EC2 shape, built two different ways |

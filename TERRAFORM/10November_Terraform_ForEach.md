@@ -2,7 +2,7 @@
 
 **Topic: Terraform `for_each`**
 
-Friends, every "multiple of the same thing" example so far (`4November_Terraform_Module_Network.md`'s subnets, `26October_Terraform_Modules.md`'s module calls) used **`count`** — plain numbers, `[0]`, `[1]`, `[2]`. Today's topic, **`for_each`**, is the other way to create multiples — using **names** instead of numbers. We'll build the exact same "one EC2 per environment" idea **three different ways**, so the differences are concrete, not just theoretical.
+Friends, every "multiple of the same thing" example so far (`4.2November_Terraform_Module_Network.md`'s subnets, `26October_Terraform_Modules.md`'s module calls) used **`count`** — plain numbers, `[0]`, `[1]`, `[2]`. Today's topic, **`for_each`**, is the other way to create multiples — using **names** instead of numbers. We'll build the exact same "one EC2 per environment" idea **three different ways**, so the differences are concrete, not just theoretical.
 
 ---
 
@@ -169,7 +169,7 @@ resource "aws_instance" "web" {
 
 ## 5. Reading `for_each` outputs — including a genuinely new kind of `for` expression
 
-Every `for` expression we've used before (`4November_Terraform_Module_Network.md` §4) produced a **list**: `[for s in aws_subnet.public : s.id]`. Today's outputs introduce the **map-producing** version:
+Every `for` expression we've used before (`4.2November_Terraform_Module_Network.md` §4) produced a **list**: `[for s in aws_subnet.public : s.id]`. Today's outputs introduce the **map-producing** version:
 
 ```hcl
 output "ec2_details" {
@@ -222,7 +222,7 @@ ec2_details = {
 ```
 Now you can type `ec2_details["prod"].public_ip` and get prod's IP directly — no need to remember which position in a list "prod" happened to land at.
 
-**Why `{ }` instead of `[ ]`?** `{ for ... : key => value }` (curly braces + `=>`) builds a **map**. `[ for ... : value ]` (square brackets, no `=>`) builds a plain **list** — that's what `4November_Terraform_Module_Network.md`'s `[for s in aws_subnet.public : s.id]` does instead. Same `for` keyword, same looping idea — the brackets around it decide whether you end up with a list or a map.
+**Why `{ }` instead of `[ ]`?** `{ for ... : key => value }` (curly braces + `=>`) builds a **map**. `[ for ... : value ]` (square brackets, no `=>`) builds a plain **list** — that's what `4.2November_Terraform_Module_Network.md`'s `[for s in aws_subnet.public : s.id]` does instead. Same `for` keyword, same looping idea — the brackets around it decide whether you end up with a list or a map.
 
 **Other ways to reach into `for_each` resources**, straight from the raw notes:
 ```hcl
@@ -265,7 +265,7 @@ resource "aws_security_group" "sg" {
   }
 }
 ```
-- Creates `web-sg`, `app-sg`, `db-sg` — matching exactly the per-tier Security Group split already built by hand across `4November_Terraform_Module_Security.md`'s single wide-open SG — this is what the *parameterized, per-tier* version of that same idea looks like, actually running.
+- Creates `web-sg`, `app-sg`, `db-sg` — matching exactly the per-tier Security Group split already built by hand across `4.3November_Terraform_Module_Security.md`'s single wide-open SG — this is what the *parameterized, per-tier* version of that same idea looks like, actually running.
 
 **Multiple IAM users, one block — in the exact same project:**
 ```hcl
@@ -301,7 +301,7 @@ module "s3_buckets" {
   bucket_name = "my-company-${each.key}-bucket"
 }
 ```
-- Same mechanics as module composition (`4November_Terraform_3TierProject.md` §2) — just now the *same* module gets instantiated once per entry, as `module.s3_buckets["dev"]`, `module.s3_buckets["test"]`, `module.s3_buckets["prod"]`, instead of being called once per environment by hand.
+- Same mechanics as module composition (`4.1November_Terraform_3TierProject.md` §2) — just now the *same* module gets instantiated once per entry, as `module.s3_buckets["dev"]`, `module.s3_buckets["test"]`, `module.s3_buckets["prod"]`, instead of being called once per environment by hand.
 
 ---
 
@@ -322,7 +322,7 @@ module "s3_buckets" {
 
 1. `for_each` accepts a **map**, or a **set of strings** — not a plain list directly (convert a list with `toset()` if needed, as several examples above do).
 2. Map keys / set values must be **known** before Terraform touches real infrastructure — something computed only *during* `apply` can't be used as a `for_each` key.
-3. **Sensitive values can't be used as `for_each` keys** — keys show up in plans and resource addresses, so Terraform won't let a `sensitive = true` value (`4November_Terraform_Module_RDS.md` §2) be used that way.
+3. **Sensitive values can't be used as `for_each` keys** — keys show up in plans and resource addresses, so Terraform won't let a `sensitive = true` value (`4.8November_Terraform_Module_RDS.md` §2) be used that way.
 4. Every instance is tracked **separately** in state.
 5. `each.key`/`each.value` only exist inside a block that actually has `for_each` set.
 6. ⚠️ **Changing a map key (or a set element) changes that resource's *address*.** Terraform doesn't see "renamed" — it sees one resource disappearing and a different one appearing, and will plan to **destroy and recreate** unless you deliberately migrate the state first. Renaming `"qa"` to `"staging"` in one of today's examples, for instance, would destroy the `"qa"` instance and create a brand-new `"staging"` one — not simply relabel the existing instance.

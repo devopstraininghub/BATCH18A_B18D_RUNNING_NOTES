@@ -178,7 +178,7 @@ resource "aws_instance" "prod-server-mum" {
 
 **Why this matters in real projects:**
 - **Disaster recovery** — a standby copy of your infrastructure in a second region.
-- **Lower latency** for users in different geographies — the same underlying motivation as CloudFront's edge locations (`30September_CloudFront.md`), just at the compute layer instead of the CDN layer.
+- **Lower latency** for users in different geographies — the same underlying motivation as CloudFront's edge locations (`30.1September_CloudFront.md`), just at the compute layer instead of the CDN layer.
 - **Data-residency / compliance** — some workloads must legally stay pinned to a specific region.
 
 ---
@@ -303,7 +303,7 @@ resource "azurerm_virtual_machine" "example" {
 8. Assign an **Elastic IP** to the network interface from step 7
 9. Create an **EC2 instance** using it — and launch an application on it
 
-- This is, in effect, the exact same VPC/IGW/Subnet/SG/ENI/EIP/EC2 architecture already built by hand through the console back in `9September_VPC.md` through `11September_ENI.md`.
+- This is, in effect, the exact same VPC/IGW/Subnet/SG/ENI/EIP/EC2 architecture already built by hand through the console back in `9September_VPC.md` through `11.1September_ENI.md`.
 - The point of tomorrow's exercise is writing **all nine of those steps as Terraform resources**.
 - Same familiar architecture, but created with one `terraform apply` instead of nine separate console actions.
 
@@ -321,4 +321,4 @@ resource "azurerm_virtual_machine" "example" {
 | Multi-region | One config, multiple regions of the same cloud | `aws.nv` (us-east-1) + `aws.mum` (ap-south-1) — real build from today |
 | Multi-cloud | One config, multiple different cloud providers | `aws`, `google`, `azurerm` providers side by side |
 | Never hardcode secrets in `.tf` | Same rule as DB/AWS credentials, now for VM passwords too | Use a secrets manager or a `sensitive = true` variable instead |
-| Tomorrow's mini project | The familiar VPC/IGW/Subnet/SG/ENI/EIP/EC2 build — now in Terraform | Same architecture as `9September_VPC.md`–`11September_ENI.md`, written as code |
+| Tomorrow's mini project | The familiar VPC/IGW/Subnet/SG/ENI/EIP/EC2 build — now in Terraform | Same architecture as `9September_VPC.md`–`11.1September_ENI.md`, written as code |
