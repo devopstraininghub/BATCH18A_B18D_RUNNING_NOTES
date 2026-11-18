@@ -6,7 +6,7 @@ Friends, `16November_Python_DataTypes.md` covered what each collection type *is*
 
 ---
 
-## 1. List operations (`6-list_ops.py`)
+## 1. List operations (`1-list-ops.py`)
 
 **Complete script:**
 ```python
@@ -94,7 +94,7 @@ Sum: 46
 
 ---
 
-## 2. Tuple operations (`7-tuple_ops.py`) — immutable, so far fewer methods exist
+## 2. Tuple operations (`2-tuple-ops.py`) — immutable, so far fewer methods exist
 
 **Complete script:**
 ```python
@@ -154,7 +154,7 @@ AttributeError: 'tuple' object has no attribute 'append'
 
 ---
 
-## 3. Set operations (`8-set_ops.py`)
+## 3. Set operations (`3-set-ops.py`)
 
 **Complete script:**
 ```python
@@ -163,7 +163,7 @@ my_set = {1, 2, 1, 3, 4, 5}
 my_set.add(6)
 print("After add:", my_set)
 
-my_set.remove(4)
+my_set.remove(2)
 print("After remove:", my_set)
 
 popped = my_set.pop()
@@ -184,9 +184,9 @@ print("Difference:", set_a.difference(set_b))
 **Sample output** (`my_set = {1, 2, 1, 3, 4, 5}` auto-dedupes to `{1, 2, 3, 4, 5}` on creation; exact element order is never guaranteed — see the warning below):
 ```
 After add: {1, 2, 3, 4, 5, 6}
-After remove: {1, 2, 3, 5, 6}
+After remove: {1, 3, 4, 5, 6}
 Popped: 1
-After pop: {2, 3, 5, 6}
+After pop: {3, 4, 5, 6}
 After clear: set()
 Union: {1, 2, 3, 4, 5}
 Intersection: {3}
@@ -198,7 +198,7 @@ Difference: {1, 2}
 | Operation | Code | Result |
 |---|---|---|
 | Add one element | `my_set.add(6)` | now contains `6` too |
-| Remove a specific element | `my_set.remove(4)` | `4` is gone |
+| Remove a specific element | `my_set.remove(2)` | `2` is gone |
 | Remove and return an arbitrary element | `popped = my_set.pop()` | removes *some* element — sets have no order, so you can't predict which one |
 | Empty the set | `my_set.clear()` | `set()` (empty) |
 | Combine two sets | `set_a.union(set_b)` | every element from both: `{1, 2, 3, 4, 5}` |
@@ -209,25 +209,25 @@ Difference: {1, 2}
 
 ---
 
-## 4. Dictionary operations (`9-dict-ops.py`)
+## 4. Dictionary operations (`4-dict-ops.py`)
 
 **Complete script:**
 ```python
 my_dict = {
     "name": "Madhu",
     "phone": "7396627149",
-    "city": "Hyderabad"
+    "city": "Hyderabad",
 }
 
 print("Name:", my_dict['name'])
 
-phone = my_dict.get('phone')
-print("Phone:", phone)
+name = my_dict.get('name', 'Not Available')
+print("Name:", name)
 
 salary = my_dict.get('salary', 'Not Available')
 print("Salary:", salary)
 
-my_dict['occupation'] = 'DevOps Engineer'
+my_dict['occupation'] = 'SRE Engineer'
 print("After adding occupation:", my_dict)
 
 popped_value = my_dict.pop('phone')
@@ -249,14 +249,14 @@ print("Copied:", copied_dict)
 **Sample output:**
 ```
 Name: Madhu
-Phone: 7396627149
+Name: Madhu
 Salary: Not Available
-After adding occupation: {'name': 'Madhu', 'phone': '7396627149', 'city': 'Hyderabad', 'occupation': 'DevOps Engineer'}
+After adding occupation: {'name': 'Madhu', 'phone': '7396627149', 'city': 'Hyderabad', 'occupation': 'SRE Engineer'}
 Popped: 7396627149
-After pop: {'name': 'Madhu', 'city': 'Hyderabad', 'occupation': 'DevOps Engineer'}
+After pop: {'name': 'Madhu', 'city': 'Hyderabad', 'occupation': 'SRE Engineer'}
 Keys: ['name', 'city', 'occupation']
-Values: ['Madhu', 'Hyderabad', 'DevOps Engineer']
-Items: [('name', 'Madhu'), ('city', 'Hyderabad'), ('occupation', 'DevOps Engineer')]
+Values: ['Madhu', 'Hyderabad', 'SRE Engineer']
+Items: [('name', 'Madhu'), ('city', 'Hyderabad'), ('occupation', 'SRE Engineer')]
 After clear: {}
 Copied: {'a': 1, 'b': 2}
 ```
@@ -265,16 +265,18 @@ Copied: {'a': 1, 'b': 2}
 
 | Operation | Code | Result |
 |---|---|---|
-| Read a value by key | `my_dict['name']` | `'Madhu'` |
-| Read a value, safely (no crash if key is missing) | `my_dict.get('phone')` | `'7396627149'` |
-| Read a missing key, with a fallback | `my_dict.get('salary', 'Not Available')` | `'Not Available'` |
-| Add/update a key | `my_dict['occupation'] = 'DevOps Engineer'` | key added |
+| Read a value by key (square brackets) | `my_dict['name']` | `'Madhu'` |
+| Read the same key, safely, via `.get()` with a fallback | `my_dict.get('name', 'Not Available')` | `'Madhu'` — the fallback isn't used, since `'name'` exists |
+| Read a missing key, with a fallback | `my_dict.get('salary', 'Not Available')` | `'Not Available'` — the fallback *is* used, since `'salary'` doesn't exist |
+| Add/update a key | `my_dict['occupation'] = 'SRE Engineer'` | key added |
 | Remove a key, and get its value back | `popped_value = my_dict.pop('phone')` | returns `'7396627149'` |
 | List all keys | `list(my_dict.keys())` | `['name', 'city', 'occupation']` |
-| List all values | `list(my_dict.values())` | `['Madhu', 'Hyderabad', 'DevOps Engineer']` |
-| List all key-value pairs | `list(my_dict.items())` | `[('name', 'Madhu'), ('city', 'Hyderabad'), ('occupation', 'DevOps Engineer')]` |
+| List all values | `list(my_dict.values())` | `['Madhu', 'Hyderabad', 'SRE Engineer']` |
+| List all key-value pairs | `list(my_dict.items())` | `[('name', 'Madhu'), ('city', 'Hyderabad'), ('occupation', 'SRE Engineer')]` |
 | Empty the dict | `my_dict.clear()` | `{}` |
 | Make an independent copy (on a fresh dict) | `copied_dict = new_dict.copy()` | `{'a': 1, 'b': 2}` |
+
+- The two `.get()` calls side by side are the real teaching point here: same method, same syntax — one finds its key and returns the real value, the other doesn't and falls back to the default, **neither one crashes.**
 
 - ⚠️ `my_dict['salary']` (square-bracket access on a missing key) would **crash** with `KeyError: 'salary'` — that's exactly why `.get('salary', 'Not Available')` is the safer way to read a key that might not exist.
 - Unlike a set, a **dict's order is reliable** — Python guarantees (since 3.7) that a dict remembers the order keys were inserted in.

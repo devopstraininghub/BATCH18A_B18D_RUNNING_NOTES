@@ -98,40 +98,35 @@ The sum of 7 and 3 is: 10
 **Same idea in Python (`4-sum.py`):**
 ```python
 def sum_numbers(num1, num2):
-    sum = num1 + num2
-    print(f"The sum of {num1} and {num2}: {sum}")
+    output = num1 + num2
+    print(f"The sum of {num1} & {num2} is {output}")
 
 sum_numbers(10, 20)
-sum_numbers(5, 15)
-sum_numbers(7, 8)
+sum_numbers(30, 40)
+sum_numbers(50, 60)
 ```
 **Sample output:**
 ```
-The sum of 10 and 20: 30
-The sum of 5 and 15: 20
-The sum of 7 and 8: 15
+The sum of 10 & 20 is 30
+The sum of 30 & 40 is 70
+The sum of 50 & 60 is 110
 ```
-⚠️ Naming the local variable `sum` here **shadows** Python's own built-in `sum()` function — only *inside* this function's body, so it doesn't break anything in this script, but it's worth knowing the name exists. We'll meet the real `sum()` function in `17November_Python_Collections_Methods.md`.
+⚠️ The variable inside this function is named `output`, not `sum` — an earlier version of this exact script used `sum` instead, which **shadows** Python's own built-in `sum()` function (only *inside* that function's body — see §3's trace capture below, taken from that earlier version, for what that looked like). Renaming it to `output` avoids the shadowing entirely. We'll meet the real `sum()` function in `17November_Python_Collections_Methods.md`.
 
 **A function that *returns* a value instead of printing it directly (`5-sum_return.py`):**
 ```python
 def sum_numbers(num1, num2):
-    sum = num1 + num2
-    return sum
+    output = num1 + num2
+    return output
 
-num1 = float(input("Enter first number: "))
-num2 = float(input("Enter second number: "))
-
-output = sum_numbers(num1, num2)
-print(f"The sum of {num1} and {num2}: {output}")
+op_sum = sum_numbers(10, 20)
+print(f"The sum of 10 & 20 is {op_sum}")
 ```
-**Sample output** (user enters `10` and `20`):
+**Sample output:**
 ```
-Enter first number: 10
-Enter second number: 20
-The sum of 10.0 and 20.0: 30.0
+The sum of 10 & 20 is 30
 ```
-- The difference from `4-sum.py`: that version **prints inside the function** and returns nothing useful; this version **returns the result** with `return sum`, so the caller decides what to do with it (here, printing it) — a function with `return` is reusable in more places, since the value can be stored, passed on, or used in a calculation, not just displayed.
+- The difference from `4-sum.py`: that version **prints inside the function** and returns nothing useful; this version **returns the result** with `return output`, so the caller decides what to do with it (here, storing it in `op_sum` before printing) — a function with `return` is reusable in more places, since the value can be stored, passed on, or used in a calculation, not just displayed.
 
 **Easy memory trick:** Shell functions take arguments as `$1`, `$2`, ... Python functions take them as named parameters. A function that `print`s is a dead end; a function that `return`s hands the value back to whoever called it.
 
@@ -174,7 +169,7 @@ The sum of 20 and 30 is 50
 The sum of 100 and 250 is 350
 ```
 
-**A real `python3 -m trace --trace` run, against a version of `4-sum.py` with three different calls:**
+**A real `python3 -m trace --trace` run, against the *earlier* version of `4-sum.py` — the one that still used `sum` as the variable name, before it was renamed to `output` above:**
 ```bash
 $ python3 -m trace --trace 4-sum.py
 ```
@@ -206,8 +201,8 @@ The sum of 50 & 60 is 110
 
 | Concept | One-line meaning | Real-time (DevOps) example |
 |---|---|---|
-| Function with `print` vs `return` | `print` is a dead end; `return` hands the value back to the caller | `5-sum_return.py` reuses the returned sum in another `print` |
+| Function with `print` vs `return` | `print` is a dead end; `return` hands the value back to the caller | `5-sum_return.py` stores the returned value in `op_sum` before printing |
 | `python3 -m trace --trace script.py` | Prints every line (and its file/line number) as it executes | Pinpointing exactly which line ran, in what order, in a misbehaving automation script |
 | Shell `set -x` | Prints every command (with expanded values) as it runs | Debugging a misbehaving Shell script |
 | `$1`/`$2` vs named parameters | Shell functions take positional args; Python functions take named parameters | `greet "Madhu"` vs `greet("Madhu")` |
-| Variable shadowing a built-in | Naming a local variable `sum` hides the built-in `sum()` function, only inside that function | `4-sum.py`'s `sum = num1 + num2` |
+| Variable shadowing a built-in | Naming a local variable `sum` hides the built-in `sum()` function, only inside that function | Fixed in `4-sum.py`/`5-sum_return.py` by renaming it to `output` |

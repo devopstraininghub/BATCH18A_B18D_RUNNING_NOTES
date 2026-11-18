@@ -1,12 +1,9 @@
 def sum_numbers(num1, num2): 
-    sum = num1 + num2 
-    return sum
+    output = num1 + num2 
+    return output
 
-num1 = float(input("Enter the first number"))
-num2 = float(input("enter the second number"))
 
-output =   sum_numbers(num1 ,num2 ) 
-print(f"The sum of {num1} & {num2} is {output}")
+
+op_sum =   sum_numbers(10 ,20) 
+print(f"The sum of 10 & 20 is {op_sum}")
      
-sum_numbers(30,40)
-sum_numbers(50,60)

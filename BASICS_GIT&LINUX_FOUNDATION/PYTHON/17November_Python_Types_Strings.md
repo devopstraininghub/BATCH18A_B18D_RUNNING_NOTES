@@ -23,7 +23,7 @@ x = 4 + 3j    # now a complex number
 
 ---
 
-## 2. String manipulation — built-in methods and functions
+## 2. String manipulation — built-in methods and functions (`5-string-ops.py`)
 
 **Complete script:**
 ```python
@@ -57,11 +57,11 @@ words = my_string.split()
 print(f"Split into words: {words}")
 
 # 8. Check if all characters are alphanumeric
-alphanumeric_string = "Python123"
-print(f"Is Python123 alphanumeric? {alphanumeric_string.isalnum()}")
+alphanumeric_string = "Python123$@"
+print(f"Is Python alphanumeric? {alphanumeric_string.isalnum()}")
 
 # 9. Convert string to title case
-title_case_string = "python programming"
+title_case_string = "python programming language"
 print(f"Title case: {title_case_string.title()}")
 ```
 
@@ -77,8 +77,8 @@ Index of 'World': 29
 Original string: Hello, Welcome to Aws Devops World
 Modified string: Hello, Welcome to Cloud Devops World
 Split into words: ['Hello,', 'Welcome', 'to', 'Aws', 'Devops', 'World']
-Is Python123 alphanumeric? True
-Title case: Python Programming
+Is Python alphanumeric? False
+Title case: Python Programming Language
 ```
 
 **What each method does:**
@@ -92,20 +92,20 @@ Title case: Python Programming
 | `s.find(sub)` | Position of the first match (returns `-1` if not found) | `29` |
 | `s.replace(old, new)` | Returns a **new** string with replacements made — the original is untouched | `Aws` → `Cloud` |
 | `s.split()` | Breaks the string into a list, splitting on whitespace by default | `['Hello,', 'Welcome', ...]` |
-| `s.isalnum()` | `True` only if every character is a letter or digit, no spaces/punctuation | `True` for `"Python123"` |
-| `s.title()` | Capitalizes the first letter of every word | `"python programming"` → `"Python Programming"` |
+| `s.isalnum()` | `True` only if **every** character is a letter or digit — no spaces, no punctuation | `False` for `"Python123$@"`, because of the `$` and `@` |
+| `s.title()` | Capitalizes the first letter of every word | `"python programming language"` → `"Python Programming Language"` |
 
 - ⚠️ `s.replace(...)` doesn't modify `my_string` itself — strings in Python are **immutable**, exactly like tuples (§2 of `17November_Python_Collections_Methods.md`). That's why the script prints both the untouched `Original string` and a separately-stored `Modified string`.
 
 ---
 
-## 3. Numeric types and type conversion
+## 3. Numeric types and type conversion (`6-arth-ops.py`)
 
-**Complete script** (corrected — see the note below):
+**Complete script:**
 ```python
 # Integer examples
 x = 10
-y = -5
+y = 5
 z = 0
 
 # Floating-point examples
@@ -133,21 +133,18 @@ g = int(a)
 print(f"Convert float {a} to int: g = {g}")
 ```
 
-⚠️ **The raw class example had a real bug, worth seeing once:**
-- Its floating-point `print` line referenced a variable `c`, which was never actually defined anywhere (only `x`, `y`, `z`, `a`, `b` were assigned).
-- Running that line would crash with `NameError: name 'c' is not defined`.
-- Fixed above by only printing the two floats that actually exist, `a` and `b`.
+⚠️ An earlier version of this class example used a floating-point `print` line that referenced a variable `c` which was never actually defined, which would have crashed with `NameError: name 'c' is not defined` — the real practice script above is already clean, only printing the two floats that actually exist, `a` and `b`.
 
 **Sample output:**
 ```
-Integers: x = 10, y = -5, z = 0
+Integers: x = 10, y = 5, z = 0
 Floating-point numbers: a = 3.14, b = -0.001
 
 Arithmetic Operations:
-x + y = 5
-x - y = 15
-x * y = -50
-x / y = -2.0
+x + y = 15
+x - y = 5
+x * y = 50
+x / y = 2.0
 x % y = 0
 
 Type Conversions:
@@ -159,8 +156,8 @@ Convert float 3.14 to int: g = 3
 
 | Operation | Code | Result | Why |
 |---|---|---|---|
-| Division | `x / y` | `-2.0` | `/` always returns a `float` in Python, even when the result is a whole number |
-| Modulus | `x % y` | `0` | `10 % -5` — Python's `%` follows the sign of the divisor; `10` divides evenly by `-5`, so the remainder is `0` |
+| Division | `x / y` | `2.0` | `/` always returns a `float` in Python, even when the result is a whole number |
+| Modulus | `x % y` | `0` | `10 % 5` — `10` divides evenly by `5`, so the remainder is `0` |
 | int → float | `float(x)` | `10.0` | Adds the decimal point, value unchanged |
 | float → int | `int(a)` | `3` | **Truncates** toward zero — it does not round. `int(3.9)` still gives `3`, not `4` |
 
@@ -174,5 +171,5 @@ Convert float 3.14 to int: g = 3
 | Static typing | Type fixed at compile time, declared upfront | C, C++, Go, Java |
 | String methods | `upper`/`lower`/`count`/`startswith`/`endswith`/`find`/`replace`/`split`/`isalnum`/`title` | Parsing a log line, or cleaning a hostname before using it |
 | Strings are immutable | `.replace()` returns a new string; the original never changes | Same category as tuples |
-| `x / y` | Always returns a `float` in Python 3 | `10 / -5` → `-2.0`, not `-2` |
+| `x / y` | Always returns a `float` in Python 3 | `10 / 5` → `2.0`, not `2` |
 | `int(a)` | Truncates toward zero, doesn't round | `int(3.14)` → `3`, `int(3.9)` → `3` |

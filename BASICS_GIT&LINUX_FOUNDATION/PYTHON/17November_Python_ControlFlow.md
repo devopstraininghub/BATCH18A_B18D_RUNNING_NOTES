@@ -23,45 +23,48 @@ else:
 - Python checks each `elif` **in order**, top to bottom, and runs the **first** one that's `True` — it never checks the rest after that.
 - `else` only runs if every single condition above it was `False`.
 
-**The class notes' version compares one number against a fixed threshold of 10 — shown here just for the pattern:**
+**What was actually practiced — checking whether a number is positive, negative, or zero.**
+
+**Shell (`7-if.sh`):**
 ```bash
 #!/bin/bash
 
-read -p "Enter a number: " NUMBER
+number="-10"
 
-if [ $NUMBER -gt 10 ]; then
-    echo "$NUMBER is greater than 10"
+if [ $number -gt 0 ]; then
+    echo "The number is positive."
 
-elif [ $NUMBER -lt 10 ]; then
-    echo "$NUMBER is less than 10"
-
+elif [ $number -lt 0 ]; then
+    echo "The number is negative."
 else
-    echo "$NUMBER is equal to 10"
-
+    echo "The number is zero."
 fi
 ```
+**Sample output** (`number="-10"` is hardcoded in the script, not read from user input):
+```
+The number is negative.
+```
 
-**What was actually practiced (`if.py`) compares two numbers against each other instead, not against a fixed 10:**
+**Python (`8-if.py`):**
 ```python
-num1 = int(input("Enter the first number: "))
-num2 = int(input("Enter the second number: "))
+number = 0
 
-if num1 > num2:
-    print(f"{num1} is greater than {num2}")
+if number > 0:
+    print("The number is positive.")
 
-elif num1 < num2:
-    print(f"{num1} is less than {num2}")
+elif number < 0:
+    print("The number is negative.")
 
 else:
-    print(f"{num1} is equal to {num2}")
+    print("The number is zero.")
 ```
-**Sample output** (user enters `15` then `10`):
+**Sample output** (`number = 0` is hardcoded here too):
 ```
-Enter the first number: 15
-Enter the second number: 10
-15 is greater than 10
+The number is zero.
 ```
-- Same three-way `if`/`elif`/`else` shape either way — Shell's `-gt`/`-lt` test flags (`13November_Python.md` §6) become Python's plain `>`/`<`. The matching `if.sh` for this two-number version exists as a file but was left **empty** — only the Python side actually got written this time.
+- Same three-way `if`/`elif`/`else` shape in both — Shell's `-gt`/`-lt` test flags (`13November_Python.md` §6) become Python's plain `>`/`<`.
+- ⚠️ Neither script actually reads a value from the user this time — `read -p`/`input()` are both absent, and the number is just hardcoded at the top instead, which is why each sample output above shows one single fixed result.
+- To make either one interactive, swap in `number = int(input("Enter a number: "))` (Python) or `read -p "Enter a number: " number` (Shell) — exactly like `13November_Python.md` §5's `input()`/`read` examples.
 
 ---
 
