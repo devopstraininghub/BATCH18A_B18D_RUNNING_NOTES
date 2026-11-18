@@ -2,7 +2,7 @@
 
 **Topic: Why Python for DevOps? + Python Basics**
 
-Friends, you already know Shell Scripting (`BASICS_GIT&LINUX_FOUNDATION/AWS-LINUX-SHELL/27August.md`/`28August.md`) — so today starts with the obvious question: if Shell can already automate things, why learn an entire second language? Then we get into Python's actual basics — variables, data types, input/output, and operators — building toward real DevOps scripting over the next few classes.
+Friends, you already know Shell Scripting (`BASICS_GIT_LINUX_SHELL_PYTHON_FOUNDATION/AWS-LINUX-SHELL/27August.md`/`28August.md`) — so today starts with the obvious question: if Shell can already automate things, why learn an entire second language? Then we get into Python's actual basics — variables, data types, input/output, and operators — building toward real DevOps scripting over the next few classes.
 
 ---
 
