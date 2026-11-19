@@ -35,3 +35,7 @@ terraform.rc
 # __pycache__/.pyc are regenerated automatically on every run.
 __pycache__/
 *.pyc
+
+# Generated output of the 19 Nov file-operations demo scripts (side effect, not source)
+**/19nov26/devops
+**/19nov26/testfile
