@@ -30,3 +30,8 @@ terraform.rc
 # Generated output of local-exec provisioner demos (side effect, not source)
 **/localfile.txt
 **/ajalocalfile.txt
+
+# Python — only hand-written .py/.sh source should ever be committed.
+# __pycache__/.pyc are regenerated automatically on every run.
+__pycache__/
+*.pyc

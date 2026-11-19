@@ -1386,3 +1386,555 @@ from my_package import module1, module2, module3
 module1.func1()
 module2.func2() 
 module3.func3()
+
+
+=============================
+
+DATE: 19 NOV 26
+
+DATE: 21 JAN 2026
+
+
+    ENVIRONMENT VARIABLES
+
+    --------------------------------------------------
+    WHAT IS AN ENVIRONMENT VARIABLE?
+    --------------------------------------------------
+
+        - A value stored in the system environment.
+        - Available system-wide.
+        - Automatically inherited by child processes.
+        - Used to pass configuration or secrets without
+          hard-coding them in the program.
+
+        In simple words:
+            Environment variables allow you to give input
+            to a program from outside the code.
+
+
+    --------------------------------------------------
+    WHY ENVIRONMENT VARIABLES ARE IMPORTANT?
+    --------------------------------------------------
+
+        • Used for API keys, passwords, tokens
+        • Used in CI/CD pipelines
+        • Used in Docker, Kubernetes, Terraform
+        • Keeps code secure and configurable
+        • Avoids hard-coding of sensitive data
+
+
+On Unix/Linux/macOS:
+
+export MY_ENV_VARIABLE="some_value"
+
+===============================================================================
+On Windows: 
+
+set MY_VARIABLE=some_value
+
+---------------
+import os
+
+user = os.getenv('USERNAME')
+awsvar = os.getenv('MY_VARIABLE')
+
+print(f"user env variable is : {user}")
+
+print(f"aws variable is: {awsvar}")
+
+==================
+./abc.sh val1 val2 val3
+===================================================================================================
+
+  COMMAND LINE ARGUMENTS (PYTHON)
+
+   
+
+        Command-line arguments are values passed to a
+        script when it is executed from the terminal.
+
+        They allow users to provide input dynamically
+        without modifying the code.
+
+        Example (terminal):
+
+            py script.py arg1 arg2 arg3
+
+
+    --------------------------------------------------
+    sys.argv 
+    --------------------------------------------------
+
+        - sys.argv is a list in Python.
+        - It stores all command-line arguments.
+        - Provided by the "sys" module.
+
+        Example:
+
+            import sys
+            print(sys.argv)
+
+        Output for:
+            python3 test.py madhu 123
+
+            ['test.py', 'madhu', '123']
+
+
+    --------------------------------------------------
+    INDEX DETAILS
+    --------------------------------------------------
+
+        sys.argv[0]
+            - Always the script name.
+            - Example: "script.py"
+
+        sys.argv[1]
+            - First command-line argument.
+
+        sys.argv[2]
+            - Second command-line argument.
+
+        sys.argv[n]
+            - nth argument.
+
+
+-------------
+
+# my_script.py "env" "rel_number"
+
+
+import sys
+
+env_name = sys.argv[1]
+rel_number = sys.argv[2]
+
+
+print(f"The environment to deploy:  {env_name} ")
+print(f"The Release version is :  {rel_number} ")
+
+
+
+--------------------
+
+
+Example Combining Environment Variables and Command-Line Arguments
+
+# combined_script.py
+import os
+import sys
+
+user = os.getenv('USERNAME')
+file_path = sys.argv[1]
+
+print(f"user env variable is : {user}")
+print(f"File Path: {file_path}")
+
+
+============================================================
+FILE OPERATIONS:
+
+
+touch 
+vim 
+echo "content " > file1.txt 
+
+
+
+    FILE OPERATIONS IN PYTHON
+
+    --------------------------------------------------
+    OPENING A FILE
+    --------------------------------------------------
+
+        You can open a file using the open() function.
+
+        Example:
+
+            file = open("devops_b17.txt", "a")
+
+        Common file modes:
+
+            'r'  → Read mode (default)
+            'w'  → Write mode (creates new or overwrites)
+            'a'  → Append mode (adds data at end)
+            'x'  → Create file (fails if file exists)
+            'b'  → Binary mode
+            't'  → Text mode (default)
+            '+'  → Read + Write mode
+
+        Example reading:
+
+            file = open("devops.txt", "r")
+            content = file.read()
+            print(content)
+            file.close()      # Manual close
+
+
+    --------------------------------------------------
+    WRITING TO A FILE (with open)
+    --------------------------------------------------
+
+        with open('devops.txt', 'w') as file:
+            file.write('Hello, World!-3\n')
+            file.write('This is a test file.\n')
+
+        Notes:
+            • 'w' overwrites the file.
+            • File closes automatically.
+
+
+    --------------------------------------------------
+    READING A FILE
+    --------------------------------------------------
+
+        with open('devops.txt', 'r') as file:
+            content = file.read()
+            print(content)
+
+
+    --------------------------------------------------
+    APPENDING TO A FILE
+    --------------------------------------------------
+
+        with open('devops.txt', 'a') as file:
+            file.write('Appending a new line.\n')
+
+
+        Reading again:
+
+            with open('devops.txt', 'r') as file:
+                content = file.read()
+                print(content)
+
+
+    --------------------------------------------------
+    CLOSING A FILE
+    --------------------------------------------------
+
+        It's good practice to close files when done.
+
+        Manual close:
+
+            file = open("devops.txt", "r")
+            content = file.read()
+            file.close()
+
+        Using "with" automatically closes the file:
+
+            with open("devops.txt", "r") as file:
+                data = file.read()
+
+        Why use "with"?
+            - No need for file.close()
+            - Handles exceptions safely
+            - Best practice for file operations
+
+
+    --------------------------------------------------
+    SUMMARY
+    --------------------------------------------------
+
+        • open() is used to open files
+        • Modes: r, w, a
+        • read(), write(), append() operations supported
+        • with open(...) is the recommended method
+        • Always close files to free system resources
+
+==================================================================================
+    EXCEPTION HANDLING – FILE OPERATIONS
+
+
+        File operations may fail due to:
+
+            • FileNotFoundError     (file does not exist)
+            • IOError               (general input/output failure)
+            • PermissionError       (no access rights)
+            • Disk full             (cannot write)
+            • Device not ready      (USB/drive unavailable)
+            • Hardware failure      (bad sectors, I/O issues)
+
+        Exceptions help you prevent program crashes
+        and display meaningful error messages.
+
+
+    --------------------------------------------------
+    EXCEPTION HANDLING EXAMPLE
+    --------------------------------------------------
+
+        try:
+            with open('devops.txt', 'r') as file:
+                content = file.read()
+                print(content)
+
+        except FileNotFoundError:
+            print("Error: The file was not found.")
+
+        except IOError:
+            print("Error: An I/O error occurred.")
+
+        except PermissionError:
+            print("Error: You do not have permission to read the file.")
+
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+===================================================================================
+
+    FEW USEFUL PYTHON MODULES & LIBRARIES
+
+    --------------------------------------------------
+    OS MODULE (STANDARD LIBRARY)
+    --------------------------------------------------
+
+        • Used to interact with the operating system.
+        • Supports file/directory operations, environment
+          variables, and executing system commands.
+
+        Common operations:
+
+            os.system("ls")
+            os.getenv("USERNAME")
+            os.makedirs("new_folder")
+
+
+    --------------------------------------------------
+    SYS MODULE (STANDARD LIBRARY)
+    --------------------------------------------------
+
+        • Provides access to Python runtime and interpreter.
+        • Used for command-line arguments, exit control,
+          and modifying Python path.
+
+        Common examples:
+
+            sys.argv
+            sys.exit()
+            sys.path
+
+
+    --------------------------------------------------
+    SHUTIL MODULE (STANDARD LIBRARY)
+    --------------------------------------------------
+
+        • Provides high-level file operations.
+        • Useful for copying, moving, deleting files
+          and directories.
+
+        Common usage:
+
+            shutil.copy("a.txt", "b.txt")
+            shutil.copytree("src", "dest")
+            shutil.disk_usage("/")
+
+
+    --------------------------------------------------
+    BOTO3 (EXTERNAL LIBRARY – AWS SDK)
+    --------------------------------------------------
+
+        • Used to automate and manage AWS services.
+        • Required for DevOps, CloudOps, SRE automation.
+
+        Examples:
+
+            boto3.client("s3")
+            boto3.resource("ec2")
+
+        Use cases:
+
+            • Start/stop EC2
+            • Upload/download S3 objects
+            • Manage IAM, Lambda, RDS, etc.
+
+
+    --------------------------------------------------
+    PSUTIL (EXTERNAL LIBRARY – SYSTEM MONITORING)
+    --------------------------------------------------
+
+        • Used to gather system information.
+        • Helpful for monitoring CPU, memory, disk, processes.
+
+        Examples:
+
+            psutil.cpu_percent()
+            psutil.virtual_memory()
+            psutil.disk_usage("/")
+
+
+ 	
+
+========================================================================================
+REAL TIME USE - CASES :
+
+
+Write a Python script that checks if a server/host is up by pinging it.
+
+
+ping www.google.com
+------------------------------------------
+import os
+import sys
+
+def ping_server(server_ip):
+    response = os.system(f"ping -n 1 {server_ip}")
+    if response == 0:
+        return True
+    else:
+        return False
+    
+
+if __name__ == "__main__":
+    
+   # server_ip = input("Enter the server IP or hostname to ping: ")  
+
+    server_ip = sys.argv[1]
+    
+    if ping_server(server_ip):
+        print(f"Server {server_ip} is reachable.")      
+    else:
+        print(f"Server {server_ip} is not reachable.")
+----------------------------------------------	
+CLI ARGUMENTS 
+
+import os
+import sys
+def ping_server(server):
+    response = os.system(f"ping  {server}")
+    return response == 0
+
+server = sys.argv[1]
+
+if ping_server(server):
+    print(f"Server {server} is up")
+else:
+    print(f"Server {server} is down")
+	
+----------------------------------------------	
+import os
+
+def ping_server(server):
+    response = os.system(f"ping {server}")
+    return response == 0
+
+server = input("Enter server name or IP: ")
+
+if ping_server(server):
+    print(f"Server {server} is up")
+else:
+    print(f"Server {server} is down")
+
+==============================================================
+
+
+Example 2: Create a Directory Backup
+
+Write a Python script that copies a directory to a backup location.  \
+
+import shutil
+import os
+
+# Directory to backup
+source_dir = r"C:\Users\Dell\Desktop\k8s"
+
+# Backup destination
+backup_dir =  r"C:\Users\Dell\Desktop\k8s_backupfiles"
+
+# Ensure backup directory exists
+os.makedirs(backup_dir, exist_ok=True)
+
+# Copy the directory
+shutil.copytree(source_dir, os.path.join(backup_dir, os.path.basename(source_dir)))
+
+
+print("Backup completed successfully")
+
+----------------------------------------------	
+
+import shutil
+import os
+
+# Take input at runtime
+source_dir = input("Enter source directory path: ")
+backup_dir = input("Enter backup directory path: ")
+
+# Ensure backup directory exists
+os.makedirs(backup_dir, exist_ok=True)
+
+# Copy the directory
+shutil.copytree(
+    source_dir,
+    os.path.join(backup_dir, os.path.basename(source_dir))
+)
+
+print("Backup completed successfully")
+
+
+-----------------OR-----------------------------------------
+
+import os
+import shutil
+def backup_directory(source_dir, backup_dir):
+    try:
+        shutil.copytree(source_dir, backup_dir)
+        print(f"Backup of '{source_dir}' created at '{backup_dir}'")
+    except Exception as e:
+        print(f"Error during backup: {e}")  
+
+if __name__ == "__main__":
+    source_directory = r"C:\Users\Madhukiran\Desktop\k8s"
+    backup_directory_path = r"C:\Users\Madhukiran\Desktop\k8s_backupfiles"
+    backup_directory(source_directory, backup_directory_path)   
+
+
+===========================================================================
+Example 3: Monitor Disk Usage
+Question:
+Write a Python script that checks the disk usage of a directory and prints a warning if it exceeds a certain threshold.
+
+
+
+import shutil
+
+monitor_dir = r"C:"
+
+# Disk usage threshold (in percentage)
+threshold = 80
+
+# Get disk usage
+total, used, free = shutil.disk_usage(monitor_dir) # returns tuple of three values
+
+print(total, used, free)   ## Print total, used, and free bytes on the disk
+
+usage_percent = used / total * 100  
+
+# Check if usage exceeds threshold
+if usage_percent > threshold:
+    print(f"Warning: Disk usage is {usage_percent:.2f}%")
+else:
+    print(f"Disk usage is {usage_percent:.2f}%, within the threshold")
+
+	
+------------OR -----------------------
+
+import shutil
+
+def get_disk_usage(path):
+    total, used, free = shutil.disk_usage(path)
+    return total, used, free    
+
+
+if __name__ == "__main__":
+    path = "/"
+    total, used, free = get_disk_usage(path)
+    print(f"Total: {total}, Used: {used}, Free: {free}")
+
+    usage_percent = (used / total) * 100
+    print(f"Disk usage percentage: {usage_percent:.2f}%")   
+
+    if usage_percent > 80:
+        print("Warning: Disk usage is above 80%!")
+    else:
+        print("Disk usage is within acceptable limits.")	
+	
+
+
+
