@@ -7,4 +7,4 @@ sudo systemctl start pm2-root
 sudo systemctl enable pm2-root 
 sudo pm2 start aws_three_tier_code/backend/index.js --name "backendApi"
 sudo apt install mysql-server -y 
-mysql -h book.rds.com -u admin -ppassword123 test < aws_three_tier_code/backend/test.sql
+mysql -h book.rds.com -u admin -pMindcircuit1234 test < aws_three_tier_code/backend/test.sql

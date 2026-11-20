@@ -24,7 +24,7 @@ resource "aws_route53_record" "alb_backend" {
   name    = var.alb_record_name
   type    = "CNAME"
   ttl     = 300
-  records = [var.alb_dns_name]
+  records = [var.alb_backend_dns_name]
 }
 
 

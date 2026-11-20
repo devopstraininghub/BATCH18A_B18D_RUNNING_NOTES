@@ -55,7 +55,7 @@ module "rds" {
   db_allocated_storage = 25
   db_name = "test"
   db_username = "admin"
-  db_password = "password123" # Consider using environment variables or AWS Secrets Manager instead
+  db_password = "Mindcircuit1234" # Consider using environment variables or AWS Secrets Manager instead
   db_security_group_id = module.security.security_group_id
   db_subnet_ids = [
     module.network.private_subnet_ids[4], module.network.private_subnet_ids[5],
@@ -70,3 +70,80 @@ output "rds_endpoint" {
   value = module.rds.rds_endpoint
 }
 
+### ######################### Load Balancer Configuration
+
+module "load_balancers" {
+  source = "./modules/load_balancers"
+  frontend_alb_name = "frontend-alb"
+  backend_alb_name = "backend-alb"
+  security_group_id = module.security.security_group_id
+  public_subnet_ids = [module.network.public_subnet_ids[0], module.network.public_subnet_ids[1]]
+  frontend_tg_name = "frontend-tg"
+  backend_tg_name = "backend-tg"
+  vpc_id = module.network.vpc_id
+}
+
+#### launch templates configuration
+
+module "launch_templates" {
+  source = "./modules/launch_templates"
+  frontend_lt_name = "frontend-lt"
+  backend_lt_name = "backend-lt"
+  key_name = "madhukey"
+  ami_id_frontend = "ami-0b6fc738e4f1c16b9"
+  ami_id_backend = "ami-0f1a7a7ba9b3b39d1"
+  instance_type = "t3.micro"
+  frontend_user_data = "frontend.sh"
+  backend_user_data = "backend.sh"
+  security_group_id = module.security.security_group_id
+}
+
+
+## auto scaling group configuration
+
+module "autoscaling_groups" {
+  source = "./modules/asg"
+  frontend_asg_name = "frontend-asg"
+  backend_asg_name = "backend-asg"
+  asg_min_size = 1
+  asg_max_size = 1
+  asg_desired_capacity = 1
+  frontend_subnet_ids = [module.network.private_subnet_ids[0], module.network.private_subnet_ids[1]]
+  backend_subnet_ids = [module.network.private_subnet_ids[2], module.network.private_subnet_ids[3]]
+  frontend_tg_arn = module.load_balancers.frontend_tg_arn
+  backend_tg_arn = module.load_balancers.backend_tg_arn
+  frontend_lt_id = module.launch_templates.frontend_lt_id
+  backend_lt_id = module.launch_templates.backend_lt_id
+}
+
+
+## Bastion Host Configuration 
+
+module "bastion" {
+  source = "./modules/bastion"
+  ami_id = "ami-0add9dc62cfab3c11"
+  instance_type = "t3.micro"
+  key_name = "madhukey"
+  public_subnet_id = module.network.public_subnet_ids[0]
+  security_group_id = module.security.security_group_id
+  bastion_name = "bastion-host"
+}
+
+
+output "bastion_public_ip" {
+  value = module.bastion.bastion_public_ip
+}
+
+# route 53 configuration
+# module "route53" {
+#   source = "./modules/route53"
+#   domain_name = "example.com"
+#   vpc_id = module.network.vpc_id
+#   public_subnet_ids = [module.network.public_subnet_ids[0], module.network.public_subnet_ids[1]]
+# }
+
+# module "acm" {
+#   source = "./modules/acm"
+#   domain_name = "example.com"
+#   san_names   = ["www.example.com", "api.example.com"]
+# }

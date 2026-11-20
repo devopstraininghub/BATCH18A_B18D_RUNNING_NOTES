@@ -47,7 +47,7 @@ variable "security_group_id" {
 variable "bastion_name" {
   description = "Tag name for the Bastion Host"
   type        = string
-  default     = "bastion-host"
+#  default     = "bastion-host"
 }
 output "bastion_instance_id" {
   description = "The ID of the Bastion host instance"

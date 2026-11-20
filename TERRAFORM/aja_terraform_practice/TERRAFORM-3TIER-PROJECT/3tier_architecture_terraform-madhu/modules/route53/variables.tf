@@ -32,7 +32,7 @@ variable "alb_record_name" {
   default     = "api.b15facebook.xyz"
 }
 
-variable "alb_dns_name" {
+variable "alb_backend_dns_name" {
   description = "The DNS name of the backend ALB"
   type        = string
 }
