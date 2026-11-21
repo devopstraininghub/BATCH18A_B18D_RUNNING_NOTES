@@ -1939,7 +1939,96 @@ if __name__ == "__main__":
 
 ============================
 
-20 NOV 26 
+21 NOV 26
+
+script to get cpu , ram , and disk usage 
+
+python -m pip install psutil 
+
+
+import psutil
+
+cpu_usage = psutil.cpu_percent(interval=1)
+print(f"CPU Usage: {cpu_usage}%")
+
+memory_info = psutil.virtual_memory()
+print(f"Memory information: {memory_info}")
+
+memory_percent = psutil.virtual_memory().percent
+print(f"Memory Usage percentage: {memory_percent}%")
+
+disk_usage = psutil.disk_usage('/')
+print(f"Disk Usage: {disk_usage.percent}%")
+
+==============================
+script for managing services 
+
+import os
+import sys
+
+# Function to start a service
+def start_service(service_name):
+    os.system(f"sudo systemctl start {service_name}")
+    print(f"Service {service_name} started")
+
+# Function to stop a service
+def stop_service(service_name):
+    os.system(f"sudo systemctl stop {service_name}")
+    print(f"Service {service_name} stopped")
+
+# Function to display status of a service
+def status_service(service_name):
+    os.system(f"sudo systemctl status {service_name}")
+    print(f"Service {service_name} status")
+
+# Service to manage
+service_name = "jenkins"
+# service_name = input("Enter service name: ")
+# service_name = sys.argv[1]
+
+# Start and stop the service
+
+start_service(service_name)
+status_service(service_name)
+stop_service(service_name)
+
+===========
+
+list docker containers 
+
+import os
+
+# List running Docker containers
+os.system("docker ps")
+
+print("Listed all running Docker containers")
+=====================
+
+create an ec2 instance using boto 3
+
+import boto3
+
+def create_ec2_instance():
+    ec2 = boto3.resource('ec2')
+
+    instance = ec2.create_instances(
+        ImageId='ami-0abcdef1234567890',  # Replace with a valid AMI ID
+        MinCount=1,
+        MaxCount=1,
+        InstanceType='t2.micro',
+        KeyName='your-key-pair-name'  # Replace with your key pair name
+    )
+
+    print(f'Created EC2 Instance with ID: {instance[0].id}')
+
+if __name__ == "__main__":
+    create_ec2_instance()
+
+
+============================
+
+
+
 
 INTERVIEW QUESTIONS:
 

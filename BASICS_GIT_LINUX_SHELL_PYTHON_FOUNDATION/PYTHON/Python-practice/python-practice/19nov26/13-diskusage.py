@@ -1,3 +1,5 @@
+
+
 import shutil
 
 monitor_dir = r"C:"
@@ -6,9 +8,10 @@ monitor_dir = r"C:"
 threshold = 80
 
 # Get disk usage
-total, used, free = shutil.disk_usage(monitor_dir)  # returns a tuple of three values
+total, used, free = shutil.disk_usage(monitor_dir) 
 
 print(total, used, free)  # total, used, and free bytes on the disk
+
 
 usage_percent = used / total * 100
 
